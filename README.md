@@ -10,4 +10,4 @@ Il progetto prevede di effettuare una remaster in 3D del famoso gioco Space Inva
 3) Importare il progetto in VS come soluzione
 4) Eseguire il main
 
-Il tempo di rendering potrebbe essere elevato.
+
