@@ -11,6 +11,6 @@ void main()
 
     FragColor = vec4(color, 1.0);
 
-    //BrightColor = vec4(FragColor.rgb, 1.0);
-    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+    BrightColor = vec4(FragColor.rgb, 1.0);
+    //BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 }

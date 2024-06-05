@@ -92,5 +92,14 @@
     <ClInclude Include="render_text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="alieno.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="navicella.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="proiettile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -189,9 +189,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="alieno.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="navicella.h" />
+    <ClInclude Include="proiettile.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
