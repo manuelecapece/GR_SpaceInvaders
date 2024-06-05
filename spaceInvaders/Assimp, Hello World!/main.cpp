@@ -71,11 +71,13 @@ const float larghezzaProiettile = 0.3f;
 const float altezzaProiettile = 0.3f;
 float translateSpeedProiettile;
 float speedProiettile = 6;  // velocita della navicella
-float limZproiettile = -10;
+float limZproiettile = -20;
+float spreadProiettile = 1.0f;
 
 const int SIZE_VECTOR_COLPI = 1000;
 std::vector<glm::vec3> vectorPos(SIZE_VECTOR_COLPI);
-int colpiSparati = 0;
+std::vector<glm::vec3> vectorDir(SIZE_VECTOR_COLPI);
+int colpiSparati = -1;
 
 // settings
 int SCR_WIDTH = 1920;
@@ -167,7 +169,7 @@ float lastFrame = 0.0f;
 //Mosse possibili
 bool moveLeft = false;
 bool moveRight = false;
-bool spara = false;
+bool spara = true;
 bool stopSpara = false;
 bool exitGame = false;
 
@@ -210,15 +212,26 @@ void processInput(GLFWwindow* window)
 		moveLeft = true;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		moveRight = true;
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
-		spara = true;
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+		if (spara) {
+			colpiSparati++;
+			vectorPos[colpiSparati] = posNavicella;
+			random_x = generaNumeroCasuale(-spreadProiettile, spreadProiettile);
+			proiettileAt = glm::vec3(random_x, 0.0f, -20.0f);
+			proiettileAt = glm::normalize(proiettileAt);
+			vectorDir[colpiSparati] = proiettileAt;
+			spara = false;
+		}
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)
 		moveLeft = false;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 		moveRight = false;
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-		spara = false;
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE) {
+		spara = true;
+	}
+		
 }
 
 void idle()
@@ -229,19 +242,6 @@ void idle()
 
 	translateSpeedNavicella  = speedNavicella * deltaTime;
 	translateSpeedProiettile = speedProiettile * deltaTime;
-
-	//Inizia il movimento del  proiettile
-	if (spara)
-	{
-		colpiSparati++;
-		vectorPos[colpiSparati] = posNavicella;
-		random_x = generaNumeroCasuale(-1.0f, 1.0f);
-		proiettileAt = glm::vec3(random_x, 0.0f, -10.0f);
-		proiettileAt = glm::normalize(proiettileAt);
-		
-	}
-
-	
 
 }
 
@@ -374,7 +374,7 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
 
@@ -652,19 +652,16 @@ void renderNavicella() {
 
 void renderProiettile() {
 
-	
-
-	//Disegno la palla (per ora e un cubo)
 	glBindVertexArray(cubeVAO);
 	proiettileShader.use();
-	glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
+	
 
-	for (int i = 1; i <= colpiSparati; i++)
+	for (int i = 0; i < colpiSparati + 1; i++)
 	{
 		if (vectorPos[i].z > limZproiettile)
 		{
-			vectorPos[i] = vectorPos[i] + translateSpeedProiettile * proiettileAt;
-			std::cout << " pos z" << vectorPos[i].z << std::endl;
+			glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
+			vectorPos[i] = vectorPos[i] + translateSpeedProiettile * vectorDir[i];
 			modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
 			modelCubo = glm::scale(modelCubo, glm::vec3(larghezzaProiettile, altezzaProiettile, lunghezzaProiettile));
 			proiettileShader.setMat4("model", modelCubo);
@@ -690,7 +687,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	renderTerna();
 
-	renderAlieni();
+	//renderAlieni();
 
 	renderNavicella();
 
@@ -731,7 +728,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	renderQuad2();
 
 	glDisable(GL_DEPTH_TEST);
-	std::string bloomStatus = ("Log");
+	std::string bloomStatus = "Colpi sparati: " + std::to_string(colpiSparati);
 	RenderText(bloomStatus.c_str(), 0, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
 	glEnable(GL_DEPTH_TEST);
 }
