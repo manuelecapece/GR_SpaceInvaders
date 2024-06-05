@@ -1,0 +1,13 @@
+# Blender 4.1.1 MTL File: 'sfera.blend'
+# www.blender.org
+
+newmtl wood_Mat
+Ns 202.636002
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Metal007_1K-JPG_Color.jpg
+map_Ks Metal007_1K-JPG_Metalness.jpg
+map_Bump -bm 1.000000 Metal007_1K-JPG_NormalGL.jpg

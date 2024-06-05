@@ -21,9 +21,14 @@
 
 //Dichiarazione shader
 Shader frecciaShader;
+Shader alienoShader;
+Shader proiettileShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
+Model modelSfera;
+
+float random_x;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -33,12 +38,44 @@ glm::mat4 projection = glm::mat4(1.0f);	//identity matrix
 void renderQuad();
 void renderQuad2();
 void render(Shader shaderBlur, Shader shaderBloomFinal);
+float generaNumeroCasuale(float estremoInferiore, float estremoSuperiore);
 
 const float PI = 3.14159265358979323846;
 
 using namespace irrklang;
 ISoundEngine* soundEngine;
 
+//Proprietà alieni
+int mapAlieni [5][6] = { {1,1,1,1,1,1},
+						 {1,1,1,1,1,1},
+						 {1,1,1,1,1,1},
+						 {1,1,1,1,1,1},
+						 {1,1,1,1,1,1}};
+glm::vec3 posAlieno(-4.77f, 0.0, -12.0f);
+float raggioAlieno = 1.0f;
+float spazioAlieno = 1.2f;
+
+//Proprietà navicella
+glm::vec3 posNavicella(0.0f, 0.0, 6.0f);
+float raggioNavicella = 1.0f;
+float translateSpeedNavicella;
+float speedNavicella = 6;  // velocita della navicella
+float limX_pos = posAlieno.x + 5 * raggioAlieno * 2.0f * spazioAlieno;
+
+//Proprietà proiettile
+glm::vec3 posProiettile(0.0f, 0.0, 6.0f);
+glm::vec3 proiettileAt(0.0, 0.0, 0.0); // Punto in cui e diretto il proiettile
+glm::vec3 proiettileUp(0.0, 1.0, 0.0); // Vettore up...il proiettile è sempre parallelo al piano
+const float lunghezzaProiettile = 0.6f;
+const float larghezzaProiettile = 0.3f;
+const float altezzaProiettile = 0.3f;
+float translateSpeedProiettile;
+float speedProiettile = 6;  // velocita della navicella
+float limZproiettile = -10;
+
+const int SIZE_VECTOR_COLPI = 1000;
+std::vector<glm::vec3> vectorPos(SIZE_VECTOR_COLPI);
+int colpiSparati = 0;
 
 // settings
 int SCR_WIDTH = 1920;
@@ -114,6 +151,7 @@ float vertices[] = {
 
 //Vista isometrica frontale dall'alto
 glm::vec3 cameraPos(0.0f, 12.5f, 12.5f);  // Posizione camera
+//glm::vec3 cameraPos(0.0f, 12.5f, 0.001f);  // Posizione camera
 glm::vec3 cameraAt(0.0, 0.0, 0.0);	// Punto in cui "guarda" la camera
 glm::vec3 cameraUp(0.0, 1.0, 0.0);		// Vettore up...la camera e sempre parallela al piano
 glm::vec3 cameraDir(0.0, 0.0, -0.1);	// Direzione dello sguardo
@@ -129,8 +167,8 @@ float lastFrame = 0.0f;
 //Mosse possibili
 bool moveLeft = false;
 bool moveRight = false;
-bool lanciaPalla = false;
-bool stopLancio = false;
+bool spara = false;
+bool stopSpara = false;
 bool exitGame = false;
 
 unsigned int frameCount = 0;
@@ -173,23 +211,37 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		moveRight = true;
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
-		lanciaPalla = true;
+		spara = true;
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)
 		moveLeft = false;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 		moveRight = false;
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-		lanciaPalla = false;
+		spara = false;
 }
 
-// La funzione idle continuera a spostare la camera
-// fino a quando le variabili booleane sono a true
 void idle()
 {
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
+
+	translateSpeedNavicella  = speedNavicella * deltaTime;
+	translateSpeedProiettile = speedProiettile * deltaTime;
+
+	//Inizia il movimento del  proiettile
+	if (spara)
+	{
+		colpiSparati++;
+		vectorPos[colpiSparati] = posNavicella;
+		random_x = generaNumeroCasuale(-1.0f, 1.0f);
+		proiettileAt = glm::vec3(random_x, 0.0f, -10.0f);
+		proiettileAt = glm::normalize(proiettileAt);
+		
+	}
+
+	
 
 }
 
@@ -199,14 +251,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
-}
-
-float generaNumeroCasuale(float estremoInferiore, float estremoSuperiore) {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(estremoInferiore, estremoSuperiore);
-	float random = dis(gen);
-	return random;
 }
 
 
@@ -387,9 +431,12 @@ int main()
 
 	// load models
 	modelFreccia = Model("../src/models/freccia/freccia.obj");
+	modelSfera = Model("../src/models/sfera/sferaRaggio1metro.obj");
 
 	//Shader
-	frecciaShader = Shader("piattaforma.vs", "freccia.fs");
+	frecciaShader = Shader("freccia.vs", "freccia.fs");
+	alienoShader = Shader("alieno.vs", "alieno.fs");
+	proiettileShader = Shader("proiettile.vs", "proiettile.fs");
 	
 
 	// build and compile shaders
@@ -476,14 +523,20 @@ int main()
 	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraAt, cameraUp);
 
-
-
-	// draw in wireframe
+	//draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	frecciaShader.use();
 	frecciaShader.setMat4("projection", projection);
 	frecciaShader.setMat4("view", view);
+
+	alienoShader.use();
+	alienoShader.setMat4("projection", projection);
+	alienoShader.setMat4("view", view);
+
+	proiettileShader.use();
+	proiettileShader.setMat4("projection", projection);
+	proiettileShader.setMat4("view", view);
 
 	// shader configuration
 	// --------------------
@@ -520,18 +573,7 @@ int main()
 	return 0;
 }
 
-void render(Shader shaderBlur, Shader shaderBloomFinal)
-{
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-
-	// 1. render scene into floating point framebuffer
-	// -----------------------------------------------
-	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+void renderTerna() {
 	//Disegno la terna di riferimento
 
 	//Asse x+ ROSSO
@@ -556,8 +598,103 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	frecciaShader.setMat4("model", freccia);
 	frecciaShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
 	modelFreccia.Draw(frecciaShader);
+}
+
+void renderAlieni() {
+
+	alienoShader.use();
 
 
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 6; j++)
+		{
+			if (mapAlieni[i][j] != 0)
+			{
+
+				float x = posAlieno.x + i * raggioAlieno * 2.0f * spazioAlieno;
+				float z = posAlieno.z + j * raggioAlieno * 2.0f * spazioAlieno;
+
+				glm::mat4 sfera = glm::mat4(1.0f);
+				sfera = glm::translate(sfera, glm::vec3(x, 0.0f, z));
+				sfera = glm::scale(sfera, glm::vec3(1.0f, raggioAlieno, 1.0f));
+				alienoShader.setMat4("model", sfera);
+				modelSfera.Draw(alienoShader);
+			}
+		}
+	}
+
+}
+
+void renderNavicella() {
+
+	alienoShader.use();
+
+	glm::mat4 sfera = glm::mat4(1.0f);
+	sfera = glm::translate(sfera, glm::vec3(posNavicella.x, 0.0f, posNavicella.z));
+	sfera = glm::scale(sfera, glm::vec3(1.0f, raggioNavicella, 1.0f));
+	alienoShader.setMat4("model", sfera);
+	modelSfera.Draw(alienoShader);
+
+	// Spostamento navicella laterale destro
+	if (moveRight && posNavicella.x < limX_pos)
+	{
+		posNavicella = glm::vec3(posNavicella.x + translateSpeedNavicella, posNavicella.y, posNavicella.z);
+
+	}
+	// Spostamento navicella laterale sinistro
+	if (moveLeft && posNavicella.x > -limX_pos)
+	{
+		posNavicella = glm::vec3(posNavicella.x - translateSpeedNavicella, posNavicella.y, posNavicella.z);
+	}
+
+}
+
+void renderProiettile() {
+
+	
+
+	//Disegno la palla (per ora e un cubo)
+	glBindVertexArray(cubeVAO);
+	proiettileShader.use();
+	glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
+
+	for (int i = 1; i <= colpiSparati; i++)
+	{
+		if (vectorPos[i].z > limZproiettile)
+		{
+			vectorPos[i] = vectorPos[i] + translateSpeedProiettile * proiettileAt;
+			std::cout << " pos z" << vectorPos[i].z << std::endl;
+			modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
+			modelCubo = glm::scale(modelCubo, glm::vec3(larghezzaProiettile, altezzaProiettile, lunghezzaProiettile));
+			proiettileShader.setMat4("model", modelCubo);
+			proiettileShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+	}
+
+
+
+}
+
+void render(Shader shaderBlur, Shader shaderBloomFinal)
+{
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+
+	// 1. render scene into floating point framebuffer
+	// -----------------------------------------------
+	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	renderTerna();
+
+	renderAlieni();
+
+	renderNavicella();
+
+	renderProiettile();
 
 
 
@@ -707,6 +844,14 @@ void renderQuad2()
 	glBindVertexArray(quadVAO2);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+}
+
+float generaNumeroCasuale(float estremoInferiore, float estremoSuperiore) {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(estremoInferiore, estremoSuperiore);
+	float random = dis(gen);
+	return random;
 }
 
 

@@ -166,6 +166,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="alieno.fs" />
+    <None Include="alieno.vs" />
     <None Include="blending.fs" />
     <None Include="blending.vs" />
     <None Include="bloom_final.fs" />
@@ -176,8 +178,9 @@
     <None Include="bordo.vs" />
     <None Include="freccia.fs" />
     <None Include="packages.config" />
-    <None Include="piattaforma.fs" />
-    <None Include="piattaforma.vs" />
+    <None Include="freccia.vs" />
+    <None Include="proiettile.fs" />
+    <None Include="proiettile.vs" />
     <None Include="text.fs" />
     <None Include="text.vs" />
   </ItemGroup>
