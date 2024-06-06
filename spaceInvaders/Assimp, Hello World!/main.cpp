@@ -190,13 +190,10 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 		if (spara) {
 			proiettile.incrementaColpi();
-			//vectorPos[colpiSparati] = navicella.getPos();
-			proiettile.inizializzaPos(navicella.getPos()),
-			random_x = generaNumeroCasuale(-proiettile.getSpread(), proiettile.getSpread());
-			glm::vec3 proiettileAt = glm::vec3(random_x, 0.0f, -20.0f);
+			proiettile.inizializzaPos(navicella.getPos());
+			glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -20.0f);
 			proiettileAt = glm::normalize(proiettileAt);
 			proiettile.inizializzaDir(proiettileAt),
-			//vectorDir[colpiSparati] = proiettileAt;
 			spara = false;
 		}
 	}
@@ -219,6 +216,8 @@ void idle()
 
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
 	proiettile.setTranslateSpeed(proiettile.getSpeed() * deltaTime);
+
+	alieno.spara(proiettile.getSpeed(), deltaTime);
 
 }
 
@@ -603,7 +602,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	renderTerna();
-	alieno.renderAlieni();
+	alieno.renderAlieni(proiettile);
 	navicella.renderNavicella(moveRight,moveLeft);
 	proiettile.renderProiettile();
 

@@ -32,6 +32,7 @@ private:
     std::vector<glm::vec3> vectorPos = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
     std::vector<glm::vec3> vectorDir = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
     int colpiSparati = -1;
+
     Shader shader;
     Model model;
 
@@ -55,6 +56,22 @@ public:
         return colpiSparati;
     }
 
+    float getLunghezza() const {
+        return lunghezza;
+    }
+
+    float getLarghezza() const {
+        return larghezza;
+    }
+
+    float getLimZ() const {
+        return limZ;
+    }
+
+    std::vector<glm::vec3> getVecPos() const {
+        return vectorPos;
+    }
+
     void setTranslateSpeed(float newTranslateSpeed) {
         translateSpeed = newTranslateSpeed;
     }
@@ -65,6 +82,10 @@ public:
 
     void setModel(Model newModel) {
         model = newModel;
+    }
+
+    void setVecPos(int i, glm::vec3 newPos) {
+        vectorPos[i] = newPos;
     }
 
     void inizializzaPos(glm::vec3 newPos) {
@@ -98,8 +119,6 @@ public:
                 model.Draw(shader);
             }
         }
-
-
 
     }
 
