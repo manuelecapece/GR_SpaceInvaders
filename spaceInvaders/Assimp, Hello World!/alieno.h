@@ -14,15 +14,19 @@
 #include <stack>
 #include "model.h"
 #include "proiettile.h"
+#include "navicella.h"
 
 class Alieno {
 private:
     
-    int map[5][6] = { {1,1,1,1,1,1},
-                      {1,1,1,1,1,1},
-                      {1,1,1,1,1,1},
-                      {1,1,1,1,1,1},
-                      {1,1,1,1,1,1}};
+    int static const righeAlieni = 6;
+    int static const colonneAlieni = 5;
+    int map[righeAlieni][colonneAlieni] = { {1,1,1,1,1},
+                                            {1,1,1,1,1},
+                                            {1,1,1,1,1},
+                                            {1,1,1,1,1},
+                                            {1,1,1,1,1},
+                                            {1,1,1,1,1} };
 
     glm::vec3 pos = glm::vec3(-4.77f, 0.0, -12.0f);
     float raggio = 1.0f;
@@ -30,13 +34,13 @@ private:
     Shader shader;
     Model model;
 
-    std::vector<Proiettile> vectorProiettili;
+    std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
 
 public:
     // Costruttore
     Alieno(){}
 
-    int(*getmap())[6] {
+    int(*getmap())[colonneAlieni] {
         return map;
     }
 
@@ -68,15 +72,15 @@ public:
 
         shader.use();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < righeAlieni; i++)
         {
-            for (int j = 0; j < 6; j++)
+            for (int j = 0; j < colonneAlieni; j++)
             {
                 if (map[i][j] != 0)
                 {
 
-                    float x = pos.x + i * raggio * 2.0f * spazio;
-                    float z = pos.z + j * raggio * 2.0f * spazio;
+                    float x = pos.x + j * raggio * 2.0f * spazio;
+                    float z = pos.z + i * raggio * 2.0f * spazio;
 
                     glm::mat4 modelAlieno = glm::mat4(1.0f);
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
@@ -96,34 +100,118 @@ public:
 
     }
 
-    void spara(float speed, double deltaTime) {
+    void inizializzaProiettili(Shader proiettileShader, Model modelCubo) {
 
         int k = 0;
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < righeAlieni; i++)
         {
-	        for (int j = 0; j < 6; j++)
+	        for (int j = 0; j < colonneAlieni; j++)
 	        {
 
 		        if (map[i][j] != 0)
 		        {
-                    float x = pos.x + i * raggio * 2.0f * spazio;
-                    float z = pos.z + j * raggio * 2.0f * spazio;
+                    float x = pos.x + j * raggio * 2.0f * spazio;
+                    float z = pos.z + i * raggio * 2.0f * spazio;
 
-                    if (deltaTime > 10) {
-                        vectorProiettili[k].incrementaColpi();
-                        vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
-                        glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 20.0f);
-                        proiettileAt = glm::normalize(proiettileAt);
-                        vectorProiettili[k].inizializzaDir(proiettileAt);
-                        vectorProiettili[k].renderProiettile();
-                        vectorProiettili[k].setTranslateSpeed(speed * deltaTime);
-                    }
-		
+                    vectorProiettili[k].incrementaColpi();
+                    vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
+                    glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
+                    vectorProiettili[k].inizializzaDir(proiettileAt);
+                    vectorProiettili[k].setShader(proiettileShader);
+                    vectorProiettili[k].setModel(modelCubo);
+
 		        }
 
                 k++;
 	        }
+        }
+
+    }
+
+    void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
+
+        int k = i * 5 + j;
+
+        if (map[i][j] != 0)
+        {
+            float x = pos.x + j * raggio * 2.0f * spazio;
+            float z = pos.z + i * raggio * 2.0f * spazio;
+
+            vectorProiettili[k].setSpeed(5);
+            vectorProiettili[k].incrementaColpi();
+            vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
+            glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
+            vectorProiettili[k].inizializzaDir(proiettileAt);
+            vectorProiettili[k].setShader(proiettileShader);
+            vectorProiettili[k].setModel(modelCubo);
+
+        }
+        
+    }
+
+    void setTranslateSpeedProiettili(double deltaTime) {
+
+        int k = 0;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+
+                if (map[i][j] != 0)
+                {
+
+                    vectorProiettili[k].setTranslateSpeed(vectorProiettili[k].getSpeed() * deltaTime);
+
+                }
+
+                k++;
+            }
+        }
+
+    }
+
+    void renderProiettili(Navicella& navicella) {
+
+        int k = 0;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+                float x = pos.x + j * raggio * 2.0f * spazio;
+                float z = pos.z + i * raggio * 2.0f * spazio;
+
+                if (map[i][j] != 0)
+                {
+                    if (i == 0) {
+                        vectorProiettili[k].renderProiettile(glm::vec3(1.0f,0.0f,0.0f));
+                    }
+                    if (i == 1) {
+                        vectorProiettili[k].renderProiettile(glm::vec3(0.0f, 1.0f, 0.0f));
+                    }
+                    if (i == 2) {
+                        vectorProiettili[k].renderProiettile(glm::vec3(0.0f, 0.0f, 1.0f));
+                    }
+                    if (i == 3) {
+                        vectorProiettili[k].renderProiettile(glm::vec3(1.0f, 0.0f, 1.0f));
+                    }
+                    if (i == 4) {
+                        vectorProiettili[k].renderProiettile(glm::vec3(0.0f, 1.0f, 1.0f));
+                    }
+                    if (i == 5) {
+                        vectorProiettili[k].renderProiettile(glm::vec3(1.0f, 1.0f, 0.0f));
+                    }
+                    
+                }
+
+                if (navicella.isHitted(vectorProiettili[k])) {
+                    navicella.setPos(glm::vec3(-20.0f,0.0f,0.0f));
+                }
+
+                k++;
+            }
         }
 
     }

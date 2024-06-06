@@ -38,6 +38,7 @@ Model modelSfera;
 Model modelCubo;
 
 float random_x;
+double startTime1s = glfwGetTime();
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -47,7 +48,8 @@ glm::mat4 projection = glm::mat4(1.0f);	//identity matrix
 void renderQuad();
 void renderQuad2();
 void render(Shader shaderBlur, Shader shaderBloomFinal);
-float generaNumeroCasuale(float estremoInferiore, float estremoSuperiore);
+float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
+float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 
 const float PI = 3.14159265358979323846;
 
@@ -158,9 +160,9 @@ void calculateFPS() {
 	//  Incrementiamo il contatore
 	frameCount++;
 	//  Determiniamo il numero di millisecondi trascorsi dalla glutInit
-	double currentTime = glfwGetTime();
+	double currentTime3s = glfwGetTime();
 	//  Calcoliamo il tempo trascorso
-	timeInterval = currentTime - previousTime;
+	timeInterval = currentTime3s - previousTime;
 
 	// Se e passato un secondo aggiorna la variabile fps
 	if (timeInterval > 1.0f) {
@@ -168,7 +170,7 @@ void calculateFPS() {
 		fps = frameCount;
 
 		//  Salviamo il tempo trascorso per riutilizzarlo la prossima volta
-		previousTime = currentTime;
+		previousTime = currentTime3s;
 
 		//  Azzeriamo il contatore dei tempi
 		frameCount = 0;
@@ -189,11 +191,7 @@ void processInput(GLFWwindow* window)
 		moveRight = true;
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 		if (spara) {
-			proiettile.incrementaColpi();
-			proiettile.inizializzaPos(navicella.getPos());
-			glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -20.0f);
-			proiettileAt = glm::normalize(proiettileAt);
-			proiettile.inizializzaDir(proiettileAt),
+			navicella.inizializzaProiettile(proiettile);
 			spara = false;
 		}
 	}
@@ -210,6 +208,8 @@ void processInput(GLFWwindow* window)
 
 void idle()
 {
+	double currentTime1s = glfwGetTime();
+
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
@@ -217,7 +217,17 @@ void idle()
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
 	proiettile.setTranslateSpeed(proiettile.getSpeed() * deltaTime);
 
-	alieno.spara(proiettile.getSpeed(), deltaTime);
+	alieno.setTranslateSpeedProiettili(deltaTime);
+
+	if (currentTime1s - startTime1s >= 1.0) {
+		int id_riga = generaNumeroCasualeInt(0, 5);
+		int id_colonna = generaNumeroCasualeInt(0, 4);
+		alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
+		startTime1s = currentTime1s;
+	}
+
+
+
 
 }
 
@@ -604,7 +614,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	renderTerna();
 	alieno.renderAlieni(proiettile);
 	navicella.renderNavicella(moveRight,moveLeft);
-	proiettile.renderProiettile();
+	proiettile.renderProiettile(glm::vec3(1.0f,1.0f,1.0f));
+	alieno.renderProiettili(navicella);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -754,11 +765,19 @@ void renderQuad2()
 	glBindVertexArray(0);
 }
 
-float generaNumeroCasuale(float estremoInferiore, float estremoSuperiore) {
+float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> dis(estremoInferiore, estremoSuperiore);
 	float random = dis(gen);
+	return random;
+}
+
+float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore) {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> dis(estremoInferiore, estremoSuperiore);
+	int random = dis(gen);
 	return random;
 }
 

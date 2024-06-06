@@ -18,15 +18,12 @@ const int SIZE_VECTOR_COLPI = 1000;
 
 class Proiettile {
 private:
-    //Proprietà proiettile
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 6.0f);
-    glm::vec3 at = glm::vec3(0.0, 0.0, 0.0); // Punto in cui e diretto il proiettile
-    glm::vec3 up = glm::vec3(0.0, 1.0, 0.0); // Vettore up...il proiettile è sempre parallelo al piano
+
     const float lunghezza = 0.6f;
     const float larghezza = 0.3f;
     const float altezza = 0.3f;
     float translateSpeed;
-    float speed = 6;  // velocita della navicella
+    float speed = 15;  
     float limZ = -20;
     float spread = 1.0f;
     std::vector<glm::vec3> vectorPos = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
@@ -40,9 +37,9 @@ public:
     // Costruttore
     Proiettile() {}
 
-    glm::vec3 getPos() const {
-        return pos;
-    }
+    //glm::vec3 getPos() const {
+    //    return pos;
+    //}
 
     float getSpread() {
         return spread;
@@ -70,6 +67,10 @@ public:
 
     std::vector<glm::vec3> getVecPos() const {
         return vectorPos;
+    }
+
+    void setSpeed(float newSpeed) {
+        speed = newSpeed;
     }
 
     void setTranslateSpeed(float newTranslateSpeed) {
@@ -100,7 +101,7 @@ public:
         colpiSparati++;
     }
 
-    void renderProiettile() {
+    void renderProiettile(glm::vec3 color) {
 
         //glBindVertexArray(cubeVAO);
         shader.use();
@@ -114,12 +115,11 @@ public:
                 modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
                 modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                 shader.setMat4("model", modelCubo);
-                shader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+                shader.setVec3("color", color);
                 //glDrawArrays(GL_TRIANGLES, 0, 36);
                 model.Draw(shader);
             }
         }
-
     }
 
 

@@ -38,6 +38,10 @@ public:
         return speed;
     }
 
+    void setPos(glm::vec3 newPos) {
+        pos = newPos;
+    }
+
     void setTranslateSpeed(float newTranslateSpeed) {
         translateSpeed = newTranslateSpeed;
     }
@@ -76,6 +80,43 @@ public:
             pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
         }
 
+
+    }
+
+    bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {
+        // Calcola la distanza al quadrato tra il punto e il centro della circonferenza
+        float distSq = (point.x - center.x) * (point.x - center.x) + (point.y - center.y) * (point.y - center.y);
+
+        // Calcola il raggio al quadrato
+        float radiusSq = raggio * raggio;
+
+        // Controlla se la distanza al quadrato è minore o uguale al raggio al quadrato
+        return distSq <= radiusSq;
+    }
+
+
+
+    bool isHitted(Proiettile& proiettile) {
+        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        {
+            float proiettile_x = proiettile.getVecPos()[i].x;
+            float proiettile_z = proiettile.getVecPos()[i].z;
+            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
+            glm::vec2 centro = glm::vec2(pos.x, pos.z);
+            if (isPointInsideCircle(punto, centro)) {
+                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -20.0f));
+                return true;
+
+            }
+        }
+        return false;
+    }
+
+    void inizializzaProiettile(Proiettile& proiettile) {
+        proiettile.incrementaColpi();
+        proiettile.inizializzaPos(pos);
+        glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
+        proiettile.inizializzaDir(proiettileAt);
     }
 
 
