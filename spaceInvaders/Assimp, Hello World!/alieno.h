@@ -15,6 +15,7 @@
 #include "model.h"
 #include "proiettile.h"
 #include "navicella.h"
+#include "barriera.h"
 
 class Alieno {
 private:
@@ -28,12 +29,12 @@ private:
                                             {1,1,1,1,1},
                                             {1,1,1,1,1} };
 
-    //int map[righeAlieni][colonneAlieni] = { {0,0,1,0,0},
-    //                                    {0,0,0,0,0},
-    //                                    {0,0,0,0,0},
-    //                                    {0,0,0,0,0},
-    //                                    {0,0,0,0,0},
-    //                                    {0,0,0,0,0} };
+    //int map[righeAlieni][colonneAlieni] = { {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {0,0,0,0,0} };
 
     glm::vec3 pos = glm::vec3(-4.77f, 0.0, -12.0f);
     float raggio = 1.0f;
@@ -78,7 +79,7 @@ public:
         model = newModel;
     }
 
-    void renderAlieni(Proiettile& proiettile) {
+    void render(Proiettile& proiettile) {
 
         shader.use();
 
@@ -100,7 +101,7 @@ public:
 
                     glm::vec3 posAlieno = glm::vec3(x,0.0f,z);
 
-                    if (isAlienHitted(proiettile, posAlieno)) {
+                    if (isHitted(proiettile, posAlieno)) {
                         map[i][j] = 0;
                     }
 
@@ -119,7 +120,7 @@ public:
             float x = pos.x + j * raggio * 2.0f * spazio;
             float z = pos.z + i * raggio * 2.0f * spazio;
 
-            vectorProiettili[k].setSpeed(5);
+            vectorProiettili[k].setSpeed(4);
             vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
             glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -153,7 +154,7 @@ public:
 
     }
 
-    void renderProiettili(Navicella& navicella) {
+    void renderProiettili(Navicella& navicella, Barriera& barriera) {
 
         int k = 0;
 
@@ -165,30 +166,28 @@ public:
                 if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
                 {
                     if (i == 0) {
-                        vectorProiettili[k].renderProiettile(glm::vec3(1.0f,0.0f,0.0f));
+                        vectorProiettili[k].render(glm::vec3(1.0f,0.0f,0.0f));
                     }
                     if (i == 1) {
-                        vectorProiettili[k].renderProiettile(glm::vec3(0.0f, 1.0f, 0.0f));
+                        vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 0.0f));
                     }
                     if (i == 2) {
-                        vectorProiettili[k].renderProiettile(glm::vec3(0.0f, 0.0f, 1.0f));
+                        vectorProiettili[k].render(glm::vec3(0.0f, 0.0f, 1.0f));
                     }
                     if (i == 3) {
-                        vectorProiettili[k].renderProiettile(glm::vec3(1.0f, 0.0f, 1.0f));
+                        vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 1.0f));
                     }
                     if (i == 4) {
-                        vectorProiettili[k].renderProiettile(glm::vec3(0.0f, 1.0f, 1.0f));
+                        vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 1.0f));
                     }
                     if (i == 5) {
-                        vectorProiettili[k].renderProiettile(glm::vec3(1.0f, 1.0f, 0.0f));
+                        vectorProiettili[k].render(glm::vec3(1.0f, 1.0f, 0.0f));
                     }
                     
                 }
 
-                if (navicella.isHitted(vectorProiettili[k])) {
-                    navicella.setPos(glm::vec3(-20.0f,0.0f,0.0f));
-                }
-
+                navicella.checkIsHitted(vectorProiettili[k]);
+                barriera.render(vectorProiettili[k]);
                 k++;
             }
         }
@@ -223,7 +222,7 @@ public:
 
 
 
-    bool isAlienHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
+    bool isHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
             float proiettile_x = proiettile.getVecPos()[i].x;

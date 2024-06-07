@@ -168,6 +168,8 @@
   <ItemGroup>
     <None Include="alieno.fs" />
     <None Include="alieno.vs" />
+    <None Include="barriera.fs" />
+    <None Include="barriera.vs" />
     <None Include="blending.fs" />
     <None Include="blending.vs" />
     <None Include="bloom_final.fs" />
@@ -190,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alieno.h" />
+    <ClInclude Include="barriera.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
@@ -198,6 +201,7 @@
     <ClInclude Include="render_text.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="ufo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
-#ifndef NAVICELLA_H
-#define NAVICELLA_H
+#ifndef UFO_H
+#define UFO_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,21 +16,22 @@
 #include "proiettile.h"
 
 
-class Navicella {
+class Ufo {
 private:
     //Proprietà navicella
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.2f);
-    float raggio = 1.0f;
+    glm::vec3 pos = glm::vec3(25.0f, 0.0, -15.0f);
+    float raggio = 2.0f;
     float translateSpeed;
-    float speed = 6;  // velocita della navicella
-    float limX_pos;
-    bool isHitted = false;
+    float speed = 3;  // velocita della navicella
+    float rangeSparoNeg = -10.0f;
+    float rangeSparoPos = 10.0f;
+    int colpiSubiti = 0;
     Shader shader;
     Model model;
 
 public:
     // Costruttore
-    Navicella() {}
+    Ufo() {}
 
     glm::vec3 getPos() const {
         return pos;
@@ -48,10 +49,6 @@ public:
         translateSpeed = newTranslateSpeed;
     }
 
-    void setLimXpos(float limite) {
-        limX_pos = limite;
-    }
-
     void setShader(Shader newShader) {
         shader = newShader;
     }
@@ -60,28 +57,17 @@ public:
         model = newModel;
     }
 
-    void render(bool moveRight, bool moveLeft) {
+    void render() {
 
-        if (!isHitted) {
+        if (colpiSubiti < 5) {
             shader.use();
 
-            glm::mat4 modelNavicella = glm::mat4(1.0f);
-            modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z));
-            modelNavicella = glm::scale(modelNavicella, glm::vec3(1.0f, raggio, 1.0f));
-            shader.setMat4("model", modelNavicella);
+            glm::mat4 modelUfo = glm::mat4(1.0f);
+            modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
+            modelUfo = glm::scale(modelUfo, glm::vec3(raggio, raggio, raggio));
+            shader.setMat4("model", modelUfo);
             model.Draw(shader);
-
-            // Spostamento navicella laterale destro
-            if (moveRight && pos.x < limX_pos)
-            {
-                pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
-
-            }
-            // Spostamento navicella laterale sinistro
-            if (moveLeft && pos.x > -limX_pos)
-            {
-                pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
-            }
+            pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
         }
 
     }
@@ -97,7 +83,7 @@ public:
         return distSq <= radiusSq;
     }
 
-    void checkIsHitted(Proiettile& proiettile){
+    void checkIsHitted(Proiettile& proiettile) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
             float proiettile_x = proiettile.getVecPos()[i].x;
@@ -106,21 +92,36 @@ public:
             glm::vec2 centro = glm::vec2(pos.x, pos.z);
             if (isPointInsideCircle(punto, centro)) {
                 proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -20.0f));
-                isHitted = true;
-                return;
+                colpiSubiti++;
 
             }
         }
     }
 
+    bool isInRangeSparo() {
+        if (pos.x > rangeSparoNeg && pos.x < rangeSparoPos) {
+            return true;
+        }
+        return false;
+    }
+
     void inizializzaProiettile(Proiettile& proiettile) {
-        proiettile.incrementaColpi();
-        proiettile.inizializzaPos(pos);
-        glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
-        proiettile.inizializzaDir(proiettileAt);
+        if (isInRangeSparo() && colpiSubiti < 5) {
+            proiettile.incrementaColpi();
+            proiettile.inizializzaPos(pos);
+            glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
+            proiettile.inizializzaDir(proiettileAt);
+        }
+
+    }
+
+    void ripristinaPosizioneIniziale() {
+        pos = glm::vec3(-8.0f, 0.0, -15.0f);
+        colpiSubiti = 0;
     }
 
 
 };
 
 #endif 
+

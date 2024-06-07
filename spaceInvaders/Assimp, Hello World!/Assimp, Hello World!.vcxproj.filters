@@ -64,6 +64,12 @@
     <None Include="proiettile.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="barriera.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="barriera.fs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -99,6 +105,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="proiettile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ufo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="barriera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

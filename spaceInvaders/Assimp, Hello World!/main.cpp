@@ -22,15 +22,21 @@
 #include "alieno.h"
 #include "navicella.h"
 #include "proiettile.h"
+#include "ufo.h"
+#include "barriera.h"
 
 Alieno alieno;
 Navicella navicella;
-Proiettile proiettile;
+Proiettile proiettileNavicella;
+Proiettile proiettileUfo;
+Ufo ufo;
+Barriera barriera;
 
 //Dichiarazione shader
 Shader frecciaShader;
 Shader alienoShader;
 Shader proiettileShader;
+Shader barrieraShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
@@ -39,6 +45,7 @@ Model modelCubo;
 
 float random_x;
 double startTime1s = glfwGetTime();
+double startTime20s = glfwGetTime();
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -129,7 +136,7 @@ float vertices[] = {
 
 
 //Vista isometrica frontale dall'alto
-glm::vec3 cameraPos(0.0f, 12.5f, 12.5f);  // Posizione camera
+glm::vec3 cameraPos(0.0f, 17.5f, 17.5f);  // Posizione camera
 //glm::vec3 cameraPos(0.0f, 12.5f, 0.001f);  // Posizione camera
 glm::vec3 cameraAt(0.0, 0.0, 0.0);	// Punto in cui "guarda" la camera
 glm::vec3 cameraUp(0.0, 1.0, 0.0);		// Vettore up...la camera e sempre parallela al piano
@@ -191,7 +198,7 @@ void processInput(GLFWwindow* window)
 		moveRight = true;
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 		if (spara) {
-			navicella.inizializzaProiettile(proiettile);
+			navicella.inizializzaProiettile(proiettileNavicella);
 			spara = false;
 		}
 	}
@@ -209,13 +216,16 @@ void processInput(GLFWwindow* window)
 void idle()
 {
 	double currentTime1s = glfwGetTime();
+	double currentTime20s = glfwGetTime();
 
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
-	proiettile.setTranslateSpeed(proiettile.getSpeed() * deltaTime);
+	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
+	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
+	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
 
 	alieno.setTranslateSpeedProiettili(deltaTime);
 
@@ -224,7 +234,13 @@ void idle()
 		int id_colonna = generaNumeroCasualeInt(0, 4);
 		alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
 		alieno.cambiaPos();
+		ufo.inizializzaProiettile(proiettileUfo);
 		startTime1s = currentTime1s;
+	}
+
+	if (currentTime20s - startTime20s >= 20.0) {
+		ufo.ripristinaPosizioneIniziale();
+		startTime20s = currentTime20s;
 	}
 
 
@@ -387,7 +403,7 @@ int main()
 	}
 
 	// glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Arkanoid!", primaryMonitor, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Space invaders!", primaryMonitor, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -425,6 +441,7 @@ int main()
 	frecciaShader = Shader("freccia.vs", "freccia.fs");
 	alienoShader = Shader("alieno.vs", "alieno.fs");
 	proiettileShader = Shader("proiettile.vs", "proiettile.fs");
+	barrieraShader = Shader("barriera.vs", "barriera.fs");
 	
 	// build and compile shaders
 	// -------------------------
@@ -525,6 +542,10 @@ int main()
 	proiettileShader.setMat4("projection", projection);
 	proiettileShader.setMat4("view", view);
 
+	barrieraShader.use();
+	barrieraShader.setMat4("projection", projection);
+	barrieraShader.setMat4("view", view);
+
 	// shader configuration
 	// --------------------
 	shaderBlur.use();
@@ -542,8 +563,18 @@ int main()
 	navicella.setShader(alienoShader);
 	navicella.setModel(modelSfera);
 
-	proiettile.setShader(proiettileShader);
-	proiettile.setModel(modelCubo);
+	ufo.setShader(alienoShader);
+	ufo.setModel(modelSfera);
+
+	proiettileNavicella.setShader(proiettileShader);
+	proiettileNavicella.setModel(modelCubo);
+
+	proiettileUfo.setShader(proiettileShader);
+	proiettileUfo.setModel(modelCubo);
+	proiettileUfo.setSpeed(4.0f);
+
+	barriera.setShader(barrieraShader);
+	barriera.setModel(modelCubo);
 
 	float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
 	navicella.setLimXpos(limX_pos);
@@ -625,6 +656,7 @@ void renderTerna2() {
 
 }
 
+
 void render(Shader shaderBlur, Shader shaderBloomFinal)
 {
 
@@ -638,10 +670,18 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	renderTerna();
 	renderTerna2();
-	alieno.renderAlieni(proiettile);
-	navicella.renderNavicella(moveRight,moveLeft);
-	proiettile.renderProiettile(glm::vec3(1.0f,1.0f,1.0f));
-	alieno.renderProiettili(navicella);
+	alieno.render(proiettileNavicella);
+	navicella.render(moveRight,moveLeft);
+	proiettileNavicella.render(glm::vec3(1.0f,1.0f,1.0f));
+	alieno.renderProiettili(navicella,barriera);
+
+	ufo.render();
+	proiettileUfo.render(glm::vec3(0.902f, 0.392f, 0.0f));
+	navicella.checkIsHitted(proiettileUfo);
+	ufo.checkIsHitted(proiettileNavicella);
+
+	barriera.render(proiettileNavicella);
+	barriera.render(proiettileUfo);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -676,7 +716,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	renderQuad2();
 
 	glDisable(GL_DEPTH_TEST);
-	std::string bloomStatus = "Colpi sparati: " + std::to_string(proiettile.getColpiSparati());
+	std::string bloomStatus = "Colpi sparati: " + std::to_string(proiettileNavicella.getColpiSparati());
 	RenderText(bloomStatus.c_str(), 0, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
 	glEnable(GL_DEPTH_TEST);
 }

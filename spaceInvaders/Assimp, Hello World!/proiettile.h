@@ -19,9 +19,9 @@ const int SIZE_VECTOR_COLPI = 1000;
 class Proiettile {
 private:
 
-    const float lunghezza = 0.6f;
-    const float larghezza = 0.3f;
-    const float altezza = 0.3f;
+    const float lunghezza = 0.5f;
+    const float larghezza = 0.15f;
+    const float altezza = 0.15f;
     float translateSpeed;
     float speed = 15;  
     float limZNeg = -20;
@@ -106,7 +106,7 @@ public:
         colpiSparati++;
     }
 
-    void renderProiettile(glm::vec3 color) {
+    void render(glm::vec3 color) {
 
         //glBindVertexArray(cubeVAO);
         shader.use();
@@ -126,26 +126,6 @@ public:
             }
         }
     }
-
-    //bool isAllProiettiliOut(int type) {
-
-    //    for (int i = 0; i < colpiSparati + 1; i++)
-    //    {
-    //        //Controllo per colpi della navicella
-    //        if (type == 0 && vectorPos[i].z > limZNeg)
-    //        {
-    //            return false;
-    //        }
-    //        //Controllo per colpi dell'alieno
-    //        if (type == 1 && vectorPos[i].z < limZPos)
-    //        {
-    //            return false;
-    //        }
-    //    }
-    //
-    //    return true;
-
-    //}
 
     bool isAllProiettiliAlienoOut() {
 
