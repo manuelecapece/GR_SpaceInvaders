@@ -223,6 +223,7 @@ void idle()
 		int id_riga = generaNumeroCasualeInt(0, 5);
 		int id_colonna = generaNumeroCasualeInt(0, 4);
 		alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
+		alieno.cambiaPos();
 		startTime1s = currentTime1s;
 	}
 
@@ -600,6 +601,30 @@ void renderTerna() {
 	modelFreccia.Draw(frecciaShader);
 }
 
+void renderTerna2() {
+	//Disegno la terna di riferimento
+
+	//Asse x+ ROSSO
+	frecciaShader.use();
+	glm::mat4 freccia = glm::mat4(1.0f);
+	freccia = glm::translate(freccia, glm::vec3(0.0f, 0.0f, -20.0f));
+	freccia = glm::scale(freccia, glm::vec3(0.3f, 0.3f, 0.3f));
+	freccia = glm::rotate(freccia, -PI / 2, glm::vec3(0.0f, 0.0f, 1.0f));
+	frecciaShader.setMat4("model", freccia);
+	frecciaShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+	modelFreccia.Draw(frecciaShader);
+
+	//Asse x+ ROSSO
+	glm::mat4 freccia2 = glm::mat4(1.0f);
+	freccia2 = glm::translate(freccia2, glm::vec3(0.0f, 0.0f, 10.0f));
+	freccia2 = glm::scale(freccia2, glm::vec3(0.3f, 0.3f, 0.3f));
+	freccia2 = glm::rotate(freccia2, -PI / 2, glm::vec3(0.0f, 0.0f, 1.0f));
+	frecciaShader.setMat4("model", freccia2);
+	frecciaShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+	modelFreccia.Draw(frecciaShader);
+
+}
+
 void render(Shader shaderBlur, Shader shaderBloomFinal)
 {
 
@@ -612,6 +637,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	renderTerna();
+	renderTerna2();
 	alieno.renderAlieni(proiettile);
 	navicella.renderNavicella(moveRight,moveLeft);
 	proiettile.renderProiettile(glm::vec3(1.0f,1.0f,1.0f));

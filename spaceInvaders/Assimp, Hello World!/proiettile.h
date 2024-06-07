@@ -24,7 +24,8 @@ private:
     const float altezza = 0.3f;
     float translateSpeed;
     float speed = 15;  
-    float limZ = -20;
+    float limZNeg = -20;
+    float limZPos = 10;
     float spread = 1.0f;
     std::vector<glm::vec3> vectorPos = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
     std::vector<glm::vec3> vectorDir = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
@@ -61,8 +62,12 @@ public:
         return larghezza;
     }
 
-    float getLimZ() const {
-        return limZ;
+    float getLimZNeg() const {
+        return limZNeg;
+    }
+
+    float getLimZPos() const {
+        return limZPos;
     }
 
     std::vector<glm::vec3> getVecPos() const {
@@ -108,7 +113,7 @@ public:
 
         for (int i = 0; i < colpiSparati + 1; i++)
         {
-            if (vectorPos[i].z > limZ)
+            if (vectorPos[i].z > limZNeg && vectorPos[i].z < limZPos)
             {
                 glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
                 vectorPos[i] = vectorPos[i] + translateSpeed * vectorDir[i];
@@ -120,6 +125,40 @@ public:
                 model.Draw(shader);
             }
         }
+    }
+
+    //bool isAllProiettiliOut(int type) {
+
+    //    for (int i = 0; i < colpiSparati + 1; i++)
+    //    {
+    //        //Controllo per colpi della navicella
+    //        if (type == 0 && vectorPos[i].z > limZNeg)
+    //        {
+    //            return false;
+    //        }
+    //        //Controllo per colpi dell'alieno
+    //        if (type == 1 && vectorPos[i].z < limZPos)
+    //        {
+    //            return false;
+    //        }
+    //    }
+    //
+    //    return true;
+
+    //}
+
+    bool isAllProiettiliAlienoOut() {
+
+        for (int i = 0; i < colpiSparati + 1; i++)
+        {
+            if (vectorPos[i].z < limZPos)
+            {
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
 

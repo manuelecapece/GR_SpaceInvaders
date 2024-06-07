@@ -28,9 +28,19 @@ private:
                                             {1,1,1,1,1},
                                             {1,1,1,1,1} };
 
+    //int map[righeAlieni][colonneAlieni] = { {0,0,1,0,0},
+    //                                    {0,0,0,0,0},
+    //                                    {0,0,0,0,0},
+    //                                    {0,0,0,0,0},
+    //                                    {0,0,0,0,0},
+    //                                    {0,0,0,0,0} };
+
     glm::vec3 pos = glm::vec3(-4.77f, 0.0, -12.0f);
     float raggio = 1.0f;
     float spazio = 1.2f;
+    bool restart = false;
+    float limXalieniPos = 0;
+    float limXalieniNeg = -9.54;
     Shader shader;
     Model model;
 
@@ -100,40 +110,11 @@ public:
 
     }
 
-    void inizializzaProiettili(Shader proiettileShader, Model modelCubo) {
-
-        int k = 0;
-
-        for (int i = 0; i < righeAlieni; i++)
-        {
-	        for (int j = 0; j < colonneAlieni; j++)
-	        {
-
-		        if (map[i][j] != 0)
-		        {
-                    float x = pos.x + j * raggio * 2.0f * spazio;
-                    float z = pos.z + i * raggio * 2.0f * spazio;
-
-                    vectorProiettili[k].incrementaColpi();
-                    vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
-                    glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
-                    vectorProiettili[k].inizializzaDir(proiettileAt);
-                    vectorProiettili[k].setShader(proiettileShader);
-                    vectorProiettili[k].setModel(modelCubo);
-
-		        }
-
-                k++;
-	        }
-        }
-
-    }
-
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
 
         int k = i * 5 + j;
 
-        if (map[i][j] != 0)
+        if (map[i][j] != 0 )
         {
             float x = pos.x + j * raggio * 2.0f * spazio;
             float z = pos.z + i * raggio * 2.0f * spazio;
@@ -159,7 +140,7 @@ public:
             for (int j = 0; j < colonneAlieni; j++)
             {
 
-                if (map[i][j] != 0)
+                if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
                 {
 
                     vectorProiettili[k].setTranslateSpeed(vectorProiettili[k].getSpeed() * deltaTime);
@@ -180,10 +161,8 @@ public:
         {
             for (int j = 0; j < colonneAlieni; j++)
             {
-                float x = pos.x + j * raggio * 2.0f * spazio;
-                float z = pos.z + i * raggio * 2.0f * spazio;
 
-                if (map[i][j] != 0)
+                if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
                 {
                     if (i == 0) {
                         vectorProiettili[k].renderProiettile(glm::vec3(1.0f,0.0f,0.0f));
@@ -216,6 +195,21 @@ public:
 
     }
 
+    void cambiaPos() {
+
+        if (pos.x < limXalieniPos && !restart) {
+            pos = glm::vec3(pos.x + 1, 0.0f, pos.z);
+        }else if(pos.x > limXalieniPos && !restart) {
+            pos = glm::vec3(pos.x, 0.0f, pos.z + 1);
+            restart = true;
+        }else if (pos.x > limXalieniNeg && restart) {
+            pos = glm::vec3(pos.x - 1, 0.0f, pos.z);
+        }else if (pos.x < limXalieniNeg && restart) {
+            pos = glm::vec3(pos.x, 0.0f, pos.z + 1);
+            restart = false;
+        }
+    }
+
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {
         // Calcola la distanza al quadrato tra il punto e il centro della circonferenza
         float distSq = (point.x - center.x) * (point.x - center.x) + (point.y - center.y) * (point.y - center.y);
@@ -237,7 +231,7 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
             if(isPointInsideCircle(punto, centro)){
-                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -20.0f));
+                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -21.0f));
                 return true;
 
             }
