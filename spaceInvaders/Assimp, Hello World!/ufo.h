@@ -19,7 +19,7 @@
 class Ufo {
 private:
     //Proprietà navicella
-    glm::vec3 pos = glm::vec3(25.0f, 0.0, -15.0f);
+    glm::vec3 pos = glm::vec3(35.0f, 0.0, -15.0f);
     float raggio = 2.0f;
     float translateSpeed;
     float speed = 3;  // velocita della navicella
@@ -67,8 +67,9 @@ public:
             modelUfo = glm::scale(modelUfo, glm::vec3(raggio, raggio, raggio));
             shader.setMat4("model", modelUfo);
             model.Draw(shader);
-            pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
+            
         }
+        pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
 
     }
 

@@ -25,10 +25,22 @@ private:
     const float altezza = 0.6f;
     int static const righeCubiBarriera = 4;
     int static const colonneCubiBarriera = 8;
-    int map[righeCubiBarriera][colonneCubiBarriera] = { {1,1,1,1,1,1,1,1},
+
+    int map1[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1},
                                                         {1,1,1,1,1,1,1,1},
                                                         {1,1,0,0,0,0,1,1},
                                                         {1,1,0,0,0,0,1,1}};
+
+    int map2[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1},
+                                                        {1,1,0,0,0,0,1,1},
+                                                        {1,1,0,0,0,0,1,1} };
+
+    int map3[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1},
+                                                        {1,1,0,0,0,0,1,1},
+                                                        {1,1,0,0,0,0,1,1} };
+
     Shader shader;
     Model model;
 
@@ -48,43 +60,55 @@ public:
         pos = newPos;
     }
 
-    void render(Proiettile& proiettile) {
+    void renderBarriere(Proiettile& proiettile) {
 
         shader.use();
 
         for (int k = 0; k < 3; k++) {
             pos = glm::vec3(-6.0f + k * 5.0f, 0.0f, 6.0f);
 
-            for (int i = 0; i < righeCubiBarriera; i++)
-            {
-                for (int j = 0; j < colonneCubiBarriera; j++)
-                {
-                    if (map[i][j] != 0)
-                    {
+            if (k == 0) {
+                renderBarriera(map1, proiettile);
+            }
 
-                        float x = pos.x + j * larghezza;
-                        float z = pos.z + i * lunghezza;
+            if (k == 1) {
+                renderBarriera(map2, proiettile);
+            }
 
-                        glm::mat4 modelCubo = glm::mat4(1.0f);
-                        modelCubo = glm::translate(modelCubo, glm::vec3(x, 0.0f, z));
-                        modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
-                        shader.setMat4("model", modelCubo);
-                        model.Draw(shader);
-
-                        glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
-
-                        if (isHitted(proiettile, posCubo)) {
-                            map[i][j] = 0;
-                        }
-
-                    }
-                }
+            if (k == 2) {
+                renderBarriera(map3, proiettile);
             }
         }
 
+    }
 
+    void renderBarriera(int map[righeCubiBarriera][colonneCubiBarriera], Proiettile& proiettile) {
 
-        
+        for (int i = 0; i < righeCubiBarriera; i++)
+        {
+            for (int j = 0; j < colonneCubiBarriera; j++)
+            {
+                if (map[i][j] != 0)
+                {
+
+                    float x = pos.x + j * larghezza;
+                    float z = pos.z + i * lunghezza;
+
+                    glm::mat4 modelCubo = glm::mat4(1.0f);
+                    modelCubo = glm::translate(modelCubo, glm::vec3(x, 0.0f, z));
+                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
+                    shader.setMat4("model", modelCubo);
+                    model.Draw(shader);
+
+                    glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
+
+                    if (isHitted(proiettile, posCubo)) {
+                        map[i][j] = 0;
+                    }
+
+                }
+            }
+        }
 
     }
 

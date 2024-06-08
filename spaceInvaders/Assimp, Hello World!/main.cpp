@@ -25,6 +25,7 @@
 #include "ufo.h"
 #include "barriera.h"
 
+//Dichiarazione classi
 Alieno alieno;
 Navicella navicella;
 Proiettile proiettileNavicella;
@@ -44,7 +45,11 @@ Model modelSfera;
 Model modelCubo;
 
 float random_x;
-double startTime1s = glfwGetTime();
+bool alieniFermi = true;
+double startTime05s = glfwGetTime();
+double startTime1s  = glfwGetTime();
+double startTime2s  = glfwGetTime();
+double startTime4s  = glfwGetTime();
 double startTime20s = glfwGetTime();
 
 //Dichiarazione matrici di trasformazione
@@ -196,8 +201,13 @@ void processInput(GLFWwindow* window)
 		moveLeft = true;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		moveRight = true;
+
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-		if (spara) {
+
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		if (spara && !navicella.getIsHitted()) {
 			navicella.inizializzaProiettile(proiettileNavicella);
 			spara = false;
 		}
@@ -208,6 +218,9 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 		moveRight = false;
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE) {
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
 		spara = true;
 	}
 		
@@ -215,7 +228,10 @@ void processInput(GLFWwindow* window)
 
 void idle()
 {
+	double currentTime05s = glfwGetTime();
 	double currentTime1s = glfwGetTime();
+	double currentTime2s = glfwGetTime();
+	double currentTime4s = glfwGetTime();
 	double currentTime20s = glfwGetTime();
 
 	double currentFrame = glfwGetTime();
@@ -224,18 +240,31 @@ void idle()
 
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
 	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
+	alieno.setTranslateSpeedx(alieno.getSpeedx() * deltaTime);
+	alieno.setTranslateSpeedz(alieno.getSpeedz() * deltaTime);
 	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
-
 	alieno.setTranslateSpeedProiettili(deltaTime);
+
+	if (currentTime05s - startTime05s >= 0.5) {
+		ufo.inizializzaProiettile(proiettileUfo);
+		startTime05s = currentTime05s;
+	}
 
 	if (currentTime1s - startTime1s >= 1.0) {
 		int id_riga = generaNumeroCasualeInt(0, 5);
 		int id_colonna = generaNumeroCasualeInt(0, 4);
 		alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
-		alieno.cambiaPos();
-		ufo.inizializzaProiettile(proiettileUfo);
 		startTime1s = currentTime1s;
+	}
+
+	if (currentTime2s - startTime2s >= 1.0) {
+		alieno.cambiaSpeed();
+		startTime2s = currentTime2s;
+	}
+	else {
+		alieno.setSpeedx(0.0f);
+		alieno.setSpeedz(0.0f);
 	}
 
 	if (currentTime20s - startTime20s >= 20.0) {
@@ -576,8 +605,8 @@ int main()
 	barriera.setShader(barrieraShader);
 	barriera.setModel(modelCubo);
 
-	float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
-	navicella.setLimXpos(limX_pos);
+	//float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
+	//navicella.setLimXpos(limX_pos);
 
 	// render loop
 	while (!glfwWindowShouldClose(window))
@@ -680,8 +709,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	navicella.checkIsHitted(proiettileUfo);
 	ufo.checkIsHitted(proiettileNavicella);
 
-	barriera.render(proiettileNavicella);
-	barriera.render(proiettileUfo);
+	barriera.renderBarriere(proiettileNavicella);
+	barriera.renderBarriere(proiettileUfo);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

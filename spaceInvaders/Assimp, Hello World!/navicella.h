@@ -23,7 +23,7 @@ private:
     float raggio = 1.0f;
     float translateSpeed;
     float speed = 6;  // velocita della navicella
-    float limX_pos;
+    float limX_pos = 999;
     bool isHitted = false;
     Shader shader;
     Model model;
@@ -38,6 +38,10 @@ public:
 
     float getSpeed() const {
         return speed;
+    }
+
+    bool getIsHitted() const {
+        return isHitted;
     }
 
     void setPos(glm::vec3 newPos) {

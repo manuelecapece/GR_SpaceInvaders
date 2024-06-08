@@ -39,9 +39,13 @@ private:
     glm::vec3 pos = glm::vec3(-4.77f, 0.0, -12.0f);
     float raggio = 1.0f;
     float spazio = 1.2f;
+    float translateSpeedx;
+    float translateSpeedz;
+    float speedx = 0.0f;
+    float speedz = 0.0f;
     bool restart = false;
-    float limXalieniPos = 0;
-    float limXalieniNeg = -9.54;
+    float limXalieniPos = 3;
+    float limXalieniNeg = -12.54;
     Shader shader;
     Model model;
 
@@ -71,6 +75,30 @@ public:
         return spazio;
     }
 
+    float getSpeedx() const {
+        return speedx;
+    }
+
+    float getSpeedz() const {
+        return speedz;
+    }
+
+    void setSpeedx(float newSpeedx) {
+        speedx = newSpeedx;
+    }
+
+    void setSpeedz(float newSpeedz) {
+        speedz = newSpeedz;
+    }
+
+    void setTranslateSpeedx(float newTranslateSpeedx) {
+        translateSpeedx = newTranslateSpeedx;
+    }
+
+    void setTranslateSpeedz(float newTranslateSpeedz) {
+        translateSpeedz = newTranslateSpeedz;
+    }
+
     void setShader(Shader newShader) {
         shader = newShader;
     }
@@ -87,11 +115,14 @@ public:
         {
             for (int j = 0; j < colonneAlieni; j++)
             {
+                pos.x = pos.x + translateSpeedx;
+                pos.z = pos.z + translateSpeedz;
+
                 if (map[i][j] != 0)
                 {
 
-                    float x = pos.x + j * raggio * 2.0f * spazio;
-                    float z = pos.z + i * raggio * 2.0f * spazio;
+                    float x = (pos.x + j * raggio * 2.0f * spazio) ;
+                    float z = (pos.z + i * raggio * 2.0f * spazio) ;
 
                     glm::mat4 modelAlieno = glm::mat4(1.0f);
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
@@ -123,7 +154,8 @@ public:
             vectorProiettili[k].setSpeed(4);
             vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
-            glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
+            float random = generaNumeroCasualeFloat(-0.2f,0.2f);
+            glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);
             vectorProiettili[k].inizializzaDir(proiettileAt);
             vectorProiettili[k].setShader(proiettileShader);
             vectorProiettili[k].setModel(modelCubo);
@@ -187,24 +219,29 @@ public:
                 }
 
                 navicella.checkIsHitted(vectorProiettili[k]);
-                barriera.render(vectorProiettili[k]);
+                barriera.renderBarriere(vectorProiettili[k]);
                 k++;
             }
         }
 
     }
 
-    void cambiaPos() {
-
+    void cambiaSpeed() {
         if (pos.x < limXalieniPos && !restart) {
-            pos = glm::vec3(pos.x + 1, 0.0f, pos.z);
-        }else if(pos.x > limXalieniPos && !restart) {
-            pos = glm::vec3(pos.x, 0.0f, pos.z + 1);
+            speedx = 7;
+        }
+        else if (pos.x > limXalieniPos && !restart) {
+            speedx = 0;
+            speedz = 7;
             restart = true;
-        }else if (pos.x > limXalieniNeg && restart) {
-            pos = glm::vec3(pos.x - 1, 0.0f, pos.z);
-        }else if (pos.x < limXalieniNeg && restart) {
-            pos = glm::vec3(pos.x, 0.0f, pos.z + 1);
+        }
+        else if (pos.x > limXalieniNeg && restart) {
+            speedx = -7;
+            speedz = 0;
+        }
+        else if (pos.x < limXalieniNeg && restart) {
+            speedz = 7;
+            speedx = 0;
             restart = false;
         }
     }
@@ -236,6 +273,14 @@ public:
             }
         }
         return false;
+    }
+
+    float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dis(estremoInferiore, estremoSuperiore);
+        float random = dis(gen);
+        return random;
     }
 };
 
