@@ -104,17 +104,58 @@ public:
     void checkIsHitted(Proiettile& proiettile){
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
+            //float proiettile_x = proiettile.getVecPos()[i].x;
+            //float proiettile_z = proiettile.getVecPos()[i].z;
+            //glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z + (proiettile.getLunghezza() / 2));
+            //glm::vec2 centro = glm::vec2(pos.x, pos.z);
+            //if (isPointInsideCircle(proiettile.getVecHitPoint()[i], centro)) {
+            //    proiettile.setVecPos(i, glm::vec3(proiettile.getVecHitPoint()[i].x, 0.0f, -20.0f));
+            //    isHitted = true;
+            //    return;
+
+            //}
+
+
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
-            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z + (proiettile.getLunghezza() / 2));
+            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z);
+            glm::vec3 hitPoint;
+            float angolo;
+            glm::vec3 dir = proiettile.getVecDir()[i];
+            glm::vec3 posBullet = proiettile.getVecPos()[i];
+            float larghezza = proiettile.getLarghezza();
+            float lunghezza = proiettile.getLunghezza();
+
+            if (dir.x > 0) {
+                hitPoint = glm::vec3(posBullet.x + (larghezza / 2), 0.0f, posBullet.z + (lunghezza / 2));
+                angolo = calcolaAngolo(dir, glm::vec3(0.0f, 0.0f, 1.0f));
+
+            }
+            if (dir.x < 0) {
+                hitPoint = glm::vec3(posBullet.x - (larghezza / 2), 0.0f, posBullet.z + (lunghezza / 2));
+                angolo = -calcolaAngolo(dir, glm::vec3(0.0f, 0.0f, 1.0f));
+
+            }
+            if (dir.x < 0 || dir.x > 0) {
+
+                glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotazione intorno all'asse y
+                glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), angolo, rotationAxis);
+                glm::vec3 rotatedTopLeft = glm::vec3(rotationMatrix * glm::vec4(hitPoint, 1.0f));
+                punto = glm::vec2(rotatedTopLeft.x, rotatedTopLeft.z);
+            }
+
             glm::vec2 centro = glm::vec2(pos.x, pos.z);
-            if (isPointInsideCircle(proiettile.getVecHitPoint()[i], centro)) {
-                proiettile.setVecPos(i, glm::vec3(proiettile.getVecHitPoint()[i].x, 0.0f, -20.0f));
+            if (isPointInsideCircle(punto, centro)) {
+                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
                 isHitted = true;
                 return;
 
             }
+
+
+
         }
+
     }
 
     void inizializzaProiettile(Proiettile& proiettile) {
@@ -124,6 +165,16 @@ public:
         proiettile.inizializzaDir(proiettileAt);
     }
 
+    float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
+
+        float dotProduct = glm::dot(u, v);
+        float norm_u = glm::length(u);
+        float norm_v = glm::length(v);
+        float cosTheta = dotProduct / (norm_u * norm_v);
+        float theta = glm::acos(cosTheta);
+
+        return theta;
+    }
 
 };
 

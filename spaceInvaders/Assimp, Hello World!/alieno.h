@@ -262,11 +262,13 @@ public:
     bool isHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
+            float proiettile_x = proiettile.getVecPos()[i].x;
+            float proiettile_z = proiettile.getVecPos()[i].z;
+            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
-            if(isPointInsideCircle(proiettile.getVecHitPoint()[i], centro)) {
-                proiettile.setVecPos(i, glm::vec3(proiettile.getVecHitPoint()[i].x, 0.0f, -21.0f));
+            if (isPointInsideCircle(punto, centro)) {
+                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -25.0f));
                 return true;
-
             }
         }
         return false;

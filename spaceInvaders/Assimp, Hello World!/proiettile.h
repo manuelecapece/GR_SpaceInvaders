@@ -29,7 +29,6 @@ private:
     float spread = 1.0f;
     std::vector<glm::vec3> vectorPos   = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
     std::vector<glm::vec3> vectorDir   = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
-    std::vector<glm::vec2> vecHitPoint = std::vector<glm::vec2>(SIZE_VECTOR_COLPI);
     int colpiSparati = -1;
 
     Shader shader;
@@ -79,9 +78,6 @@ public:
         return vectorDir;
     }
 
-    std::vector<glm::vec2> getVecHitPoint() const {
-        return vecHitPoint;
-    }
 
     void setSpeed(float newSpeed) {
         speed = newSpeed;
@@ -123,8 +119,8 @@ public:
 
         for (int i = 0; i < colpiSparati + 1; i++)
         {
-            if (vectorPos[i].z > limZNeg && vectorPos[i].z < limZPos)
-            {
+            //if (vectorPos[i].z > limZNeg && vectorPos[i].z < limZPos)
+            //{
                 glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
                 vectorPos[i] = vectorPos[i] + translateSpeed * vectorDir[i];
 
@@ -134,13 +130,6 @@ public:
                         angolo = -angolo;
                     }
                     modelCubo = glm::rotate(modelCubo, angolo, glm::vec3(0.0f, 1.0f, 0.0f));
-                    
-                    glm::mat2 rotationMatrix = glm::mat2(
-                        glm::vec2(glm::cos(angolo), glm::sin(angolo)),
-                        glm::vec2(-glm::sin(angolo), glm::cos(angolo))
-                    );
-
-
                 }
 
                 modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
@@ -149,7 +138,7 @@ public:
                 shader.setVec3("color", color);
                 //glDrawArrays(GL_TRIANGLES, 0, 36);
                 model.Draw(shader);
-            }
+            //}
         }
     }
 

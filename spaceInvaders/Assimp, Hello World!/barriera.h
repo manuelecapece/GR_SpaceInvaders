@@ -130,42 +130,34 @@ public:
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z);
-            //std::cout << "centro x : " << punto.x << std::endl;
-            //std::cout << "centro z : " << punto.y << std::endl;
-
+            glm::vec3 hitPoint;
+            float angolo;
             glm::vec3 dir = proiettile.getVecDir()[i];
             glm::vec3 pos = proiettile.getVecPos()[i];
             float larghezza = proiettile.getLarghezza();
             float lunghezza = proiettile.getLunghezza();
 
             if (dir.x > 0) {
-                glm::vec3 hitPoint = glm::vec3(pos.x + (larghezza / 2), 0.0f, pos.z + (lunghezza / 2));
-               float angolo = calcolaAngolo(dir, glm::vec3(0.0f, 0.0f, 1.0f));
+               hitPoint = glm::vec3(pos.x + (larghezza / 2), 0.0f, pos.z + (lunghezza / 2));
+               angolo = calcolaAngolo(dir, glm::vec3(0.0f, 0.0f, 1.0f));
 
-               glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); 
-               glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), angolo, rotationAxis);
-               glm::vec3 rotatedTopLeft = glm::vec3(rotationMatrix * glm::vec4(hitPoint, 1.0f));
-               punto = glm::vec2(rotatedTopLeft.x, rotatedTopLeft.z);
-
-               //std::cout << "spigolo sx x : " << punto.x << std::endl;
-               //std::cout << "spigolo sx z : " << punto.y << std::endl;
             }
             if (dir.x < 0) {
-                glm::vec3 hitPoint = glm::vec3(pos.x - (larghezza / 2), 0.0f, pos.z + (lunghezza / 2));
-                float angolo = -calcolaAngolo(dir, glm::vec3(0.0f, 0.0f, 1.0f));
+                hitPoint = glm::vec3(pos.x - (larghezza / 2), 0.0f, pos.z + (lunghezza / 2));
+                angolo = -calcolaAngolo(dir, glm::vec3(0.0f, 0.0f, 1.0f));
+
+            }
+            if (dir.x < 0 || dir.x > 0) {
 
                 glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotazione intorno all'asse y
                 glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), angolo, rotationAxis);
                 glm::vec3 rotatedTopLeft = glm::vec3(rotationMatrix * glm::vec4(hitPoint, 1.0f));
                 punto = glm::vec2(rotatedTopLeft.x, rotatedTopLeft.z);
-
-                //std::cout << "spigolo dx x : " << punto.x << std::endl;
-                //std::cout << "spigolo dx z : " << punto.y << std::endl;
             }
 
             glm::vec2 centro = glm::vec2(posCubo.x, posCubo.z);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -21.0f));
+                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
                 return true;
 
             }
@@ -175,17 +167,11 @@ public:
 
     
     float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
-        // Calcolo del prodotto scalare
-        float dotProduct = glm::dot(u, v);
 
-        // Calcolo delle norme dei vettori
+        float dotProduct = glm::dot(u, v);
         float norm_u = glm::length(u);
         float norm_v = glm::length(v);
-
-        // Calcolo del coseno dell'angolo
         float cosTheta = dotProduct / (norm_u * norm_v);
-
-        // Calcolo dell'angolo in radianti
         float theta = glm::acos(cosTheta);
 
         return theta;
