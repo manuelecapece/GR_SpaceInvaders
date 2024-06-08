@@ -258,14 +258,14 @@ void idle()
 		startTime1s = currentTime1s;
 	}
 
-	if (currentTime2s - startTime2s >= 1.0) {
-		alieno.cambiaSpeed();
-		startTime2s = currentTime2s;
-	}
-	else {
-		alieno.setSpeedx(0.0f);
-		alieno.setSpeedz(0.0f);
-	}
+	//if (currentTime2s - startTime2s >= 1.0) {
+	//	alieno.cambiaSpeed();
+	//	startTime2s = currentTime2s;
+	//}
+	//else {
+	//	alieno.setSpeedx(0.0f);
+	//	alieno.setSpeedz(0.0f);
+	//}
 
 	if (currentTime20s - startTime20s >= 20.0) {
 		ufo.ripristinaPosizioneIniziale();

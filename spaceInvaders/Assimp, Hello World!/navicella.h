@@ -106,10 +106,10 @@ public:
         {
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
-            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
+            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z + (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(pos.x, pos.z);
-            if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -20.0f));
+            if (isPointInsideCircle(proiettile.getVecHitPoint()[i], centro)) {
+                proiettile.setVecPos(i, glm::vec3(proiettile.getVecHitPoint()[i].x, 0.0f, -20.0f));
                 isHitted = true;
                 return;
 

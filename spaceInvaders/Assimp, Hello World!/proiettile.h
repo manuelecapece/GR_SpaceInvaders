@@ -27,8 +27,9 @@ private:
     float limZNeg = -20;
     float limZPos = 10;
     float spread = 1.0f;
-    std::vector<glm::vec3> vectorPos = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
-    std::vector<glm::vec3> vectorDir = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
+    std::vector<glm::vec3> vectorPos   = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
+    std::vector<glm::vec3> vectorDir   = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
+    std::vector<glm::vec2> vecHitPoint = std::vector<glm::vec2>(SIZE_VECTOR_COLPI);
     int colpiSparati = -1;
 
     Shader shader;
@@ -74,6 +75,14 @@ public:
         return vectorPos;
     }
 
+    std::vector<glm::vec3> getVecDir() const {
+        return vectorDir;
+    }
+
+    std::vector<glm::vec2> getVecHitPoint() const {
+        return vecHitPoint;
+    }
+
     void setSpeed(float newSpeed) {
         speed = newSpeed;
     }
@@ -110,6 +119,7 @@ public:
 
         //glBindVertexArray(cubeVAO);
         shader.use();
+        float angolo = 0;
 
         for (int i = 0; i < colpiSparati + 1; i++)
         {
@@ -117,6 +127,22 @@ public:
             {
                 glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
                 vectorPos[i] = vectorPos[i] + translateSpeed * vectorDir[i];
+
+                if (color.x != 1.0f || color.y != 1.0f || color.z != 1.0f) {
+                    angolo = calcolaAngolo(vectorDir[i],glm::vec3(0.0f, 0.0f, 1.0f));
+                    if (vectorDir[i].x < 0.0f) {
+                        angolo = -angolo;
+                    }
+                    modelCubo = glm::rotate(modelCubo, angolo, glm::vec3(0.0f, 1.0f, 0.0f));
+                    
+                    glm::mat2 rotationMatrix = glm::mat2(
+                        glm::vec2(glm::cos(angolo), glm::sin(angolo)),
+                        glm::vec2(-glm::sin(angolo), glm::cos(angolo))
+                    );
+
+
+                }
+
                 modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
                 modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                 shader.setMat4("model", modelCubo);
@@ -125,6 +151,23 @@ public:
                 model.Draw(shader);
             }
         }
+    }
+
+    float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
+        // Calcolo del prodotto scalare
+        float dotProduct = glm::dot(u, v);
+
+        // Calcolo delle norme dei vettori
+        float norm_u = glm::length(u);
+        float norm_v = glm::length(v);
+
+        // Calcolo del coseno dell'angolo
+        float cosTheta = dotProduct / (norm_u * norm_v);
+
+        // Calcolo dell'angolo in radianti
+        float theta = glm::acos(cosTheta);
+
+        return theta;
     }
 
     bool isAllProiettiliAlienoOut() {

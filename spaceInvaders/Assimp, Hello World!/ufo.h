@@ -110,7 +110,8 @@ public:
         if (isInRangeSparo() && colpiSubiti < 5) {
             proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);
-            glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, 1.0f);
+            float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
+            glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);
             proiettile.inizializzaDir(proiettileAt);
         }
 
@@ -121,7 +122,13 @@ public:
         colpiSubiti = 0;
     }
 
-
+    float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dis(estremoInferiore, estremoSuperiore);
+        float random = dis(gen);
+        return random;
+    }
 };
 
 #endif 
