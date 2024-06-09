@@ -76,13 +76,13 @@ public:
             model.Draw(shader);
 
             // Spostamento navicella laterale destro
-            if (moveRight && pos.x < limX_pos)
+            if (moveRight)
             {
                 pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
 
             }
             // Spostamento navicella laterale sinistro
-            if (moveLeft && pos.x > -limX_pos)
+            if (moveLeft)
             {
                 pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
             }

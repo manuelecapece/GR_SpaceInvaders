@@ -66,6 +66,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal);
 float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 void muoviAlieni(double& currentTime2s, double& startTime2s);
+void muoviCamera(float deltaTime);
 
 const float PI = 3.14159265358979323846;
 
@@ -151,6 +152,7 @@ glm::vec3 cameraAt(0.0, 0.0, 0.0);	// Punto in cui "guarda" la camera
 glm::vec3 cameraUp(0.0, 1.0, 0.0);		// Vettore up...la camera e sempre parallela al piano
 glm::vec3 cameraDir(0.0, 0.0, -0.1);	// Direzione dello sguardo
 glm::vec3 cameraSide(1.0, 0.0, 0.0);	// Direzione spostamento laterale
+float speed = navicella.getSpeed();
 
 unsigned int cubeVAO;
 unsigned int cubeVBO;
@@ -270,6 +272,23 @@ void idle()
 		startTime20s = currentTime20s;
 	}
 
+	muoviCamera(deltaTime);
+
+}
+
+void muoviCamera(float deltaTime) {
+	float cameraSpeed = speed * deltaTime;
+
+	if (moveRight)
+	{
+		cameraPos.x = cameraPos.x + cameraSpeed;
+		cameraAt.x = cameraAt.x + cameraSpeed;
+	}
+	if (moveLeft)
+	{
+		cameraPos.x = cameraPos.x - cameraSpeed;
+		cameraAt.x = cameraPos.x - cameraSpeed;
+	}
 }
 
 void muoviAlieni(double& currentTime2s, double& startTime2s) {
@@ -287,7 +306,7 @@ void muoviAlieni(double& currentTime2s, double& startTime2s) {
 		z = alieno.getPos().z;
 		if (intervallo > 0.06) {
 			intervallo = intervallo - 0.03;
-			speedAlieni = speedAlieni + 0.010;
+			speedAlieni = speedAlieni + 0.013;
 		}
 
 	}
@@ -422,7 +441,7 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
 
@@ -577,19 +596,15 @@ int main()
 
 	frecciaShader.use();
 	frecciaShader.setMat4("projection", projection);
-	frecciaShader.setMat4("view", view);
 
 	alienoShader.use();
 	alienoShader.setMat4("projection", projection);
-	alienoShader.setMat4("view", view);
 
 	proiettileShader.use();
 	proiettileShader.setMat4("projection", projection);
-	proiettileShader.setMat4("view", view);
 
 	barrieraShader.use();
 	barrieraShader.setMat4("projection", projection);
-	barrieraShader.setMat4("view", view);
 
 	// shader configuration
 	// --------------------
@@ -632,6 +647,18 @@ int main()
 		// input
 		processInput(window);
 		idle();
+
+		// create transformations
+		view = glm::lookAt(cameraPos, cameraAt, cameraUp);
+
+		frecciaShader.use();
+		frecciaShader.setMat4("view", view);
+		alienoShader.use();
+		alienoShader.setMat4("view", view);
+		proiettileShader.use();
+		proiettileShader.setMat4("view", view);
+		barrieraShader.use();
+		barrieraShader.setMat4("view", view);
 
 		render(shaderBlur, shaderBloomFinal);
 
