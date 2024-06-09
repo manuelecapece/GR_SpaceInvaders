@@ -119,10 +119,10 @@ public:
 
         for (int i = 0; i < colpiSparati + 1; i++)
         {
-            //if (vectorPos[i].z > limZNeg && vectorPos[i].z < limZPos)
-            //{
+
                 glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
                 vectorPos[i] = vectorPos[i] + translateSpeed * vectorDir[i];
+                modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
 
                 if (color.x != 1.0f || color.y != 1.0f || color.z != 1.0f) {
                     angolo = calcolaAngolo(vectorDir[i],glm::vec3(0.0f, 0.0f, 1.0f));
@@ -132,13 +132,12 @@ public:
                     modelCubo = glm::rotate(modelCubo, angolo, glm::vec3(0.0f, 1.0f, 0.0f));
                 }
 
-                modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
                 modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                 shader.setMat4("model", modelCubo);
                 shader.setVec3("color", color);
                 //glDrawArrays(GL_TRIANGLES, 0, 36);
                 model.Draw(shader);
-            //}
+            
         }
     }
 
