@@ -23,6 +23,9 @@ private:
     const float lunghezza = 0.3f;
     const float larghezza = 0.3f;
     const float altezza = 0.6f;
+    float posX;
+    float spazio;
+    float posZ = 6.0f;
     int static const righeCubiBarriera = 4;
     int static const colonneCubiBarriera = 8;
 
@@ -48,6 +51,14 @@ public:
     // Costruttore
     Barriera() {}
 
+    void setPosX(float diametroAlieni, float spazioAlieni) {
+        posX = -((diametroAlieni + spazioAlieni) * 3) - (larghezza * (colonneCubiBarriera/2 - 0.5));
+    }
+
+    void setSpazio(float diametroAlieni, float spazioAlieni) {
+        spazio = (diametroAlieni + spazioAlieni) * 3;
+    }
+
     void setShader(Shader newShader) {
         shader = newShader;
     }
@@ -65,7 +76,7 @@ public:
         shader.use();
 
         for (int k = 0; k < 3; k++) {
-            pos = glm::vec3(-6.0f + k * 5.0f, 0.0f, 6.0f);
+            pos = glm::vec3(posX + k * spazio, 0.0f, posZ);
 
             if (k == 0) {
                 renderBarriera(map1, proiettile);
@@ -157,7 +168,12 @@ public:
 
             glm::vec2 centro = glm::vec2(posCubo.x, posCubo.z);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
+                if (dir.x == 0.0f) {
+                    proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -25.0f));
+                }
+                else {
+                    proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
+                }
                 return true;
 
             }

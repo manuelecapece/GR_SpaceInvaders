@@ -36,16 +36,17 @@ private:
     //                                        {0,0,0,0,0},
     //                                        {0,0,0,0,0} };
 
-    glm::vec3 pos = glm::vec3(-4.77f, 0.0, -12.0f);
+    
     float raggio = 1.0f;
     float spazio = 1.2f;
+    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -15.0f);
     float translateSpeedx;
     float translateSpeedz;
     float speedx = 0.0f;
     float speedz = 0.0f;
     bool restart = false;
-    float limXalieniPos = 3;
-    float limXalieniNeg = -12.54;
+    float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
+    float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio*2;
     Shader shader;
     Model model;
 
@@ -81,6 +82,14 @@ public:
 
     float getSpeedz() const {
         return speedz;
+    }
+
+    float getLimXalieniPos() const {
+        return limXalieniPos;
+    }
+
+    float getLimXalieniNeg() const {
+        return limXalieniNeg;
     }
 
     void setSpeedx(float newSpeedx) {
@@ -242,6 +251,27 @@ public:
         else if (pos.x < limXalieniNeg && restart) {
             speedz = 7;
             speedx = 0;
+            restart = false;
+        }
+    }
+
+    void muovi(float speedAlieni) {
+        if (pos.x < limXalieniPos && !restart && speedz == 0.0f) {
+            speedx = speedAlieni;
+            speedz = 0.0f;
+        }
+        else if (pos.x > limXalieniPos && !restart && speedx == 0.0f) {
+            speedx = 0.0f;
+            speedz = speedAlieni/1.5;
+            restart = true;
+        }
+        else if (pos.x > limXalieniNeg && restart && speedz == 0.0f) {
+            speedx = -speedAlieni;
+            speedz = 0.0f;
+        }
+        else if (pos.x < limXalieniNeg && restart && speedx == 0.0f) {
+            speedx = 0.0f;
+            speedz = speedAlieni/1.5;
             restart = false;
         }
     }

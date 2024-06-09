@@ -46,6 +46,9 @@ Model modelCubo;
 
 float random_x;
 bool alieniFermi = true;
+float intervallo = 1.0f;
+float speedAlieni = 0.05f;
+float z = alieno.getPos().z;
 double startTime05s = glfwGetTime();
 double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
@@ -62,6 +65,7 @@ void renderQuad2();
 void render(Shader shaderBlur, Shader shaderBloomFinal);
 float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
+void muoviAlieni(double& currentTime2s, double& startTime2s);
 
 const float PI = 3.14159265358979323846;
 
@@ -251,30 +255,42 @@ void idle()
 		startTime05s = currentTime05s;
 	}
 
-	if (currentTime1s - startTime1s >= 1.0) {
-		int id_riga = generaNumeroCasualeInt(0, 5);
-		int id_colonna = generaNumeroCasualeInt(0, 4);
-		alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
-		startTime1s = currentTime1s;
+	if (currentTime1s - startTime1s >= 2.0) {
+		for (int id_riga = 0; id_riga < 6; id_riga++) {
+			int id_colonna = generaNumeroCasualeInt(0, 4);
+			alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
+			startTime1s = currentTime1s;
+		}
 	}
 
-	if (currentTime2s - startTime2s >= 1.0) {
-		alieno.cambiaSpeed();
-		startTime2s = currentTime2s;
-	}
-	else {
-		alieno.setSpeedx(0.0f);
-		alieno.setSpeedz(0.0f);
-	}
+	muoviAlieni(currentTime2s, startTime2s);
 
-	if (currentTime20s - startTime20s >= 10.0) {
+	if (currentTime20s - startTime20s >= 20.0f) {
 		ufo.ripristinaPosizioneIniziale();
 		startTime20s = currentTime20s;
 	}
 
+}
 
+void muoviAlieni(double& currentTime2s, double& startTime2s) {
+	float deltaTime2s = currentTime2s - startTime2s;
 
+	if (deltaTime2s >= intervallo) {
+		alieno.muovi(speedAlieni);
+	}
+	if (deltaTime2s >= intervallo * 2) {
+		alieno.setSpeedx(0.0f);
+		alieno.setSpeedz(0.0f);
+		startTime2s = currentTime2s;
+	}
+	if (alieno.getPos().z > z && alieno.getSpeedz() == 0.0f) {
+		z = alieno.getPos().z;
+		if (intervallo > 0.06) {
+			intervallo = intervallo - 0.03;
+			speedAlieni = speedAlieni + 0.010;
+		}
 
+	}
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -406,7 +422,7 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
 
@@ -604,6 +620,8 @@ int main()
 
 	barriera.setShader(barrieraShader);
 	barriera.setModel(modelCubo);
+	barriera.setPosX(alieno.getRaggio() * 2, alieno.getSpazio());
+	barriera.setSpazio(alieno.getRaggio() * 2, alieno.getSpazio());
 
 	//float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
 	//navicella.setLimXpos(limX_pos);
@@ -661,7 +679,7 @@ void renderTerna() {
 	modelFreccia.Draw(frecciaShader);
 }
 
-void renderTerna2() {
+void renderLimitiAlieniAsseZ() {
 	//Disegno la terna di riferimento
 
 	//Asse x+ ROSSO
@@ -685,6 +703,30 @@ void renderTerna2() {
 
 }
 
+void renderLimitiAlieniAsseX() {
+	//Asse x+ ROSSO
+	frecciaShader.use();
+	glm::mat4 freccia = glm::mat4(1.0f);
+	freccia = glm::translate(freccia, glm::vec3(alieno.getLimXalieniPos(), 0.0f, 0.0f));
+	freccia = glm::scale(freccia, glm::vec3(0.3f, 0.3f, 0.3f));
+	freccia = glm::rotate(freccia, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	frecciaShader.setMat4("model", freccia);
+	frecciaShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+	modelFreccia.Draw(frecciaShader);
+
+	//Asse x+ ROSSO
+	frecciaShader.use();
+	glm::mat4 freccia2 = glm::mat4(1.0f);
+	freccia2 = glm::translate(freccia2, glm::vec3(alieno.getLimXalieniNeg(), 0.0f, 0.0f));
+	freccia2 = glm::scale(freccia2, glm::vec3(0.3f, 0.3f, 0.3f));
+	freccia2 = glm::rotate(freccia2, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	frecciaShader.setMat4("model", freccia2);
+	frecciaShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+	modelFreccia.Draw(frecciaShader);
+
+
+}
+
 
 void render(Shader shaderBlur, Shader shaderBloomFinal)
 {
@@ -697,8 +739,9 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	renderTerna();
-	renderTerna2();
+	//renderTerna();
+	//renderLimitiAlieniAsseZ();
+	//renderLimitiAlieniAsseX();
 	alieno.render(proiettileNavicella);
 	navicella.render(moveRight,moveLeft);
 	proiettileNavicella.render(glm::vec3(1.0f,1.0f,1.0f));
