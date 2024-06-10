@@ -188,7 +188,14 @@ public:
         return false;
     }
 
-    
+    bool checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {
+        float distSq = (alienPos.x - pos.x) * (alienPos.x - pos.x) + (alienPos.z - pos.z) * (alienPos.z - pos.z);
+        if (distSq <= (larghezza/2 + raggioAlieno)) {
+            return true;
+        }
+        return false;
+    }
+
     float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
 
         float dotProduct = glm::dot(u, v);

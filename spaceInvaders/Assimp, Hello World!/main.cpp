@@ -252,31 +252,35 @@ void idle()
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedProiettili(deltaTime);
 
-	if (currentTime05s - startTime05s >= 0.5) {
-		ufo.inizializzaProiettile(proiettileUfo);
-		startTime05s = currentTime05s;
-	}
+	//Inizia il gioco dopo 4 secondi
+	if (currentTime4s - startTime4s >= 4.0) {
 
-	if (currentTime1s - startTime1s >= 2.0) {
-		for (int id_riga = 0; id_riga < 6; id_riga++) {
-			int id_colonna = generaNumeroCasualeInt(0, 4);
-			alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
-			startTime1s = currentTime1s;
+		if (currentTime05s - startTime05s >= 0.5) {
+			//ufo.inizializzaProiettile(proiettileUfo);
+			startTime05s = currentTime05s;
 		}
+
+		if (currentTime1s - startTime1s >= 2.0) {
+			for (int id_riga = 0; id_riga < 6; id_riga++) {
+				int id_colonna = generaNumeroCasualeInt(0, 4);
+				//alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
+				startTime1s = currentTime1s;
+			}
+		}
+
+		muoviAlieni(currentTime2s, startTime2s);
+
+		if (currentTime20s - startTime20s >= 20.0f) {
+			ufo.ripristinaPosizioneIniziale();
+			startTime20s = currentTime20s;
+		}
+
+		if (vista == 1) {
+			muoviCamera(deltaTime);
+		}
+
+
 	}
-
-	muoviAlieni(currentTime2s, startTime2s);
-
-	if (currentTime20s - startTime20s >= 20.0f) {
-		ufo.ripristinaPosizioneIniziale();
-		startTime20s = currentTime20s;
-	}
-
-	if (vista == 1) {
-		muoviCamera(deltaTime);
-	}
-
-	
 
 }
 
@@ -449,9 +453,9 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
-	vista = 1;
+	vista = 0;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -792,7 +796,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	//renderTerna();
 	//renderLimitiAlieniAsseZ();
 	//renderLimitiAlieniAsseX();
-	alieno.render(proiettileNavicella);
+	alieno.render(proiettileNavicella,navicella);
 	navicella.render(moveRight,moveLeft);
 	proiettileNavicella.render(glm::vec3(1.0f,1.0f,1.0f));
 	alieno.renderProiettili(navicella,barriera);

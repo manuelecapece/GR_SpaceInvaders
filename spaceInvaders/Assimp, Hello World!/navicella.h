@@ -76,14 +76,11 @@ public:
             model.Draw(shader);
 
             // Spostamento navicella laterale destro
-            if (moveRight)
-            {
+            if (moveRight){
                 pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
-
             }
             // Spostamento navicella laterale sinistro
-            if (moveLeft)
-            {
+            if (moveLeft){
                 pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
             }
         }
@@ -148,6 +145,13 @@ public:
 
         }
 
+    }
+
+    void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {
+        float distSq = (alienPos.x - pos.x) * (alienPos.x - pos.x) + (alienPos.z - pos.z) * (alienPos.z - pos.z);
+        if (distSq <= (raggio + raggioAlieno)) {
+            isHitted = true;
+        }
     }
 
     void inizializzaProiettile(Proiettile& proiettile) {

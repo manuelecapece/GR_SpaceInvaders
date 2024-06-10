@@ -117,7 +117,7 @@ public:
         model = newModel;
     }
 
-    void render(Proiettile& proiettile) {
+    void render(Proiettile& proiettile, Navicella& navicella) {
 
         shader.use();
 
@@ -145,6 +145,8 @@ public:
                     if (isHitted(proiettile, posAlieno)) {
                         map[i][j] = 0;
                     }
+
+                    navicella.checkCollisionAlien(posAlieno, raggio);
 
                 }
             }
