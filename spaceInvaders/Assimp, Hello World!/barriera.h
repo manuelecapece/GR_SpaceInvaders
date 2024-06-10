@@ -19,30 +19,33 @@
 class Barriera {
 private:
 
-    glm::vec3 pos = glm::vec3(-1.0f, 0.0, 6.0f);
+    glm::vec3 pos;
+    float posX;
+    float posZ = 5.5f;
     const float lunghezza = 0.3f;
     const float larghezza = 0.3f;
-    const float altezza = 0.6f;
-    float posX;
+    const float altezza = 1.0f;
     float spazio;
-    float posZ = 6.0f;
-    int static const righeCubiBarriera = 4;
-    int static const colonneCubiBarriera = 8;
+    int static const righeCubiBarriera = 5;
+    int static const colonneCubiBarriera = 10;
 
-    int map1[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1},
-                                                        {1,1,1,1,1,1,1,1},
-                                                        {1,1,0,0,0,0,1,1},
-                                                        {1,1,0,0,0,0,1,1}};
+    int map1[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,0,0,0,0,1,1,1},
+                                                        {1,1,1,0,0,0,0,1,1,1}};
 
-    int map2[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1},
-                                                        {1,1,1,1,1,1,1,1},
-                                                        {1,1,0,0,0,0,1,1},
-                                                        {1,1,0,0,0,0,1,1} };
+    int map2[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,0,0,0,0,1,1,1},
+                                                        {1,1,1,0,0,0,0,1,1,1}};
 
-    int map3[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1},
-                                                        {1,1,1,1,1,1,1,1},
-                                                        {1,1,0,0,0,0,1,1},
-                                                        {1,1,0,0,0,0,1,1} };
+    int map3[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,1,1,1,1,1,1,1},
+                                                        {1,1,1,0,0,0,0,1,1,1},
+                                                        {1,1,1,0,0,0,0,1,1,1}};
 
     Shader shader;
     Model model;
@@ -173,7 +176,7 @@ public:
             glm::vec2 centroCirconf = glm::vec2(posCubo.x, posCubo.z);
             if (isPointInsideCircle(punto, centroCirconf)) {
                 if (dir.x == 0.0f) {
-                    proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -25.0f));
+                    proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -100.0f));
                 }
                 else {
                     proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));

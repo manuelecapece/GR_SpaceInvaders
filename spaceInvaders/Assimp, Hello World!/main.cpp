@@ -144,14 +144,14 @@ float vertices[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
+int vista;
 
-//Vista isometrica frontale dall'alto
-glm::vec3 cameraPos(0.0f, 17.5f, 17.5f);  // Posizione camera
-//glm::vec3 cameraPos(0.0f, 12.5f, 0.001f);  // Posizione camera
-glm::vec3 cameraAt(0.0, 0.0, 0.0);	// Punto in cui "guarda" la camera
-glm::vec3 cameraUp(0.0, 1.0, 0.0);		// Vettore up...la camera e sempre parallela al piano
-glm::vec3 cameraDir(0.0, 0.0, -0.1);	// Direzione dello sguardo
-glm::vec3 cameraSide(1.0, 0.0, 0.0);	// Direzione spostamento laterale
+glm::vec3 cameraPos;  // Posizione camera
+glm::vec3 cameraAt;	// Punto in cui "guarda" la camera
+glm::vec3 cameraUp(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano
+glm::vec3 cameraDir(0.0, 0.0, -0.1); // Direzione dello sguardo
+glm::vec3 cameraSide(1.0, 0.0, 0.0); // Direzione spostamento laterale
+
 float speed = navicella.getSpeed();
 
 unsigned int cubeVAO;
@@ -272,7 +272,11 @@ void idle()
 		startTime20s = currentTime20s;
 	}
 
-	muoviCamera(deltaTime);
+	if (vista == 1) {
+		muoviCamera(deltaTime);
+	}
+
+	
 
 }
 
@@ -283,11 +287,15 @@ void muoviCamera(float deltaTime) {
 	{
 		cameraPos.x = cameraPos.x + cameraSpeed;
 		cameraAt.x = cameraAt.x + cameraSpeed;
+		cameraUp.x = cameraUp.x + cameraSpeed/100;
+		cameraUp = normalize(cameraUp);
 	}
 	if (moveLeft)
 	{
 		cameraPos.x = cameraPos.x - cameraSpeed;
 		cameraAt.x = cameraPos.x - cameraSpeed;
+		cameraUp.x = cameraUp.x - cameraSpeed / 100;
+		cameraUp = normalize(cameraUp);
 	}
 }
 
@@ -441,7 +449,22 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = false;
+	bool schermoIntero = true;
+
+	vista = 1;
+
+	if (vista == 0) {
+		//Vista isometrica frontale dall'alto
+		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
+		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
+	}
+
+	if (vista == 1) {
+		//Vista dinamica frontale 
+		cameraPos = glm::vec3(0.0f, 10.5f, 19.5f);
+		cameraAt = glm::vec3(0.0, 0.0, 0.0);
+	}
+
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
 

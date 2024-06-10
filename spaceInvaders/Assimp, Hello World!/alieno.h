@@ -39,11 +39,12 @@ private:
     
     float raggio = 1.0f;
     float spazio = 1.2f;
-    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -15.0f);
+    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -17.0f);
     float translateSpeedx;
     float translateSpeedz;
     float speedx = 0.0f;
     float speedz = 0.0f;
+    float speedProiettili = 6;
     bool restart = false;
     float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
     float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio*2;
@@ -160,7 +161,7 @@ public:
             float x = pos.x + j * raggio * 2.0f * spazio;
             float z = pos.z + i * raggio * 2.0f * spazio;
 
-            vectorProiettili[k].setSpeed(4);
+            vectorProiettili[k].setSpeed(speedProiettili);
             vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
             float random = generaNumeroCasualeFloat(-0.2f,0.2f);
@@ -297,7 +298,7 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -25.0f));
+                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -100.0f));
                 return true;
             }
         }

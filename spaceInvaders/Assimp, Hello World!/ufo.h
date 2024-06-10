@@ -24,6 +24,7 @@ private:
     float raggio = 2.0f;
     float translateSpeed;
     float speed = 3;  // velocita della navicella
+    float speedProiettili = 6;
     float rangeSparoNeg = -10.0f;
     float rangeSparoPos = 10.0f;
     int colpiSubiti = 0;
@@ -93,7 +94,7 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(pos.x, pos.z);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -25.0f));
+                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -100.0f));
                 colpiSubiti++;
 
             }
@@ -109,6 +110,7 @@ public:
 
     void inizializzaProiettile(Proiettile& proiettile) {
         if (isInRangeSparo() && colpiSubiti < 5) {
+            proiettile.setSpeed(speedProiettili);
             proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
