@@ -52,7 +52,7 @@ float z = alieno.getPos().z;
 double startTime05s = glfwGetTime();
 double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
-double startTime4s  = glfwGetTime();
+double startTime = glfwGetTime();
 double startTime20s = glfwGetTime();
 
 //Dichiarazione matrici di trasformazione
@@ -67,6 +67,8 @@ float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 void muoviAlieni(double& currentTime2s, double& startTime2s);
 void muoviCamera(float deltaTime);
+void checkGameWin();
+void checkGameLost();
 
 const float PI = 3.14159265358979323846;
 
@@ -237,12 +239,14 @@ void idle()
 	double currentTime05s = glfwGetTime();
 	double currentTime1s = glfwGetTime();
 	double currentTime2s = glfwGetTime();
-	double currentTime4s = glfwGetTime();
+	double currentTime = glfwGetTime();
 	double currentTime20s = glfwGetTime();
 
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
+
+	double deltaTimeExecute = currentTime - startTime;
 
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
 	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
@@ -253,17 +257,17 @@ void idle()
 	alieno.setTranslateSpeedProiettili(deltaTime);
 
 	//Inizia il gioco dopo 4 secondi
-	if (currentTime4s - startTime4s >= 4.0) {
+	if (deltaTimeExecute >= 2.0) {
 
 		if (currentTime05s - startTime05s >= 0.5) {
-			//ufo.inizializzaProiettile(proiettileUfo);
+			ufo.inizializzaProiettile(proiettileUfo);
 			startTime05s = currentTime05s;
 		}
 
 		if (currentTime1s - startTime1s >= 2.0) {
 			for (int id_riga = 0; id_riga < 6; id_riga++) {
 				int id_colonna = generaNumeroCasualeInt(0, 4);
-				//alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
+				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
 				startTime1s = currentTime1s;
 			}
 		}
@@ -279,9 +283,23 @@ void idle()
 			muoviCamera(deltaTime);
 		}
 
-
 	}
 
+	checkGameWin();
+	checkGameLost();
+
+}
+
+void checkGameLost() {
+
+}
+
+void checkGameWin() {
+	if (alieno.getAlieniEliminati() == (alieno.getColonneAlieni() * alieno.getRigheAlieni())) {
+ 		cout << "Hai vinto!" << endl;
+		ufo.setSpeed(0.0f);
+		navicella.setSpeed(0.0f);
+	}
 }
 
 void muoviCamera(float deltaTime) {
@@ -781,6 +799,30 @@ void renderLimitiAlieniAsseX() {
 
 }
 
+//void checkCollisioneAlieniBarriere() {
+//	for (int i = 0; i < alieno.getRigheAlieni(); i++)
+//	{
+//		for (int j = 0; j < alieno.getColonneAlieni(); j++)
+//		{
+//
+//			if (alieno.getmap()[i][j] != 0)
+//			{
+//
+//				float x = (alieno.getPos().x + j * alieno.getRaggio() * 2.0f * alieno.getSpazio());
+//				float z = (alieno.getPos().z + i * alieno.getRaggio() * 2.0f * alieno.getSpazio());
+//				glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
+//
+//				if (posAlieno.z >= barriera.getPosZ()) {
+//
+//				}
+//
+//
+//
+//			}
+//		}
+//	}
+//}
+
 
 void render(Shader shaderBlur, Shader shaderBloomFinal)
 {
@@ -808,6 +850,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	barriera.renderBarriere(proiettileNavicella);
 	barriera.renderBarriere(proiettileUfo);
+
+	//checkCollisioneAlieniBarriere();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

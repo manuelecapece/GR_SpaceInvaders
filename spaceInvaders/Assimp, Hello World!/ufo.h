@@ -43,6 +43,10 @@ public:
         return speed;
     }
 
+    void setSpeed(float newSpeed) {
+        speed = newSpeed;
+    }
+
     void setPos(glm::vec3 newPos) {
         pos = newPos;
     }
@@ -109,7 +113,7 @@ public:
     }
 
     void inizializzaProiettile(Proiettile& proiettile) {
-        if (isInRangeSparo() && colpiSubiti < 5) {
+        if (isInRangeSparo() && colpiSubiti < 5 && speed != 0.0f) {
             proiettile.setSpeed(speedProiettili);
             proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);

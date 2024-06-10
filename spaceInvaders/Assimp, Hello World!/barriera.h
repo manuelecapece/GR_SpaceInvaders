@@ -54,6 +54,26 @@ public:
     // Costruttore
     Barriera() {}
 
+    float getPosX() {
+        return posX;
+    }
+
+    float getPosZ() {
+        return posZ;
+    }
+
+    int getRigheCubiBarriera() {
+        return righeCubiBarriera;
+    }
+
+    int getColonneCubiBarriera() {
+        return colonneCubiBarriera;
+    }
+
+    int(*getmap1())[colonneCubiBarriera] {
+        return map1;
+        }
+
     void setPosX(float diametroAlieni, float spazioAlieni) {
         posX = -((diametroAlieni + spazioAlieni) * 3) - (larghezza * (colonneCubiBarriera/2 - 0.5));
     }

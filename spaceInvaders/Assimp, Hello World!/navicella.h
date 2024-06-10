@@ -48,6 +48,10 @@ public:
         pos = newPos;
     }
 
+    void setSpeed(float newSpeed) {
+        speed = newSpeed;
+    }
+
     void setTranslateSpeed(float newTranslateSpeed) {
         translateSpeed = newTranslateSpeed;
     }

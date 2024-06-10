@@ -29,13 +29,6 @@ private:
                                             {1,1,1,1,1},
                                             {1,1,1,1,1} };
 
-    //int map[righeAlieni][colonneAlieni] = { {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {0,0,0,0,0} };
-
     
     float raggio = 1.0f;
     float spazio = 1.2f;
@@ -46,6 +39,7 @@ private:
     float speedz = 0.0f;
     float speedProiettili = 6;
     bool restart = false;
+    int alieniEliminati = 0;
     float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
     float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio*2;
     Shader shader;
@@ -57,8 +51,28 @@ public:
     // Costruttore
     Alieno(){}
 
+    int getAlieniEliminati() {
+        return alieniEliminati;
+    }
+
     int(*getmap())[colonneAlieni] {
         return map;
+    }
+
+    int getRigheAlieni() {
+        return righeAlieni;
+    }
+
+    int getColonneAlieni() {
+        return colonneAlieni;
+    }
+
+    float getTranslateSpeedX() {
+        return translateSpeedx;
+    }
+
+    float getTranslateSpeedZ() {
+        return translateSpeedz;
     }
 
     glm::vec3 getPos() const {
@@ -144,6 +158,7 @@ public:
 
                     if (isHitted(proiettile, posAlieno)) {
                         map[i][j] = 0;
+                        alieniEliminati++;
                     }
 
                     navicella.checkCollisionAlien(posAlieno, raggio);
