@@ -296,7 +296,7 @@ void checkGameLost() {
 
 void checkGameWin() {
 	if (alieno.getAlieniEliminati() == (alieno.getColonneAlieni() * alieno.getRigheAlieni())) {
- 		cout << "Hai vinto!" << endl;
+ 		//cout << "Hai vinto!" << endl;
 		ufo.setSpeed(0.0f);
 		navicella.setSpeed(0.0f);
 	}
@@ -471,9 +471,9 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
