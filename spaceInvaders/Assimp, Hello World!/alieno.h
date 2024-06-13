@@ -32,7 +32,7 @@ private:
     
     float raggio = 1.0f;
     float spazio = 1.2f;
-    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -17.0f);
+    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -17.5f);
     float translateSpeedx;
     float translateSpeedz;
     float speedx = 0.0f;
