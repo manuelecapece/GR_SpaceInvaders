@@ -166,6 +166,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="alieni.fs" />
+    <None Include="alieni.vs" />
     <None Include="alieno.fs" />
     <None Include="alieno.vs" />
     <None Include="barriera.fs" />
@@ -179,12 +181,16 @@
     <None Include="bordo.fs" />
     <None Include="bordo.vs" />
     <None Include="freccia.fs" />
+    <None Include="navicella.fs" />
+    <None Include="navicella.vs" />
     <None Include="packages.config" />
     <None Include="freccia.vs" />
     <None Include="proiettile.fs" />
     <None Include="proiettile.vs" />
     <None Include="text.fs" />
     <None Include="text.vs" />
+    <None Include="ufoRetro.fs" />
+    <None Include="ufoRetro.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />

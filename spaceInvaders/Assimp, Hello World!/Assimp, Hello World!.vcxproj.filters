@@ -70,6 +70,24 @@
     <None Include="barriera.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="alieni.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="alieni.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="navicella.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="navicella.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ufoRetro.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ufoRetro.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

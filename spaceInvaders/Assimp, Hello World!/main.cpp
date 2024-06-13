@@ -38,11 +38,21 @@ Shader frecciaShader;
 Shader alienoShader;
 Shader proiettileShader;
 Shader barrieraShader;
+Shader navicellaShader;
+Shader ufoRetroShader;
+Shader alieniShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
 Model modelSfera;
 Model modelCubo;
+Model modelNavicella;
+Model modelUfoRetro;
+Model modelAlieno1;
+Model modelAlieno2;
+Model modelAlieno3;
+Model modelAlieno4;
+Model modelAlieno5;
 
 float random_x;
 bool alieniFermi = true;
@@ -517,7 +527,7 @@ int main()
 {
 	bool schermoIntero = false;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -589,12 +599,22 @@ int main()
 	modelFreccia = Model("../src/models/freccia/freccia.obj");
 	modelSfera = Model("../src/models/sfera/sferaRaggio1metro.obj");
 	modelCubo = Model("../src/models/cubo.obj");
+	modelNavicella = Model("../src/models/navicella/navicella.obj");
+	modelUfoRetro = Model("../src/models/retroUfo/retroUfo.obj");
+	modelAlieno1 = Model("../src/models/alieni/alieno1/alieno1.obj");
+	modelAlieno2 = Model("../src/models/alieni/alieno2/alieno2.obj");
+	modelAlieno3 = Model("../src/models/alieni/alieno3/alieno3.obj");
+	modelAlieno4 = Model("../src/models/alieni/alieno4/alieno4.obj");
+	modelAlieno5 = Model("../src/models/alieni/alieno5/alieno5.obj");
 
 	//Shader
 	frecciaShader = Shader("freccia.vs", "freccia.fs");
 	alienoShader = Shader("alieno.vs", "alieno.fs");
 	proiettileShader = Shader("proiettile.vs", "proiettile.fs");
 	barrieraShader = Shader("barriera.vs", "barriera.fs");
+	navicellaShader = Shader("navicella.vs", "navicella.fs");
+	ufoRetroShader = Shader("ufoRetro.vs", "ufoRetro.fs");
+	alieniShader = Shader("alieni.vs", "alieni.fs");
 	
 	// build and compile shaders
 	// -------------------------
@@ -695,6 +715,15 @@ int main()
 	barrieraShader.use();
 	barrieraShader.setMat4("projection", projection);
 
+	navicellaShader.use();
+	navicellaShader.setMat4("projection", projection);
+
+	ufoRetroShader.use();
+	ufoRetroShader.setMat4("projection", projection);
+
+	alieniShader.use();
+	alieniShader.setMat4("projection", projection);
+
 	// shader configuration
 	// --------------------
 	shaderBlur.use();
@@ -709,11 +738,11 @@ int main()
 	alieno.setShader(alienoShader);
 	alieno.setModel(modelSfera);
 
-	navicella.setShader(alienoShader);
-	navicella.setModel(modelSfera);
+	navicella.setShader(navicellaShader);
+	navicella.setModel(modelNavicella);
 
-	ufo.setShader(alienoShader);
-	ufo.setModel(modelSfera);
+	ufo.setShader(ufoRetroShader);
+	ufo.setModel(modelUfoRetro);
 
 	proiettileNavicella.setShader(proiettileShader);
 	proiettileNavicella.setModel(modelCubo);
@@ -748,6 +777,12 @@ int main()
 		proiettileShader.setMat4("view", view);
 		barrieraShader.use();
 		barrieraShader.setMat4("view", view);
+		navicellaShader.use();
+		navicellaShader.setMat4("view", view);
+		ufoRetroShader.use();
+		ufoRetroShader.setMat4("view", view);
+		alieniShader.use();
+		alieniShader.setMat4("view", view);
 
 		render(shaderBlur, shaderBloomFinal);
 
