@@ -54,6 +54,7 @@ double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
 double startTime = glfwGetTime();
 double startTime20s = glfwGetTime();
+int step = 1;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -66,6 +67,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal);
 float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 void muoviAlieni(double& currentTime2s, double& startTime2s);
+void muoviAlieni2(double& currentTime2s, double& startTime2s);
 void muoviCamera(float deltaTime);
 void checkGameWin();
 void checkGameLost();
@@ -340,6 +342,47 @@ void muoviAlieni(double& currentTime2s, double& startTime2s) {
 		}
 
 	}
+}
+
+void muoviAlieni2(double& currentTime2s, double& startTime2s) {
+	float deltaTime2s = currentTime2s - startTime2s;
+
+	//if (deltaTime2s >= intervallo) {
+	//	alieno.muovi2(speedAlieni);
+	//}
+	//if (deltaTime2s >= intervallo * 2) {
+	//	alieno.setSpeedx(0.0f);
+	//	alieno.setSpeedz(0.0f);
+	//	startTime2s = currentTime2s;
+	//}
+	//if (alieno.getPos().z > z && alieno.getSpeedz() == 0.0f) {
+	//	z = alieno.getPos().z;
+	//	if (intervallo > 0.06) {
+	//		intervallo = intervallo - 0.03;
+	//		speedAlieni = speedAlieni + 0.013;
+	//	}
+
+	//}
+
+	double start = glfwGetTime();
+	double current = glfwGetTime();
+	double end;
+	double delta;
+
+	alieno.stepDx(1);
+
+	if (alieno.getSpeedx() == 0) {
+		end = glfwGetTime();
+		delta = start - end;
+		start = glfwGetTime();
+		current = glfwGetTime();
+		step++;
+	}
+
+	if (current - start >= delta) {
+		alieno.stepDx(step);
+	}
+
 }
 
 

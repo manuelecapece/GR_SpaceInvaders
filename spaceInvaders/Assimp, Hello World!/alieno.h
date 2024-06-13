@@ -19,7 +19,7 @@
 
 class Alieno {
 private:
-    
+
     int static const righeAlieni = 6;
     int static const colonneAlieni = 5;
     int map[righeAlieni][colonneAlieni] = { {1,1,1,1,1},
@@ -29,7 +29,7 @@ private:
                                             {1,1,1,1,1},
                                             {1,1,1,1,1} };
 
-    
+
     float raggio = 1.0f;
     float spazio = 1.2f;
     glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -17.5f);
@@ -41,7 +41,7 @@ private:
     bool restart = false;
     int alieniEliminati = 0;
     float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
-    float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio*2;
+    float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio * 2;
     Shader shader;
     Model model;
 
@@ -49,7 +49,7 @@ private:
 
 public:
     // Costruttore
-    Alieno(){}
+    Alieno() {}
 
     int getAlieniEliminati() {
         return alieniEliminati;
@@ -57,9 +57,9 @@ public:
 
     int(*getmap())[colonneAlieni] {
         return map;
-    }
+        }
 
-    int getRigheAlieni() {
+        int getRigheAlieni() {
         return righeAlieni;
     }
 
@@ -145,8 +145,8 @@ public:
                 if (map[i][j] != 0)
                 {
 
-                    float x = (pos.x + j * raggio * 2.0f * spazio) ;
-                    float z = (pos.z + i * raggio * 2.0f * spazio) ;
+                    float x = (pos.x + j * raggio * 2.0f * spazio);
+                    float z = (pos.z + i * raggio * 2.0f * spazio);
 
                     glm::mat4 modelAlieno = glm::mat4(1.0f);
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
@@ -154,7 +154,7 @@ public:
                     shader.setMat4("model", modelAlieno);
                     model.Draw(shader);
 
-                    glm::vec3 posAlieno = glm::vec3(x,0.0f,z);
+                    glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
                     if (isHitted(proiettile, posAlieno)) {
                         map[i][j] = 0;
@@ -173,7 +173,7 @@ public:
 
         int k = i * 5 + j;
 
-        if (map[i][j] != 0 )
+        if (map[i][j] != 0)
         {
             float x = pos.x + j * raggio * 2.0f * spazio;
             float z = pos.z + i * raggio * 2.0f * spazio;
@@ -181,14 +181,14 @@ public:
             vectorProiettili[k].setSpeed(speedProiettili);
             vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
-            float random = generaNumeroCasualeFloat(-0.2f,0.2f);
+            float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);
             vectorProiettili[k].inizializzaDir(proiettileAt);
             vectorProiettili[k].setShader(proiettileShader);
             vectorProiettili[k].setModel(modelCubo);
 
         }
-        
+
     }
 
     void setTranslateSpeedProiettili(double deltaTime) {
@@ -225,7 +225,7 @@ public:
                 if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
                 {
                     if (i == 0) {
-                        vectorProiettili[k].render(glm::vec3(1.0f,0.0f,0.0f));
+                        vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 0.0f));
                     }
                     if (i == 1) {
                         vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -242,7 +242,7 @@ public:
                     if (i == 5) {
                         vectorProiettili[k].render(glm::vec3(1.0f, 1.0f, 0.0f));
                     }
-                    
+
                 }
 
                 navicella.checkIsHitted(vectorProiettili[k]);
@@ -280,7 +280,7 @@ public:
         }
         else if (pos.x > limXalieniPos && !restart && speedx == 0.0f) {
             speedx = 0.0f;
-            speedz = speedAlieni/1.5;
+            speedz = speedAlieni / 1.5;
             restart = true;
         }
         else if (pos.x > limXalieniNeg && restart && speedz == 0.0f) {
@@ -289,8 +289,27 @@ public:
         }
         else if (pos.x < limXalieniNeg && restart && speedx == 0.0f) {
             speedx = 0.0f;
-            speedz = speedAlieni/1.5;
+            speedz = speedAlieni / 1.5;
             restart = false;
+        }
+    }
+
+    void ferma() {
+        speedx = 0.1f;
+    }
+
+    void muovi2(int i) {
+        stepDx(i);
+    }
+
+    void stepDx(int i) {
+        glm::vec3 newPos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + i * raggio * 2.0f * spazio, 0.0, -17.5f);
+        glm::vec3 limPos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + 4 * raggio * 2.0f * spazio, 0.0, -17.5f);
+        if (pos.x < newPos.x) {
+            speedx = 0.1f;
+        }
+        if (pos.x >= newPos.x) {
+            speedx = 0.0f;
         }
     }
 
