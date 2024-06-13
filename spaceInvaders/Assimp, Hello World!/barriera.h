@@ -62,6 +62,14 @@ public:
         return posZ;
     }
 
+    float getSpazio(){
+        return spazio;
+    }
+
+    float getLarghezza() {
+        return larghezza;
+    }
+
     int getRigheCubiBarriera() {
         return righeCubiBarriera;
     }
@@ -208,14 +216,6 @@ public:
         return false;
     }
 
-    bool checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {
-        float distSq = (alienPos.x - pos.x) * (alienPos.x - pos.x) + (alienPos.z - pos.z) * (alienPos.z - pos.z);
-        if (distSq <= (larghezza/2 + raggioAlieno)) {
-            return true;
-        }
-        return false;
-    }
-
     float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
 
         float dotProduct = glm::dot(u, v);
@@ -225,6 +225,69 @@ public:
         float theta = glm::acos(cosTheta);
 
         return theta;
+    }
+
+    bool isCollided(glm::vec3 posAlieno, float raggioAlieno, glm::vec3 posCubo) {
+        float distSq = (posAlieno.x - posCubo.x) * (posAlieno.x - posCubo.x) + (posAlieno.z - pos.z) * (posAlieno.z - posCubo.z);
+        if (distSq <= ((larghezza/2) + raggioAlieno)) {
+            return true;
+        }
+        return false;
+    }
+
+    void checkCollisioneBarrieraAlieno(int map, glm::vec3 posAlieno, glm::vec3 posBarriera, float raggioAlieno) {
+        
+        if (map == 1) {
+
+            for (int j = 0; j < colonneCubiBarriera; j++)
+            {
+                float x = posBarriera.x + j * larghezza;
+                float z = posBarriera.z + 2 * lunghezza;
+                glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
+
+                if (isCollided(posAlieno, raggioAlieno, posCubo)) {
+                    map1[0][j] = 0;
+                    map1[1][j] = 0;
+                    map1[2][j] = 0;
+                    map1[3][j] = 0;
+                    map1[4][j] = 0;
+                }
+            }
+        }
+
+        if (map == 2) {
+            for (int j = 0; j < colonneCubiBarriera; j++)
+            {
+                float x = posBarriera.x + j * larghezza;
+                float z = posBarriera.z + 2 * lunghezza;
+                glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
+
+                if (isCollided(posAlieno, raggioAlieno, posCubo)) {
+                    map2[0][j] = 0;
+                    map2[1][j] = 0;
+                    map2[2][j] = 0;
+                    map2[3][j] = 0;
+                    map2[4][j] = 0;
+                }
+            }
+        }
+
+        if (map == 3) {
+            for (int j = 0; j < colonneCubiBarriera; j++)
+            {
+                float x = posBarriera.x + j * larghezza;
+                float z = posBarriera.z + 2 * lunghezza;
+                glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
+
+                if (isCollided(posAlieno, raggioAlieno, posCubo)) {
+                    map3[0][j] = 0;
+                    map3[1][j] = 0;
+                    map3[2][j] = 0;
+                    map3[3][j] = 0;
+                    map3[4][j] = 0;
+                }
+            }
+        }
     }
 
 };

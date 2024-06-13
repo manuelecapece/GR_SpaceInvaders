@@ -471,9 +471,9 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
-	vista = 1;
+	vista = 0;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -799,29 +799,36 @@ void renderLimitiAlieniAsseX() {
 
 }
 
-//void checkCollisioneAlieniBarriere() {
-//	for (int i = 0; i < alieno.getRigheAlieni(); i++)
-//	{
-//		for (int j = 0; j < alieno.getColonneAlieni(); j++)
-//		{
-//
-//			if (alieno.getmap()[i][j] != 0)
-//			{
-//
-//				float x = (alieno.getPos().x + j * alieno.getRaggio() * 2.0f * alieno.getSpazio());
-//				float z = (alieno.getPos().z + i * alieno.getRaggio() * 2.0f * alieno.getSpazio());
-//				glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
-//
-//				if (posAlieno.z >= barriera.getPosZ()) {
-//
-//				}
-//
-//
-//
-//			}
-//		}
-//	}
-//}
+void checkCollisioneAlieniBarriere() {
+	for (int i = 0; i < alieno.getRigheAlieni(); i++){
+		for (int j = 0; j < alieno.getColonneAlieni(); j++){
+
+			if (alieno.getmap()[i][j] != 0){
+
+				float x = (alieno.getPos().x + j * alieno.getRaggio() * 2.0f * alieno.getSpazio());
+				float z = (alieno.getPos().z + i * alieno.getRaggio() * 2.0f * alieno.getSpazio());
+				glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
+
+				for (int k = 0; k < 3; k++) {
+					glm::vec3 posBarriera = glm::vec3(barriera.getPosX() + k * barriera.getSpazio(), 0.0f, barriera.getPosZ());
+
+					if (k == 0) {
+						barriera.checkCollisioneBarrieraAlieno(1, posAlieno, posBarriera, alieno.getRaggio());
+					}
+
+					if (k == 1) {
+						barriera.checkCollisioneBarrieraAlieno(2, posAlieno, posBarriera, alieno.getRaggio());
+					}
+
+					if (k == 2) {
+						barriera.checkCollisioneBarrieraAlieno(3, posAlieno, posBarriera, alieno.getRaggio());
+					}
+				}
+
+			}
+		}
+	}
+}
 
 
 void render(Shader shaderBlur, Shader shaderBloomFinal)
@@ -851,7 +858,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	barriera.renderBarriere(proiettileNavicella);
 	barriera.renderBarriere(proiettileUfo);
 
-	//checkCollisioneAlieniBarriere();
+	checkCollisioneAlieniBarriere();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
