@@ -19,8 +19,8 @@
 class Navicella {
 private:
     //Proprietà navicella
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.2f);
-    float raggio = 1.0f;
+    glm::vec3 pos = glm::vec3(0.0f, 0.0, 4.1f);
+    float raggio = 1.25f;
     float translateSpeed;
     float speed = 6;  // velocita della navicella
     float limX_pos = 999;
@@ -75,16 +75,17 @@ public:
 
             glm::mat4 modelNavicella = glm::mat4(1.0f);
             modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z));
-            modelNavicella = glm::scale(modelNavicella, glm::vec3(1.0f, raggio, 1.0f));
+            modelNavicella = glm::scale(modelNavicella, glm::vec3(0.4f, 1.0, 0.23f));
+            modelNavicella = glm::rotate(modelNavicella, 3.15f, glm::vec3(0.0f, 1, 0.0f));
             shader.setMat4("model", modelNavicella);
             model.Draw(shader);
 
             // Spostamento navicella laterale destro
-            if (moveRight){
+            if (moveRight) {
                 pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
             }
             // Spostamento navicella laterale sinistro
-            if (moveLeft){
+            if (moveLeft) {
                 pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
             }
         }
@@ -102,7 +103,7 @@ public:
         return distSq <= radiusSq;
     }
 
-    void checkIsHitted(Proiettile& proiettile){
+    void checkIsHitted(Proiettile& proiettile) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
 
@@ -139,7 +140,7 @@ public:
                 punto = glm::vec2(rotatedHitPoint.x, rotatedHitPoint.z);
             }
 
-            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z);
+            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z+5.);
             if (isPointInsideCircle(punto, centroCirconf)) {
 
                 proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
@@ -160,7 +161,7 @@ public:
 
     void inizializzaProiettile(Proiettile& proiettile) {
         proiettile.incrementaColpi();
-        proiettile.inizializzaPos(pos);
+        proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z+4.1));
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
     }
