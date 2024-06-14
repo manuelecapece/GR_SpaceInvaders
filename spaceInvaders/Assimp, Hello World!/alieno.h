@@ -308,6 +308,8 @@ public:
         if (pos.x < newPos.x) {
             speedx = 0.1f;
         }
+        //cout << "pos.x" << pos.x << endl;
+        //cout << "newPos.x" << newPos.x << endl;
         if (pos.x >= newPos.x) {
             speedx = 0.0f;
         }

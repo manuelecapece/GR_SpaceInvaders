@@ -64,7 +64,13 @@ double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
 double startTime = glfwGetTime();
 double startTime20s = glfwGetTime();
+double startTimexs = glfwGetTime();
+double currentxs;
+double end;
+double deltaxs = 0;
+double start2;
 int step = 1;
+bool restart = false;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -77,7 +83,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal);
 float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 void muoviAlieni(double& currentTime2s, double& startTime2s);
-void muoviAlieni2(double& currentTime2s, double& startTime2s);
+void muoviAlieni2();
 void muoviCamera(float deltaTime);
 void checkGameWin();
 void checkGameLost();
@@ -254,6 +260,8 @@ void idle()
 	double currentTime = glfwGetTime();
 	double currentTime20s = glfwGetTime();
 
+
+
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
@@ -284,7 +292,8 @@ void idle()
 			}
 		}
 
-		muoviAlieni(currentTime2s, startTime2s);
+		//muoviAlieni(currentTime2s, startTime2s);
+		muoviAlieni2();
 
 		if (currentTime20s - startTime20s >= 20.0f) {
 			ufo.ripristinaPosizioneIniziale();
@@ -354,8 +363,7 @@ void muoviAlieni(double& currentTime2s, double& startTime2s) {
 	}
 }
 
-void muoviAlieni2(double& currentTime2s, double& startTime2s) {
-	float deltaTime2s = currentTime2s - startTime2s;
+void muoviAlieni2() {
 
 	//if (deltaTime2s >= intervallo) {
 	//	alieno.muovi2(speedAlieni);
@@ -374,24 +382,40 @@ void muoviAlieni2(double& currentTime2s, double& startTime2s) {
 
 	//}
 
-	double start = glfwGetTime();
-	double current = glfwGetTime();
-	double end;
-	double delta;
 
-	alieno.stepDx(1);
 
-	if (alieno.getSpeedx() == 0) {
-		end = glfwGetTime();
-		delta = start - end;
-		start = glfwGetTime();
-		current = glfwGetTime();
-		step++;
+	
+	
+	
+	
+
+	if (alieno.getSpeedx() == 0 && !restart) {
+		currentxs = glfwGetTime();
+		deltaxs = currentxs - startTimexs;
+		cout << "-----------deltaxs:" << deltaxs / step << endl;
+		restart = true;
 	}
 
-	if (current - start >= delta) {
+	double current2 = glfwGetTime();
+	double delta2 = current2 - currentxs;
+	//cout << "-----------delta2:" << delta2 << endl;
+
+	if (delta2 > (deltaxs/step) && restart) {
+		//deltaxs = deltaxs * 2;
 		alieno.stepDx(step);
+
+		if (alieno.getSpeedx() == 0) {
+			step++;
+			restart = false;
+			cout << "*******step" << step << endl;
+		}
+		
+		cout << "*******passato" << endl;
+		
 	}
+
+
+
 
 }
 
