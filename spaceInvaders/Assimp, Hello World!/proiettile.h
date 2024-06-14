@@ -20,7 +20,7 @@ class Proiettile {
 private:
 
     const float lunghezza = 0.5f;
-    const float larghezza = 0.15f;
+    const float larghezza = 0.10f;
     const float altezza = 0.15f;
     float translateSpeed;
     float speed = 15;  

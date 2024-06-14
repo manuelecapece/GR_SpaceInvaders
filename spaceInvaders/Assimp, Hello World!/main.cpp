@@ -55,22 +55,22 @@ Model modelAlieno4;
 Model modelAlieno5;
 
 float random_x;
-bool alieniFermi = true;
-float intervallo = 1.0f;
-float speedAlieni = 0.05f;
-float z = alieno.getPos().z;
+
+float startGameTime = 2.0f;
 double startTime05s = glfwGetTime();
 double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
 double startTime = glfwGetTime();
 double startTime20s = glfwGetTime();
+
 double startTimexs = glfwGetTime();
 double currentxs;
-double end;
 double deltaxs = 0;
-double start2;
-int step = 1;
+float intervallo = 1.0f;
+int stepDx = 1;
+int stepSx = 1;
 bool restart = false;
+
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -82,8 +82,7 @@ void renderQuad2();
 void render(Shader shaderBlur, Shader shaderBloomFinal);
 float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
-void muoviAlieni(double& currentTime2s, double& startTime2s);
-void muoviAlieni2();
+void muoviAlieni();
 void muoviCamera(float deltaTime);
 void checkGameWin();
 void checkGameLost();
@@ -276,15 +275,15 @@ void idle()
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedProiettili(deltaTime);
 
-	//Inizia il gioco dopo 4 secondi
-	if (deltaTimeExecute >= 2.0) {
+	//Inizia il gioco dopo 2 secondi
+	if (deltaTimeExecute >= startGameTime) {
 
 		if (currentTime05s - startTime05s >= 0.5) {
 			ufo.inizializzaProiettile(proiettileUfo);
 			startTime05s = currentTime05s;
 		}
 
-		if (currentTime1s - startTime1s >= 2.0) {
+		if (currentTime1s - startTime1s >= 3.0) {
 			for (int id_riga = 0; id_riga < 6; id_riga++) {
 				int id_colonna = generaNumeroCasualeInt(0, 4);
 				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
@@ -292,8 +291,7 @@ void idle()
 			}
 		}
 
-		//muoviAlieni(currentTime2s, startTime2s);
-		muoviAlieni2();
+		muoviAlieni();
 
 		if (currentTime20s - startTime20s >= 20.0f) {
 			ufo.ripristinaPosizioneIniziale();
@@ -342,80 +340,64 @@ void muoviCamera(float deltaTime) {
 	}
 }
 
-void muoviAlieni(double& currentTime2s, double& startTime2s) {
-	float deltaTime2s = currentTime2s - startTime2s;
+void muoviAlieni() {
 
-	if (deltaTime2s >= intervallo) {
-		alieno.muovi(speedAlieni);
-	}
-	if (deltaTime2s >= intervallo * 2) {
-		alieno.setSpeedx(0.0f);
-		alieno.setSpeedz(0.0f);
-		startTime2s = currentTime2s;
-	}
-	if (alieno.getPos().z > z && alieno.getSpeedz() == 0.0f) {
-		z = alieno.getPos().z;
-		if (intervallo > 0.06) {
-			intervallo = intervallo - 0.03;
-			speedAlieni = speedAlieni + 0.013;
+	if (alieno.getMuoviVersoDx()) {
+		
+		if (alieno.getSpeedx() == 0 && !restart ) {
+			currentxs = glfwGetTime();
+			deltaxs = (currentxs - startTimexs) - startGameTime;
+			restart = true;
+		}
+
+		double current = glfwGetTime();
+		double delta = current - currentxs;
+
+		if (delta > (intervallo) && restart) {
+			alieno.stepVersoDx(stepDx);
+
+			if (alieno.getSpeedx() == 0.0f) {
+				stepDx++;
+				restart = false;
+			}
+
 		}
 
 	}
-}
 
-void muoviAlieni2() {
+	if (alieno.getMuoviVersoDown()) {
 
-	//if (deltaTime2s >= intervallo) {
-	//	alieno.muovi2(speedAlieni);
-	//}
-	//if (deltaTime2s >= intervallo * 2) {
-	//	alieno.setSpeedx(0.0f);
-	//	alieno.setSpeedz(0.0f);
-	//	startTime2s = currentTime2s;
-	//}
-	//if (alieno.getPos().z > z && alieno.getSpeedz() == 0.0f) {
-	//	z = alieno.getPos().z;
-	//	if (intervallo > 0.06) {
-	//		intervallo = intervallo - 0.03;
-	//		speedAlieni = speedAlieni + 0.013;
-	//	}
+		double current = glfwGetTime();
+		double delta = current - currentxs;
 
-	//}
+		if (delta > (intervallo * (stepDx + stepSx - 1))) {
+			alieno.stepVersoDown(intervallo);
+			stepDx = -1;
+			stepSx = 1;
 
-
-
-	
-	
-	
-	
-
-	if (alieno.getSpeedx() == 0 && !restart) {
-		currentxs = glfwGetTime();
-		deltaxs = currentxs - startTimexs;
-		cout << "-----------deltaxs:" << deltaxs / step << endl;
-		restart = true;
-	}
-
-	double current2 = glfwGetTime();
-	double delta2 = current2 - currentxs;
-	//cout << "-----------delta2:" << delta2 << endl;
-
-	if (delta2 > (deltaxs/step) && restart) {
-		//deltaxs = deltaxs * 2;
-		alieno.stepDx(step);
-
-		if (alieno.getSpeedx() == 0) {
-			step++;
-			restart = false;
-			cout << "*******step" << step << endl;
 		}
-		
-		cout << "*******passato" << endl;
-		
+
 	}
 
+	if (alieno.getMuoviVersoSx()) {
+		
+		if (alieno.getSpeedx() == 0 && !restart) {
+			currentxs = glfwGetTime();
+			restart = true;
+		}
 
+		double current = glfwGetTime();
+		double delta = current - currentxs;
 
+		if (delta > (intervallo) && restart) {
+			alieno.stepVersoSx(stepSx);
+
+			if (alieno.getSpeedx() == 0.0f) {
+				stepSx++;
+				restart = false;
+			}
+		}
+	}
 
 }
 
@@ -549,9 +531,9 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
