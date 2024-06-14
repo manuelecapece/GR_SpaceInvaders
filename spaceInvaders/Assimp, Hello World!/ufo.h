@@ -71,6 +71,7 @@ public:
             glm::mat4 modelUfo = glm::mat4(1.0f);
             modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
             modelUfo = glm::scale(modelUfo, glm::vec3(raggio, raggio, raggio));
+            //modelUfo = glm::rotate(modelUfo, 0.5f, glm::vec3(1.0f, 0.0, 0.0f));
             shader.setMat4("model", modelUfo);
             model.Draw(shader);
             
@@ -96,7 +97,7 @@ public:
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
-            glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.2);
+            glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.4);
             if (isPointInsideCircle(punto, centro)) {
                 proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -100.0f));
                 colpiSubiti++;
