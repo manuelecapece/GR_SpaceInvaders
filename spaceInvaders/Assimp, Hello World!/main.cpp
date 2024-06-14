@@ -283,7 +283,7 @@ void idle()
 			startTime05s = currentTime05s;
 		}
 
-		if (currentTime1s - startTime1s >= 2.0) {
+		if (currentTime1s - startTime1s >= 3.0) {
 			for (int id_riga = 0; id_riga < 6; id_riga++) {
 				int id_colonna = generaNumeroCasualeInt(0, 4);
 				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
@@ -531,9 +531,9 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
