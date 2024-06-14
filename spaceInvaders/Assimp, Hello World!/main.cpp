@@ -525,9 +525,9 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
-	vista = 1;
+	vista = 0;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -740,6 +740,9 @@ int main()
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
+
+	//navicella.setShader(navicellaShader);
+	//navicella.setModel(modelSfera);
 
 	ufo.setShader(ufoRetroShader);
 	ufo.setModel(modelUfoRetro);

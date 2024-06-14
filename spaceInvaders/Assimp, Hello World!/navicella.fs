@@ -15,7 +15,7 @@ void main()
 
     
     // Example of combining them, customize as needed:
-    vec4 resultColor = diffuse + emission*7.5;
+    vec4 resultColor = diffuse + emission*5;
     //vec4 resultColor = diffuse;
 
     FragColor = resultColor;
