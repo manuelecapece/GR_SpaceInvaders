@@ -74,7 +74,7 @@ public:
             //modelUfo = glm::rotate(modelUfo, 0.5f, glm::vec3(1.0f, 0.0, 0.0f));
             shader.setMat4("model", modelUfo);
             model.Draw(shader);
-            
+
         }
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
 
@@ -140,4 +140,3 @@ public:
 };
 
 #endif 
-
