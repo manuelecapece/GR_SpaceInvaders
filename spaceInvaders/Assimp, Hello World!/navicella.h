@@ -19,8 +19,9 @@
 class Navicella {
 private:
     //Proprietà navicella
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 4.1f);
-    float raggio = 1.25f;
+    //glm::vec3 pos = glm::vec3(0.0f, 0.0, 4.1f);
+    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.8f);
+    float raggio = 1.45f;
     float translateSpeed;
     float speed = 6;  // velocita della navicella
     float limX_pos = 999;
@@ -140,7 +141,7 @@ public:
                 punto = glm::vec2(rotatedHitPoint.x, rotatedHitPoint.z);
             }
 
-            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z + 5.);
+            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +0.22);
             if (isPointInsideCircle(punto, centroCirconf)) {
 
                 proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
@@ -161,7 +162,8 @@ public:
 
     void inizializzaProiettile(Proiettile& proiettile) {
         proiettile.incrementaColpi();
-        proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z + 4.1));
+        proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
+        //proiettile.inizializzaPos(pos);
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
     }
