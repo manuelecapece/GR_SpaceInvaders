@@ -171,7 +171,7 @@ public:
 
                     glm::mat4 modelAlieno = glm::mat4(1.0f);
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
-                    modelAlieno = glm::scale(modelAlieno, glm::vec3(1.0f, raggio, 1.0f));
+                    modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
                     shader.setMat4("model", modelAlieno);
                     model.Draw(shader);
 
