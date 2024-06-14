@@ -32,24 +32,41 @@ private:
 
     float raggio = 1.0f;
     float spazio = 1.2f;
-    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -17.5f);
+    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
     float translateSpeedx;
     float translateSpeedz;
     float speedx = 0.0f;
     float speedz = 0.0f;
+    float speed = 0.1;
     float speedProiettili = 6;
-    bool restart = false;
     int alieniEliminati = 0;
     float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
     float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio * 2;
     Shader shader;
     Model model;
 
+    bool muoviVersoDx = true;
+    bool muoviVersoSx = false;
+    bool muoviVersoDown = false;
+    int nStepDown = 0;
+
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
 
 public:
     // Costruttore
     Alieno() {}
+
+    bool getMuoviVersoDx() const {
+        return muoviVersoDx;
+    }
+
+    bool getMuoviVersoSx() const {
+        return muoviVersoSx;
+    }
+
+    bool getMuoviVersoDown() const {
+        return muoviVersoDown;
+    }
 
     int getAlieniEliminati() {
         return alieniEliminati;
@@ -65,6 +82,10 @@ public:
 
     int getColonneAlieni() {
         return colonneAlieni;
+    }
+
+    int getnStepDown() const {
+        return nStepDown;
     }
 
     float getTranslateSpeedX() {
@@ -253,67 +274,67 @@ public:
 
     }
 
-    void cambiaSpeed() {
-        if (pos.x < limXalieniPos && !restart) {
-            speedx = 7;
+    void stepVersoDx(int i) {
+        float newPosX_dx = -(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + i * raggio * 2.0f * spazio;
+        float limPosX_dx = -(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + 2 * raggio * 2.0f * spazio;
+
+        if (pos.x < newPosX_dx) {
+            speedx = speed;
         }
-        else if (pos.x > limXalieniPos && !restart) {
-            speedx = 0;
-            speedz = 7;
-            restart = true;
+        if (pos.x >= newPosX_dx) {
+            speedx = 0.0f;
         }
-        else if (pos.x > limXalieniNeg && restart) {
-            speedx = -7;
-            speedz = 0;
+        if (pos.x > limPosX_dx) {
+            speedx = 0.0f;
+            muoviVersoDx = false;
+            muoviVersoDown = true;
+            nStepDown++;
         }
-        else if (pos.x < limXalieniNeg && restart) {
-            speedz = 7;
-            speedx = 0;
-            restart = false;
-        }
+
     }
 
-    void muovi(float speedAlieni) {
-        if (pos.x < limXalieniPos && !restart && speedz == 0.0f) {
-            speedx = speedAlieni;
+    void stepVersoSx(int i) {
+        float newPosX_sx = (pos.x + 0 * raggio * 2.0f * spazio) - pos.x - i * raggio * 2.0f * spazio;
+        float limPosX_sx = (pos.x + 4 * raggio * 2.0f * spazio) - pos.x - 8 * raggio * 2.0f * spazio;
+
+        if (pos.x > newPosX_sx) {
+            speedx = -speed;
+        }
+        if (pos.x <= newPosX_sx) {
+            speedx = 0.0f;
+        }
+        if (pos.x < limPosX_sx) {
+            speedx = 0.0f;
+            muoviVersoSx = false;
+            muoviVersoDown = true;
+            nStepDown++;
+
+        }
+
+    }
+
+    void stepVersoDown(float& intervallo) {
+        float newPosZ = -17.9f + nStepDown * raggio * 2.0f * spazio;
+
+        if (pos.z < newPosZ) {
+            speedz = speed;
+        }
+        if (pos.z >= newPosZ) {
             speedz = 0.0f;
-        }
-        else if (pos.x > limXalieniPos && !restart && speedx == 0.0f) {
-            speedx = 0.0f;
-            speedz = speedAlieni / 1.5;
-            restart = true;
-        }
-        else if (pos.x > limXalieniNeg && restart && speedz == 0.0f) {
-            speedx = -speedAlieni;
-            speedz = 0.0f;
-        }
-        else if (pos.x < limXalieniNeg && restart && speedx == 0.0f) {
-            speedx = 0.0f;
-            speedz = speedAlieni / 1.5;
-            restart = false;
+            muoviVersoDown = false;
+            intervallo = intervallo - 0.1f;
+            speed = speed + 0.025f;
+            if (nStepDown % 2 == 0) {
+                muoviVersoDx = true;
+            }
+            else {
+                muoviVersoSx = true;
+            }
+            
         }
     }
 
-    void ferma() {
-        speedx = 0.1f;
-    }
 
-    void muovi2(int i) {
-        stepDx(i);
-    }
-
-    void stepDx(int i) {
-        glm::vec3 newPos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + i * raggio * 2.0f * spazio, 0.0, -17.5f);
-        glm::vec3 limPos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + 4 * raggio * 2.0f * spazio, 0.0, -17.5f);
-        if (pos.x < newPos.x) {
-            speedx = 0.1f;
-        }
-        //cout << "pos.x" << pos.x << endl;
-        //cout << "newPos.x" << newPos.x << endl;
-        if (pos.x >= newPos.x) {
-            speedx = 0.0f;
-        }
-    }
 
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {
         // Calcola la distanza al quadrato tra il punto e il centro della circonferenza
