@@ -533,7 +533,7 @@ int main()
 {
 	bool schermoIntero = true;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -742,7 +742,7 @@ int main()
 	// Creo le classi
 
 	alieno.setShader(alienoShader);
-	alieno.setModel(modelSfera);
+	alieno.setModel(modelAlieno3);
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
