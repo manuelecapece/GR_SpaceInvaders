@@ -20,8 +20,8 @@ class Ufo {
 private:
     //Proprietà navicella
     glm::vec3 pos = glm::vec3(35.0f, 0.0, -20.0f);
-    glm::vec3 posIniziale = glm::vec3(-8.0f, 0.0, -20.0f);
-    float raggio = 2.0f;
+    glm::vec3 posIniziale = glm::vec3(-8.0f, 0.0, -21.0f);
+    float raggio = 4.0f;
     float translateSpeed;
     float speed = 3;  // velocita della navicella
     float speedProiettili = 6;
@@ -96,7 +96,7 @@ public:
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
-            glm::vec2 centro = glm::vec2(pos.x, pos.z);
+            glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.2);
             if (isPointInsideCircle(punto, centro)) {
                 proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -100.0f));
                 colpiSubiti++;
