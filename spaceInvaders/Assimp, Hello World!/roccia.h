@@ -13,7 +13,7 @@
 #include <cmath>
 #include "model.h"
 
-const int NUM_ROCCE = 450;
+const int NUM_ROCCE = 500;
 
 class Roccia {
 private:
@@ -22,9 +22,9 @@ private:
     std::vector<float> speeds;
     Shader shader;
     Model model;
-    float screenTop = 100.0f;     // Limite superiore dal quale le rocce iniziano a scendere
-    float screenBottom = -100; // Limite inferiore fino al quale le rocce scendono prima di essere riportate sopra
-    float screenWidth = 100;  // Larghezza effettiva della finestra di rendering
+    float screenTop = 70.0f;     // Limite superiore dal quale le rocce iniziano a scendere
+    float screenBottom = -70.0f; // Limite inferiore fino al quale le rocce scendono prima di essere riportate sopra
+    float screenWidth = 500.0f;  // Larghezza effettiva della finestra di rendering
     std::default_random_engine generator;
     std::uniform_real_distribution<float> distributionX;
     std::uniform_real_distribution<float> distributionZ;
@@ -39,7 +39,7 @@ public:
         distributionSize(0.5f, 4.0f),
         distributionSpeed(2.0f, 10.0f) { // Generiamo anche velocità diverse
         for (int i = 0; i < NUM_ROCCE; ++i) {
-            positions.push_back(glm::vec3(distributionX(generator), 0.0, distributionZ(generator)));
+            positions.push_back(glm::vec3(distributionX(generator), 0.0f, distributionZ(generator)));
             sizes.push_back(distributionSize(generator));
             speeds.push_back(distributionSpeed(generator)); // Velocità casuale per ogni roccia
         }
@@ -55,12 +55,11 @@ public:
 
     void update(float deltaTime) {
         for (int i = 0; i < NUM_ROCCE; ++i) {
-            positions[i].y -= speeds[i] * deltaTime; // Usa la velocità individuale per ogni roccia
-            if (positions[i].y < screenBottom) {
-                positions[i].y = screenTop;
-                positions[i].x = distributionX(generator);
-                positions[i].z = distributionZ(generator);
-                speeds[i] = distributionSpeed(generator);
+            positions[i].z += speeds[i] * deltaTime; // Muovi lungo l'asse Z verso l'alto
+            if (positions[i].z > screenTop) { // Se la roccia supera il limite superiore
+                positions[i].z = screenBottom; // Riportala al limite inferiore
+                positions[i].x = distributionX(generator); // Nuova posizione X casuale
+                speeds[i] = distributionSpeed(generator); // Nuova velocità casuale
             }
         }
     }
@@ -78,3 +77,4 @@ public:
 };
 
 #endif
+
