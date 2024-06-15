@@ -24,6 +24,7 @@
 #include "proiettile.h"
 #include "ufo.h"
 #include "barriera.h"
+#include "roccia.h"
 
 //Dichiarazione classi
 Alieno alieno;
@@ -32,6 +33,7 @@ Proiettile proiettileNavicella;
 Proiettile proiettileUfo;
 Ufo ufo;
 Barriera barriera;
+Roccia roccia;
 
 //Dichiarazione shader
 Shader frecciaShader;
@@ -40,6 +42,7 @@ Shader proiettileShader;
 Shader barrieraShader;
 Shader navicellaShader;
 Shader ufoRetroShader;
+Shader rocciaShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
@@ -52,6 +55,7 @@ Model modelAlieno2;
 Model modelAlieno3;
 Model modelAlieno4;
 Model modelAlieno5;
+Model modelRoccia;
 
 
 float random_x;
@@ -533,7 +537,7 @@ int main()
 {
 	bool schermoIntero = true;
 
-	vista = 1;
+	vista = 0;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -612,6 +616,7 @@ int main()
 	modelAlieno3 = Model("../src/models/alieni/alieno3/alieno3.obj");
 	modelAlieno4 = Model("../src/models/alieni/alieno4/alieno4.obj");
 	modelAlieno5 = Model("../src/models/alieni/alieno5/alieno5.obj");
+	modelRoccia = Model("../src/models/roccia/roccia.obj");
 
 	//Shader
 	frecciaShader = Shader("freccia.vs", "freccia.fs");
@@ -620,6 +625,7 @@ int main()
 	barrieraShader = Shader("barriera.vs", "barriera.fs");
 	navicellaShader = Shader("navicella.vs", "navicella.fs");
 	ufoRetroShader = Shader("ufoRetro.vs", "ufoRetro.fs");
+	rocciaShader = Shader("roccia.vs", "roccia.fs");
 	
 	// build and compile shaders
 	// -------------------------
@@ -726,6 +732,9 @@ int main()
 	ufoRetroShader.use();
 	ufoRetroShader.setMat4("projection", projection);
 
+	rocciaShader.use();
+	rocciaShader.setMat4("projection", projection);
+
 
 	// shader configuration
 	// --------------------
@@ -754,6 +763,10 @@ int main()
 
 	ufo.setShader(ufoRetroShader);
 	ufo.setModel(modelUfoRetro);
+
+	roccia.setShader(rocciaShader);
+	roccia.setModel(modelRoccia);
+	
 
 	proiettileNavicella.setShader(proiettileShader);
 	proiettileNavicella.setModel(modelCubo);
@@ -792,6 +805,9 @@ int main()
 		navicellaShader.setMat4("view", view);
 		ufoRetroShader.use();
 		ufoRetroShader.setMat4("view", view);
+		rocciaShader.use();
+		rocciaShader.setMat4("view", view);
+		roccia.update(deltaTime);
 		
 		std::cout << navicella.getPos().x << std::endl;
 		std::cout << navicella.getPos().y << std::endl;
@@ -942,6 +958,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	proiettileNavicella.render(glm::vec3(1.0f,1.0f,1.0f));
 	alieno.renderProiettili(navicella,barriera);
 
+	roccia.render();
+
 	ufo.render();
 	proiettileUfo.render(glm::vec3(0.902f, 0.392f, 0.0f));
 	navicella.checkIsHitted(proiettileUfo);
@@ -949,6 +967,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	barriera.renderBarriere(proiettileNavicella);
 	barriera.renderBarriere(proiettileUfo);
+
 
 	checkCollisioneAlieniBarriere();
 

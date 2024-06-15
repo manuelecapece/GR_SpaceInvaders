@@ -1,12 +1,12 @@
-# Blender MTL File: 'Rock1.blend'
-# Material Count: 1
+# Blender 4.1.1 MTL File: 'roccia.blend'
+# www.blender.org
 
-newmtl Material
-Ns 13.725490
-Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.640000 0.640000
+newmtl Material.001
+Ns 0.000000
+Ka 0.300000 0.300000 0.300000
 Ks 0.007937 0.007937 0.007937
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
-map_Bump rock.png
+illum 3
+map_Kd diffuse.png

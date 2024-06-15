@@ -187,6 +187,8 @@
     <None Include="freccia.vs" />
     <None Include="proiettile.fs" />
     <None Include="proiettile.vs" />
+    <None Include="roccia.fs" />
+    <None Include="roccia.vs" />
     <None Include="text.fs" />
     <None Include="text.vs" />
     <None Include="ufoRetro.fs" />
@@ -205,6 +207,7 @@
     <ClInclude Include="navicella.h" />
     <ClInclude Include="proiettile.h" />
     <ClInclude Include="render_text.h" />
+    <ClInclude Include="roccia.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="ufo.h" />
