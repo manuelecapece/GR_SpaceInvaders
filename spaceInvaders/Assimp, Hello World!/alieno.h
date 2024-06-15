@@ -23,15 +23,15 @@ private:
     int static const righeAlieni = 6;
     int static const colonneAlieni = 5;
     int map[righeAlieni][colonneAlieni] = { {1,1,1,1,1},
-                                            {1,1,1,1,1},
-                                            {1,1,1,1,1},
-                                            {1,1,1,1,1},
-                                            {1,1,1,1,1},
-                                            {1,1,1,1,1} };
+                                            {2,2,2,2,2},
+                                            {3,3,3,3,3},
+                                            {4,4,4,4,4},
+                                            {5,5,5,5,5},
+                                            {6,6,6,6,6} };
 
 
     float raggio = 1.0f;
-    float spazio = 1.2f;
+    float spazio = 1.5f;
     glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
     float translateSpeedx;
     float translateSpeedz;
@@ -171,7 +171,7 @@ public:
 
                     glm::mat4 modelAlieno = glm::mat4(1.0f);
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
-                    modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
+                    modelAlieno = glm::scale(modelAlieno, glm::vec3(0.4f, 0.4, 0.4f));
                     shader.setMat4("model", modelAlieno);
                     model.Draw(shader);
 
