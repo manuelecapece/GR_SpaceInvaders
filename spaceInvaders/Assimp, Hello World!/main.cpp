@@ -40,7 +40,6 @@ Shader proiettileShader;
 Shader barrieraShader;
 Shader navicellaShader;
 Shader ufoRetroShader;
-Shader alieniShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
@@ -53,6 +52,7 @@ Model modelAlieno2;
 Model modelAlieno3;
 Model modelAlieno4;
 Model modelAlieno5;
+
 
 float random_x;
 
@@ -620,7 +620,6 @@ int main()
 	barrieraShader = Shader("barriera.vs", "barriera.fs");
 	navicellaShader = Shader("navicella.vs", "navicella.fs");
 	ufoRetroShader = Shader("ufoRetro.vs", "ufoRetro.fs");
-	alieniShader = Shader("alieni.vs", "alieni.fs");
 	
 	// build and compile shaders
 	// -------------------------
@@ -727,8 +726,6 @@ int main()
 	ufoRetroShader.use();
 	ufoRetroShader.setMat4("projection", projection);
 
-	alieniShader.use();
-	alieniShader.setMat4("projection", projection);
 
 	// shader configuration
 	// --------------------
@@ -795,9 +792,7 @@ int main()
 		navicellaShader.setMat4("view", view);
 		ufoRetroShader.use();
 		ufoRetroShader.setMat4("view", view);
-		alieniShader.use();
-		alieniShader.setMat4("view", view);
-
+		
 		std::cout << navicella.getPos().x << std::endl;
 		std::cout << navicella.getPos().y << std::endl;
 		std::cout << navicella.getPos().z << std::endl;
