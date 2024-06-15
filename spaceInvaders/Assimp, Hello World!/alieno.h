@@ -43,9 +43,7 @@ private:
     float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
     float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio * 2;
     Shader shader;
-    //Model model;
-    Model models[5];  // Array di modelli per i diversi alieni
-
+    std::vector<Model> models =  std::vector<Model>(righeAlieni * colonneAlieni);
 
     bool muoviVersoDx = true;
     bool muoviVersoSx = false;
@@ -182,9 +180,10 @@ public:
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
                     modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
                     shader.setMat4("model", modelAlieno);
-                    //model.Draw(shader);
-                    //int alienType = map[i][j] - 1; // ottieni il tipo di alieno dalla mappa
-                    models[nextAlien].Draw(shader);
+                    int modelIndex = map[i][j] - 1;
+                    if (modelIndex >= 0 && modelIndex < models.size()) {
+                        models[modelIndex].Draw(shader);
+                    }
 
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
@@ -197,7 +196,6 @@ public:
 
                 }
             }
-            nextAlien++;
         }
 
     }

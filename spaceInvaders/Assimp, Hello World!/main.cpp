@@ -531,7 +531,7 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	vista = 0;
 
