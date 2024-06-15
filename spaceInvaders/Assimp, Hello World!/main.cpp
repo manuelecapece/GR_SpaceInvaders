@@ -757,8 +757,6 @@ int main()
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
-
-	//navicella.setShader(navicellaShader);
 	//navicella.setModel(modelSfera);
 
 	ufo.setShader(ufoRetroShader);
@@ -766,7 +764,6 @@ int main()
 
 	roccia.setShader(rocciaShader);
 	roccia.setModel(modelRoccia);
-	
 
 	proiettileNavicella.setShader(proiettileShader);
 	proiettileNavicella.setModel(modelCubo);
@@ -809,9 +806,9 @@ int main()
 		rocciaShader.setMat4("view", view);
 		roccia.update(deltaTime);
 		
-		std::cout << navicella.getPos().x << std::endl;
-		std::cout << navicella.getPos().y << std::endl;
-		std::cout << navicella.getPos().z << std::endl;
+		//std::cout << navicella.getPos().x << std::endl;
+		//std::cout << navicella.getPos().y << std::endl;
+		//std::cout << navicella.getPos().z << std::endl;
 
 		render(shaderBlur, shaderBloomFinal);
 

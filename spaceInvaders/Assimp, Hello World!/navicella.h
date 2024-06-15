@@ -15,13 +15,14 @@
 #include "model.h"
 #include "proiettile.h"
 
+const float pigreco = 3.14159265358979323846;
+
 
 class Navicella {
 private:
-    //Proprietà navicella
-    //glm::vec3 pos = glm::vec3(0.0f, 0.0, 4.1f);
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.8f);
-    float raggio = 1.45f;
+
+    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.2f);
+    float raggio = 1.0f;
     float translateSpeed;
     float speed = 6;  // velocita della navicella
     float limX_pos = 999;
@@ -75,9 +76,15 @@ public:
             shader.use();
 
             glm::mat4 modelNavicella = glm::mat4(1.0f);
-            modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z));
-            modelNavicella = glm::scale(modelNavicella, glm::vec3(0.4f, 1.0, 0.23f));
-            modelNavicella = glm::rotate(modelNavicella, 3.15f, glm::vec3(0.0f, 1, 0.0f));
+
+            //Per il modello sfera
+            //modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z));
+
+            //Per il modello navicella
+            modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.85f));
+            modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+            modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+
             shader.setMat4("model", modelNavicella);
             model.Draw(shader);
            

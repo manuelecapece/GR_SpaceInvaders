@@ -20,18 +20,17 @@
 class Alieno {
 private:
 
-    int static const righeAlieni = 6;
+    int static const righeAlieni = 5;
     int static const colonneAlieni = 5;
     int map[righeAlieni][colonneAlieni] = { {1,1,1,1,1},
                                             {2,2,2,2,2},
                                             {3,3,3,3,3},
                                             {4,4,4,4,4},
-                                            {5,5,5,5,5},
-                                            {6,6,6,6,6} };
+                                            {5,5,5,5,5}};
 
 
     float raggio = 1.0f;
-    float spazio = 1.2f;
+    float spazio = 1.5f;
     glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
     float translateSpeedx;
     float translateSpeedz;
@@ -202,7 +201,7 @@ public:
 
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
 
-        int k = i * 5 + j;
+        int k = i * (righeAlieni - 1) + j;
 
         if (map[i][j] != 0)
         {
