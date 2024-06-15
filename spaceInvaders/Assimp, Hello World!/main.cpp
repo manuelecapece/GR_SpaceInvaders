@@ -742,7 +742,12 @@ int main()
 	// Creo le classi
 
 	alieno.setShader(alienoShader);
-	alieno.setModel(modelAlieno1);
+	//alieno.setModel(modelAlieno1);
+	alieno.setModel(0, modelAlieno1);
+	alieno.setModel(1, modelAlieno2);
+	alieno.setModel(2, modelAlieno3);
+	alieno.setModel(3, modelAlieno4);
+	alieno.setModel(4, modelAlieno5);
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
