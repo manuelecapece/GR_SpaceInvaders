@@ -1,25 +1,30 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 in vec2 TexCoords;
 
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
 uniform sampler2D texture_emission1;
 
 void main()
-{    
-    vec4 diffuse = texture(texture_diffuse1, TexCoords);
-    vec4 specular = texture(texture_specular1, TexCoords);
-    vec4 emission = texture(texture_emission1, TexCoords);
+{
+    vec3 color = texture(texture_diffuse1, TexCoords).rgb;
+    vec3 emission = texture(texture_emission1, TexCoords).rgb*5;
 
+    vec3 finalColor = color + emission;
+
+    FragColor = vec4(finalColor, 1.0);
     
-    // Example of combining them, customize as needed:
-    vec4 resultColor = diffuse + emission*5;
-    //vec4 resultColor = diffuse;
-
-    FragColor = resultColor;
+    // Consider emission when determining brightness for BrightColor
+    float brightness = dot(finalColor, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > 1.0)  // Adjust threshold as necessary
+        BrightColor = vec4(finalColor, 1.0);
+    else
+        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 }
+
+
 
 
 

@@ -80,7 +80,7 @@ public:
             modelNavicella = glm::rotate(modelNavicella, 3.15f, glm::vec3(0.0f, 1, 0.0f));
             shader.setMat4("model", modelNavicella);
             model.Draw(shader);
-
+           
             // Spostamento navicella laterale destro
             if (moveRight) {
                 pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
@@ -141,9 +141,12 @@ public:
                 punto = glm::vec2(rotatedHitPoint.x, rotatedHitPoint.z);
             }
 
-            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +0.22);
+            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
-
+                std::cout << "posizione morte x" << pos.x << std::endl;
+                std::cout << "posizione morte y" << pos.y << std::endl;
+                std::cout << "posizione morte z" << pos.z << std::endl;
+                std::cout << "raggio" << raggio << std::endl;
                 proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
                 isHitted = true;
                 return;

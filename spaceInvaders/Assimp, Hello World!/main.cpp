@@ -742,7 +742,7 @@ int main()
 	// Creo le classi
 
 	alieno.setShader(alienoShader);
-	alieno.setModel(modelAlieno3);
+	alieno.setModel(modelAlieno1);
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
@@ -792,6 +792,10 @@ int main()
 		ufoRetroShader.setMat4("view", view);
 		alieniShader.use();
 		alieniShader.setMat4("view", view);
+
+		std::cout << navicella.getPos().x << std::endl;
+		std::cout << navicella.getPos().y << std::endl;
+		std::cout << navicella.getPos().z << std::endl;
 
 		render(shaderBlur, shaderBloomFinal);
 
