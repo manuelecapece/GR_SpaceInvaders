@@ -21,7 +21,7 @@ const float pigreco = 3.14159265358979323846;
 class Navicella {
 private:
 
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.0f);
+    glm::vec3 pos = glm::vec3(0.05f, 0.0, 8.0f);
     float raggio = 1.0f;
     float translateSpeed;
     float speed = 6;  // velocita della navicella
