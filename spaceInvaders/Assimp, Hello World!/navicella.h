@@ -23,8 +23,9 @@ private:
 
     glm::vec3 pos = glm::vec3(0.05f, 0.0, 8.0f);
     float raggio = 1.0f;
+    float rotation = 0.0f;
     float translateSpeed;
-    float speed = 6;  // velocita della navicella
+    float speed = 8;  // velocita della navicella
     float limX_pos = 999;
     bool isHitted = false;
     Shader shader;
@@ -78,7 +79,14 @@ public:
     void render(bool moveRight, bool moveLeft) {
 
         if (!isHitted) {
-            shader.use();   
+            shader.use();  
+           
+            if (moveRight) {
+                pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
+            }
+            if (moveLeft) {
+                pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
+            }
 
             //Per il modello sfera
             //glm::mat4 sferaModel = glm::mat4(1.0f);
@@ -92,17 +100,29 @@ public:
             modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
             modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
             modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+            ruotaNavicella(moveRight, moveLeft, modelNavicella);
             shader.setMat4("model", modelNavicella);
             model.Draw(shader);
-           
-            if (moveRight) {
-                pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
-            }
-            if (moveLeft) {
-                pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
-            }
         }
 
+    }
+
+    void ruotaNavicella(bool moveRight, bool moveLeft, glm::mat4& modelNavicella) {
+        if (moveRight && rotation < (pigreco / 10)) {
+            rotation = rotation + translateSpeed;
+        }
+        else if (moveLeft && rotation > (-pigreco / 10)) {
+            rotation = rotation - translateSpeed;
+        }
+
+        if (!moveRight && rotation > 0.05f) {
+            rotation = rotation - translateSpeed;
+        }
+        else if (!moveLeft && rotation < -0.05f) {
+            rotation = rotation + translateSpeed;
+        }
+
+        modelNavicella = glm::rotate(modelNavicella, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
     }
 
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {

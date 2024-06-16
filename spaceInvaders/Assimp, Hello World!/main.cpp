@@ -547,7 +547,7 @@ int main()
 
 	if (vista == 1) {
 		//Vista dinamica frontale 
-		cameraPos = glm::vec3(0.0f, 10.5f, 19.5f);
+		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
 	}
 
