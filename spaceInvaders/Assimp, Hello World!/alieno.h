@@ -28,6 +28,12 @@ private:
                                             {4,4,4,4,4},
                                             {5,5,5,5,5}};
 
+    //int map[righeAlieni][colonneAlieni] = { {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {0,0,0,0,0},
+    //                                        {5,5,5,5,5} };
+
 
     float raggio = 1.0f;
     float spazio = 1.5f;
@@ -43,6 +49,7 @@ private:
     float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio * 2;
     Shader shader;
     std::vector<Model> models =  std::vector<Model>(righeAlieni * colonneAlieni);
+    Model modelSfera;
 
     bool muoviVersoDx = true;
     bool muoviVersoSx = false;
@@ -152,6 +159,10 @@ public:
         model = newModel;
     }*/
 
+    void setModelSfera(Model newModel) {
+        modelSfera = newModel;
+    }
+
     void setModel(int index, Model newModel) {
         if (index >= 0 && index < 5) {
             models[index] = newModel;
@@ -175,6 +186,14 @@ public:
                     float x = (pos.x + j * raggio * 2.0f * spazio);
                     float z = (pos.z + i * raggio * 2.0f * spazio);
 
+                    //Per modello sfera
+                    //glm::mat4 sferaModel = glm::mat4(1.0f);
+                    //sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
+                    //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+                    //shader.setMat4("model", sferaModel);
+                    //modelSfera.Draw(shader);
+
+                    //Per modello alieno
                     glm::mat4 modelAlieno = glm::mat4(1.0f);
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
                     modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
@@ -201,8 +220,9 @@ public:
 
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
 
-        int k = i * (righeAlieni - 1) + j;
-
+        //int k = i * (righeAlieni - 1) + j;
+        int k = i * (colonneAlieni) + j;
+        
         if (map[i][j] != 0)
         {
             float x = pos.x + j * raggio * 2.0f * spazio;
@@ -254,22 +274,19 @@ public:
 
                 if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
                 {
-                    if (i == 0) {
-                        vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 0.0f));
-                    }
-                    if (i == 1) {
+                    if (map[i][j] == 1) {
                         vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 0.0f));
                     }
-                    if (i == 2) {
+                    if (map[i][j] == 2) {
                         vectorProiettili[k].render(glm::vec3(0.0f, 0.0f, 1.0f));
                     }
+                    if (i == 2) {
+                        vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 0.0f));
+                    }
                     if (i == 3) {
-                        vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 1.0f));
+                        vectorProiettili[k].render(glm::vec3(0.541f, 0.168f, 0.886f));
                     }
                     if (i == 4) {
-                        vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 1.0f));
-                    }
-                    if (i == 5) {
                         vectorProiettili[k].render(glm::vec3(1.0f, 1.0f, 0.0f));
                     }
 

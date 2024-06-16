@@ -287,9 +287,9 @@ void idle()
 			startTime05s = currentTime05s;
 		}
 
-		if (currentTime1s - startTime1s >= 3.0) {
-			for (int id_riga = 0; id_riga < 6; id_riga++) {
-				int id_colonna = generaNumeroCasualeInt(0, 4);
+		if (currentTime1s - startTime1s >= 3.0f) {
+			for (int id_riga = 0; id_riga < alieno.getRigheAlieni(); id_riga++) {
+				int id_colonna = generaNumeroCasualeInt(0, alieno.getColonneAlieni()-1);
 				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
 				startTime1s = currentTime1s;
 			}
@@ -748,7 +748,7 @@ int main()
 	// Creo le classi
 
 	alieno.setShader(alienoShader);
-	//alieno.setModel(modelAlieno1);
+	alieno.setModelSfera(modelSfera);
 	alieno.setModel(0, modelAlieno1);
 	alieno.setModel(1, modelAlieno2);
 	alieno.setModel(2, modelAlieno3);
@@ -757,10 +757,11 @@ int main()
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
-	//navicella.setModel(modelSfera);
+	navicella.setModelSfera(modelSfera);
 
 	ufo.setShader(ufoRetroShader);
 	ufo.setModel(modelUfoRetro);
+	ufo.setModelSfera(modelSfera);
 
 	roccia.setShader(rocciaShader);
 	roccia.setModel(modelRoccia);
@@ -805,10 +806,6 @@ int main()
 		rocciaShader.use();
 		rocciaShader.setMat4("view", view);
 		roccia.update(deltaTime);
-		
-		//std::cout << navicella.getPos().x << std::endl;
-		//std::cout << navicella.getPos().y << std::endl;
-		//std::cout << navicella.getPos().z << std::endl;
 
 		render(shaderBlur, shaderBloomFinal);
 
@@ -958,7 +955,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	roccia.render();
 
 	ufo.render();
-	proiettileUfo.render(glm::vec3(0.902f, 0.392f, 0.0f));
+	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
 	navicella.checkIsHitted(proiettileUfo);
 	ufo.checkIsHitted(proiettileNavicella);
 

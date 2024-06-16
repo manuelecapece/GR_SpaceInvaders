@@ -15,21 +15,20 @@
 #include "model.h"
 #include "proiettile.h"
 
-
 class Ufo {
 private:
-    //Proprietà navicella
     glm::vec3 pos = glm::vec3(35.0f, 0.0, -20.0f);
     glm::vec3 posIniziale = glm::vec3(-8.0f, 0.0, -21.0f);
     float raggio = 2.5f;
     float translateSpeed;
-    float speed = 3;  // velocita della navicella
+    float speed = 3;  
     float speedProiettili = 6;
     float rangeSparoNeg = -10.0f;
     float rangeSparoPos = 10.0f;
     int colpiSubiti = 0;
     Shader shader;
     Model model;
+    Model modelSfera;
 
 public:
     // Costruttore
@@ -63,21 +62,32 @@ public:
         model = newModel;
     }
 
+    void setModelSfera(Model newModel) {
+        modelSfera = newModel;
+    }
+
     void render() {
 
         if (colpiSubiti < 5) {
             shader.use();
 
+            //Per il modello sfera
+            //glm::mat4 sferaModel = glm::mat4(1.0f);
+            //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+            //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+            //shader.setMat4("model", sferaModel);
+            //modelSfera.Draw(shader);
+
+            //Per il modello ufo
             glm::mat4 modelUfo = glm::mat4(1.0f);
             modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
-            modelUfo = glm::scale(modelUfo, glm::vec3(4.0, 4.0, 4.0));
-            //modelUfo = glm::rotate(modelUfo, 0.5f, glm::vec3(1.0f, 0.0, 0.0f));
+            modelUfo = glm::scale(modelUfo, glm::vec3(5.2, 5.2, 5.2));
+            modelUfo = glm::rotate(modelUfo, -pigreco/2 , glm::vec3(1.0f, 0.0, 0.0f));
             shader.setMat4("model", modelUfo);
             model.Draw(shader);
 
         }
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
-
     }
 
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {

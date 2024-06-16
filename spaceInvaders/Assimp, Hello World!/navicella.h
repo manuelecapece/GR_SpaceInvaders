@@ -21,7 +21,7 @@ const float pigreco = 3.14159265358979323846;
 class Navicella {
 private:
 
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.2f);
+    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.0f);
     float raggio = 1.0f;
     float translateSpeed;
     float speed = 6;  // velocita della navicella
@@ -29,6 +29,7 @@ private:
     bool isHitted = false;
     Shader shader;
     Model model;
+    Model modelSfera;
 
 public:
     // Costruttore
@@ -70,29 +71,33 @@ public:
         model = newModel;
     }
 
+    void setModelSfera(Model newModel) {
+        modelSfera = newModel;
+    }
+
     void render(bool moveRight, bool moveLeft) {
 
         if (!isHitted) {
-            shader.use();
-
-            glm::mat4 modelNavicella = glm::mat4(1.0f);
+            shader.use();   
 
             //Per il modello sfera
-            //modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z));
+            //glm::mat4 sferaModel = glm::mat4(1.0f);
+            //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+            //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+            //shader.setMat4("model", sferaModel);
+            //modelSfera.Draw(shader);
 
             //Per il modello navicella
-            modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.85f));
+            glm::mat4 modelNavicella = glm::mat4(1.0f);
+            modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
             modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
             modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-
             shader.setMat4("model", modelNavicella);
             model.Draw(shader);
            
-            // Spostamento navicella laterale destro
             if (moveRight) {
                 pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
             }
-            // Spostamento navicella laterale sinistro
             if (moveLeft) {
                 pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
             }
@@ -150,10 +155,6 @@ public:
 
             glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
-                std::cout << "posizione morte x" << pos.x << std::endl;
-                std::cout << "posizione morte y" << pos.y << std::endl;
-                std::cout << "posizione morte z" << pos.z << std::endl;
-                std::cout << "raggio" << raggio << std::endl;
                 proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
                 isHitted = true;
                 return;

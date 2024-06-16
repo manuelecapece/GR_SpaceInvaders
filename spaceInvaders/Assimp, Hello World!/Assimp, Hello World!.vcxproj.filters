@@ -70,12 +70,6 @@
     <None Include="barriera.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="alieni.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="alieni.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="navicella.fs">
       <Filter>Resource Files</Filter>
     </None>

@@ -166,8 +166,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="alieni.fs" />
-    <None Include="alieni.vs" />
     <None Include="alieno.fs" />
     <None Include="alieno.vs" />
     <None Include="barriera.fs" />

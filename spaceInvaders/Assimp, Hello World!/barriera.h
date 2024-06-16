@@ -21,7 +21,7 @@ private:
 
     glm::vec3 pos;
     float posX;
-    float posZ = 5.5f;
+    float posZ = 5.0f;
     const float lunghezza = 0.3f;
     const float larghezza = 0.3f;
     const float altezza = 1.0f;
