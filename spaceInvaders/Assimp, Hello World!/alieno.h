@@ -28,21 +28,14 @@ private:
                                             {4,4,4,4,4},
                                             {5,5,5,5,5}};
 
-    //int map[righeAlieni][colonneAlieni] = { {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {0,0,0,0,0},
-    //                                        {5,5,5,5,5} };
-
-
     float raggio = 1.0f;
-    float spazio = 1.5f;
+    float spazio = 1.3f;
     glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
     float translateSpeedx;
     float translateSpeedz;
     float speedx = 0.0f;
     float speedz = 0.0f;
-    float speed = 0.1;
+    float speed = 0.07;
     float speedProiettili = 6;
     int alieniEliminati = 0;
     float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
