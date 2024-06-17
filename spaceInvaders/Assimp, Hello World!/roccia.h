@@ -36,7 +36,7 @@ public:
     Roccia()
         : distributionX(-screenWidth, screenWidth),
         distributionZ(screenBottom, screenTop),
-        distributionSize(0.5f, 4.0f),
+        distributionSize(0.2f, 4.0f),
         distributionSpeed(2.0f, 10.0f) { // Generiamo anche velocità diverse
         for (int i = 0; i < NUM_ROCCE; ++i) {
             positions.push_back(glm::vec3(distributionX(generator), 0.0f, distributionZ(generator)));
