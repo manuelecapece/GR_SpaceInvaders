@@ -60,17 +60,16 @@ Model modelRoccia;
 
 float random_x;
 
-float startGameTime = 2.0f;
+float startGameTime = 4.0f;
 double startTime05s = glfwGetTime();
 double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
 double startTime = glfwGetTime();
 double startTime20s = glfwGetTime();
-
 double startTimexs = glfwGetTime();
 double currentxs;
 double deltaxs = 0;
-float intervallo = 1.0f;
+float intervallo = 1.5f;
 int stepDx = 1;
 int stepSx = 1;
 bool restart = false;
@@ -302,10 +301,10 @@ void idle()
 			startTime20s = currentTime20s;
 		}
 
-		if (vista == 1) {
-			muoviCamera(deltaTime);
-		}
+	}
 
+	if (vista == 1) {
+		muoviCamera(deltaTime);
 	}
 
 	checkGameWin();
@@ -777,6 +776,7 @@ int main()
 	barriera.setModel(modelCubo);
 	barriera.setPosX(alieno.getRaggio() * 2, alieno.getSpazio());
 	barriera.setSpazio(alieno.getRaggio() * 2, alieno.getSpazio());
+	barriera.inizializzaMaps();
 
 	//float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
 	//navicella.setLimXpos(limX_pos);

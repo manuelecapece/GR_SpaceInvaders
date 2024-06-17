@@ -47,6 +47,7 @@ private:
                                                         {1,1,1,0,0,0,0,1,1,1},
                                                         {1,1,1,0,0,0,0,1,1,1}};
 
+
     Shader shader;
     Model model;
 
@@ -140,6 +141,7 @@ public:
                     modelCubo = glm::translate(modelCubo, glm::vec3(x, 0.0f, z));
                     modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
+                    shader.setVec3("color", scegliColore(map[i][j]));
                     model.Draw(shader);
 
                     glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
@@ -152,6 +154,56 @@ public:
             }
         }
 
+    }
+
+    void inizializzaMaps() {
+
+        for (int i = 0; i < righeCubiBarriera; i++)
+        {
+            for (int j = 0; j < colonneCubiBarriera; j++)
+            {
+                if (map1[i][j] != 0)
+                {
+                    map1[i][j] = generaNumeroCasualeInt(1, 2);
+
+                }
+
+                if (map2[i][j] != 0)
+                {
+                    map2[i][j] = generaNumeroCasualeInt(1, 3);
+
+                }
+
+                if (map3[i][j] != 0)
+                {
+                    map3[i][j] = generaNumeroCasualeInt(1, 3);
+
+                }
+            }
+        }
+
+    }
+
+    glm::vec3 scegliColore(int n) {
+
+        if (n == 1 ) {
+            return glm::vec3(0.8f, 0.8f, 0.0f);//Dark yellow 1
+        }
+        if (n == 2) {
+            return glm::vec3(0.6f, 0.6f, 0.0f);//Dark yellow 2
+        }
+        if (n == 3) {
+            return glm::vec3(0.4f, 0.4f, 0.0f);//Dark yellow 3
+        }
+
+    }
+
+    float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(estremoInferiore, estremoSuperiore);
+        int random = dis(gen);
+        return random;
     }
 
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {

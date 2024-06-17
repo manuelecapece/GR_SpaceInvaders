@@ -17,8 +17,8 @@
 
 class Ufo {
 private:
-    glm::vec3 pos = glm::vec3(35.0f, 0.0, -20.0f);
-    glm::vec3 posIniziale = glm::vec3(-8.0f, 0.0, -21.0f);
+    glm::vec3 pos = glm::vec3(35.0f, 0.0, -22.0f);
+    glm::vec3 posIniziale = glm::vec3(-15.0f, 0.0, -22.0f);
     float raggio = 2.5f;
     float translateSpeed;
     float speed = 3;  
@@ -26,6 +26,7 @@ private:
     float rangeSparoNeg = -10.0f;
     float rangeSparoPos = 10.0f;
     int colpiSubiti = 0;
+    float rotation = 0;
     Shader shader;
     Model model;
     Model modelSfera;
@@ -83,6 +84,8 @@ public:
             modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
             modelUfo = glm::scale(modelUfo, glm::vec3(5.2, 5.2, 5.2));
             modelUfo = glm::rotate(modelUfo, -pigreco/2 , glm::vec3(1.0f, 0.0, 0.0f));
+            rotation = rotation + translateSpeed;
+            modelUfo = glm::rotate(modelUfo, rotation, glm::vec3(0.0f, 1.0, 0.0f));
             shader.setMat4("model", modelUfo);
             model.Draw(shader);
 
