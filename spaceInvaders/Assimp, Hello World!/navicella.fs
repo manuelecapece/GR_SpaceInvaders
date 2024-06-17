@@ -10,7 +10,7 @@ uniform sampler2D texture_emission1;
 void main()
 {
     vec3 color = texture(texture_diffuse1, TexCoords).rgb;
-    vec3 emission = texture(texture_emission1, TexCoords).rgb*5;
+    vec3 emission = texture(texture_emission1, TexCoords).rgb*10;
 
     vec3 finalColor = color + emission;
 
