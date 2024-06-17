@@ -13,7 +13,7 @@
 #include <cmath>
 #include "model.h"
 
-const int NUM_ROCCE = 500;
+const int NUM_ROCCE = 350;
 
 class Roccia {
 private:
