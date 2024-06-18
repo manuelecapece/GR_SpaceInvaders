@@ -183,6 +183,8 @@
     <None Include="navicella.vs" />
     <None Include="packages.config" />
     <None Include="freccia.vs" />
+    <None Include="pianeta.fs" />
+    <None Include="pianeta.vs" />
     <None Include="proiettile.fs" />
     <None Include="proiettile.vs" />
     <None Include="roccia.fs" />
@@ -203,6 +205,7 @@
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="navicella.h" />
+    <ClInclude Include="pianeta.h" />
     <ClInclude Include="proiettile.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="roccia.h" />

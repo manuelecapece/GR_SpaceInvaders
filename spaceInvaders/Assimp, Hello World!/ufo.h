@@ -18,7 +18,7 @@
 class Ufo {
 private:
     glm::vec3 pos = glm::vec3(35.0f, 0.0, -22.0f);
-    glm::vec3 posIniziale = glm::vec3(-15.0f, 0.0, -22.0f);
+    glm::vec3 posIniziale = glm::vec3(-15.0f, 0.0, -20.0f);
     float raggio = 2.5f;
     float translateSpeed;
     float speed = 3;  

@@ -88,6 +88,12 @@
     <None Include="roccia.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="pianeta.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="pianeta.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -132,6 +138,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="roccia.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pianeta.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

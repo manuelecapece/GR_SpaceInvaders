@@ -40,7 +40,7 @@ public:
     Roccia()
         : distributionX(-screenWidth, screenWidth),
         distributionZ(screenBottom, screenTop),
-        distributionSize(0.2f, 4.0f),
+        distributionSize(0.1f, 2.5f),
         distributionSpeed(2.0f, 15.0f),
         distributionRotationSpeed(-180.0f, 180.0f) { // Generiamo anche velocità diverse di rotazione
         for (int i = 0; i < NUM_ROCCE; ++i) {

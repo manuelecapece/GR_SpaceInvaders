@@ -25,6 +25,7 @@
 #include "ufo.h"
 #include "barriera.h"
 #include "roccia.h"
+#include "pianeta.h"
 
 //Dichiarazione classi
 Alieno alieno;
@@ -34,6 +35,7 @@ Proiettile proiettileUfo;
 Ufo ufo;
 Barriera barriera;
 Roccia roccia;
+Pianeta pianeta;
 
 //Dichiarazione shader
 Shader frecciaShader;
@@ -43,6 +45,7 @@ Shader barrieraShader;
 Shader navicellaShader;
 Shader ufoRetroShader;
 Shader rocciaShader;
+Shader pianetaShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
@@ -56,6 +59,11 @@ Model modelAlieno3;
 Model modelAlieno4;
 Model modelAlieno5;
 Model modelRoccia;
+Model modelPianeta1;
+Model modelPianeta2;
+Model modelPianeta3;
+Model modelPianeta4;
+Model modelPianeta5;
 
 
 float random_x;
@@ -194,6 +202,9 @@ unsigned int frameCount = 0;
 double previousTime = 0;
 double timeInterval = 0;
 unsigned int fps = 0;
+
+// Creazione di un vettore di pianeti
+std::vector<Pianeta> pianeti(5);
 
 
 void calculateFPS() {
@@ -616,6 +627,12 @@ int main()
 	modelAlieno4 = Model("../src/models/alieni/alieno4/alieno4.obj");
 	modelAlieno5 = Model("../src/models/alieni/alieno5/alieno5.obj");
 	modelRoccia = Model("../src/models/roccia/roccia.obj");
+	modelPianeta1 = Model("../src/models/pianeti/pianeta1/pianeta1.obj");
+	modelPianeta2 = Model("../src/models/pianeti/pianeta2/pianeta2.obj");
+	modelPianeta3 = Model("../src/models/pianeti/pianeta3/pianeta3.obj");
+	modelPianeta4 = Model("../src/models/pianeti/pianeta4/pianeta4.obj");
+	modelPianeta5 = Model("../src/models/pianeti/pianeta5/pianeta5.obj");
+
 
 	//Shader
 	frecciaShader = Shader("freccia.vs", "freccia.fs");
@@ -625,6 +642,7 @@ int main()
 	navicellaShader = Shader("navicella.vs", "navicella.fs");
 	ufoRetroShader = Shader("ufoRetro.vs", "ufoRetro.fs");
 	rocciaShader = Shader("roccia.vs", "roccia.fs");
+	pianetaShader = Shader("pianeta.vs", "pianeta.fs");
 	
 	// build and compile shaders
 	// -------------------------
@@ -734,6 +752,9 @@ int main()
 	rocciaShader.use();
 	rocciaShader.setMat4("projection", projection);
 
+	pianetaShader.use();
+	pianetaShader.setMat4("projection", projection);
+
 
 	// shader configuration
 	// --------------------
@@ -764,6 +785,43 @@ int main()
 
 	roccia.setShader(rocciaShader);
 	roccia.setModel(modelRoccia);
+
+	// Inizializzazione dei pianeti con posizione, scala, modello, shader, velocità di rotazione e orbita
+	pianeti[0].setShader(pianetaShader);
+	pianeti[0].setModel(modelPianeta1);
+	pianeti[0].setPosition(glm::vec3(-25.0f, 2.0f, -11.0f)); // Posizione di esempio
+	pianeti[0].setScale(1.0f); // Scala di esempio
+	pianeti[0].setRotationSpeed(100.0f); // Velocità di rotazione del primo pianeta
+	pianeti[0].setOrbitSpeed(15.0f); // Velocità di orbita del primo pianeta
+
+	pianeti[1].setShader(pianetaShader);
+	pianeti[1].setModel(modelPianeta2);
+	pianeti[1].setPosition(glm::vec3(-15.0f, 7.0f, -21.0f)); // Posizione di esempio
+	pianeti[1].setScale(1.5f); // Scala di esempio
+	pianeti[1].setRotationSpeed(60.0f); // Velocità di rotazione del secondo pianeta
+	pianeti[1].setOrbitSpeed(10.0f); // Velocità di orbita del secondo pianeta
+
+	pianeti[2].setShader(pianetaShader);
+	pianeti[2].setModel(modelPianeta3);
+	pianeti[2].setPosition(glm::vec3(0.0f, -5.0f, -26.0f)); // Posizione di esempio
+	pianeti[2].setScale(2.0f); // Scala di esempio
+	pianeti[2].setRotationSpeed(25.0f); // Velocità di rotazione del terzo pianeta
+	pianeti[2].setOrbitSpeed(12.0f); // Velocità di orbita del terzo pianeta
+
+	pianeti[3].setShader(pianetaShader);
+	pianeti[3].setModel(modelPianeta4);
+	pianeti[3].setPosition(glm::vec3(18.0f, -9.0f, -21.0f)); // Posizione di esempio
+	pianeti[3].setScale(2.5f); // Scala di esempio
+	pianeti[3].setRotationSpeed(35.0f); // Velocità di rotazione del quarto pianeta
+	pianeti[3].setOrbitSpeed(8.0f); // Velocità di orbita del quarto pianeta
+
+	pianeti[4].setShader(pianetaShader);
+	pianeti[4].setModel(modelPianeta5);
+	pianeti[4].setPosition(glm::vec3(25.0f, 7.0f, -23.0f)); // Posizione di esempio
+	pianeti[4].setScale(3.0f); // Scala di esempio
+	pianeti[4].setRotationSpeed(18.0f); // Velocità di rotazione del quinto pianeta
+	pianeti[4].setOrbitSpeed(14.0f); // Velocità di orbita del quinto pianeta
+
 
 	proiettileNavicella.setShader(proiettileShader);
 	proiettileNavicella.setModel(modelCubo);
@@ -806,6 +864,11 @@ int main()
 		rocciaShader.use();
 		rocciaShader.setMat4("view", view);
 		roccia.update(deltaTime);
+		pianetaShader.use();
+		pianetaShader.setMat4("view", view);
+		for (auto& pianeta : pianeti) {
+			pianeta.update(deltaTime);
+		}
 
 		render(shaderBlur, shaderBloomFinal);
 
@@ -953,6 +1016,10 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	alieno.renderProiettili(navicella,barriera);
 
 	roccia.render();
+
+	for (auto& pianeta : pianeti) {
+		pianeta.render();
+	}
 
 	ufo.render();
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
