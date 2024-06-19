@@ -28,6 +28,8 @@ private:
     float speed = 8;  // velocita della navicella
     float limX_pos = 999;
     bool isHitted = false;
+    int vite = 3;
+    double startTimeHitted;
     Shader shader;
     Model model;
     Model modelSfera;
@@ -40,12 +42,20 @@ public:
         return pos;
     }
 
+    int getVite() const {
+        return vite;
+    }
+
     float getSpeed() const {
         return speed;
     }
 
     bool getIsHitted() const {
         return isHitted;
+    }
+
+    double getStartTimeHitted() const {
+        return startTimeHitted;
     }
 
     void setPos(glm::vec3 newPos) {
@@ -70,6 +80,10 @@ public:
 
     void setModel(Model newModel) {
         model = newModel;
+    }
+
+    void setHisHitted(bool newValue) {
+        isHitted = newValue;
     }
 
     void setModelSfera(Model newModel) {
@@ -175,13 +189,22 @@ public:
 
             glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
+                startTimeHitted = glfwGetTime();
                 proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
                 isHitted = true;
+                vite = vite - 1;
+                if (vite >= 0) {
+                    ripristinaPosizioneIniziale();
+                }
                 return;
             }
 
         }
 
+    }
+
+    void ripristinaPosizioneIniziale() {
+        pos = glm::vec3(0.05f, 0.0, 8.0f);
     }
 
     void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {

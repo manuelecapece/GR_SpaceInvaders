@@ -20,17 +20,17 @@
 class Alieno {
 private:
 
-    int static const righeAlieni = 5;
-    int static const colonneAlieni = 5;
-    int map[righeAlieni][colonneAlieni] = { {1,1,1,1,1},
-                                            {2,2,2,2,2},
-                                            {3,3,3,3,3},
-                                            {4,4,4,4,4},
-                                            {5,5,5,5,5}};
+    int righeAlieni = 5;
+    int colonneAlieni = 5;
+    std::vector<std::vector<int>> map = {{1,1,1,1,1},
+                                         {2,2,2,2,2},
+                                         {3,3,3,3,3},
+                                         {4,4,4,4,4},
+                                         {5,5,5,5,5}};
 
     float raggio = 1.0f;
     float spazio = 1.3f;
-    glm::vec3 pos = glm::vec3(-(pos.x + 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
+    glm::vec3 pos = glm::vec3(-(colonneAlieni/2 * raggio * 2.0f * spazio), 0.0, -17.8f);
     float translateSpeedx;
     float translateSpeedz;
     float speedx = 0.0f;
@@ -38,17 +38,16 @@ private:
     float speed = 0.07;
     float speedProiettili = 6;
     int alieniEliminati = 0;
-    float limXalieniPos = (((raggio * 2 + spazio) * 3) - raggio) - (pos.x + 5 * raggio * 2.0f * spazio);
-    float limXalieniNeg = -((((raggio * 2 + spazio) * 3) - raggio) + (pos.x + 4 * raggio * 2.0f * spazio)) + raggio * 2;
     Shader shader;
-    std::vector<Model> models =  std::vector<Model>(righeAlieni * colonneAlieni);
+    std::vector<Model> models =  std::vector<Model>(5);
     Model modelSfera;
+    bool spawnaAlieni = true;
+    double startTimeLoadNewLevel;
 
     bool muoviVersoDx = true;
     bool muoviVersoSx = false;
     bool muoviVersoDown = false;
     int nStepDown = 0;
-    int nextAlien = 0;
 
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
 
@@ -72,11 +71,11 @@ public:
         return alieniEliminati;
     }
 
-    int(*getmap())[colonneAlieni] {
+    std::vector<std::vector<int>> getMap() const {
         return map;
-        }
+    }
 
-        int getRigheAlieni() {
+    int getRigheAlieni() {
         return righeAlieni;
     }
 
@@ -120,12 +119,20 @@ public:
         return speedz;
     }
 
-    float getLimXalieniPos() const {
-        return limXalieniPos;
+    double getStartTimeLoadNewLevel() const {
+        return startTimeLoadNewLevel;
     }
 
-    float getLimXalieniNeg() const {
-        return limXalieniNeg;
+    bool getSpawnaAlieni() const {
+        return spawnaAlieni;
+    }
+
+    void setRighe(float valore) {
+        righeAlieni = valore;
+    }
+
+    void setColonne(float valore) {
+        colonneAlieni = valore;
     }
 
     void setSpeedx(float newSpeedx) {
@@ -148,18 +155,42 @@ public:
         shader = newShader;
     }
 
-    /*void setModel(Model newModel) {
-        model = newModel;
-    }*/
-
     void setModelSfera(Model newModel) {
         modelSfera = newModel;
     }
 
-    void setModel(int index, Model newModel) {
-        if (index >= 0 && index < 5) {
-            models[index] = newModel;
+    void setModels(Model newModel1, Model newModel2, Model newModel3, Model newModel4, Model newModel5) {
+        models[0] = newModel1;
+        models[1] = newModel2;
+        models[2] = newModel3;
+        models[3] = newModel4;
+        models[4] = newModel5;
+    }
+
+    void setSpawnaAlieni(bool valore) {
+        spawnaAlieni = valore;
+    }
+
+    void setMuoviVersoDx(bool valore) {
+        muoviVersoDx = valore;
+    }
+
+    void resizeMap(int righe, int colonne) {
+
+        for (int i = 0; i < righe; i++) {
+            map[i].push_back(i + 1);
         }
+
+        vectorProiettili.resize(righeAlieni * colonneAlieni);
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+                map[i][j] = i+1;
+            }
+        }
+
     }
 
     void render(Proiettile& proiettile, Navicella& navicella) {
@@ -173,7 +204,7 @@ public:
                 pos.x = pos.x + translateSpeedx;
                 pos.z = pos.z + translateSpeedz;
 
-                if (map[i][j] != 0)
+                if (map[i][j] != 0 && spawnaAlieni)
                 {
 
                     float x = (pos.x + j * raggio * 2.0f * spazio);
@@ -191,16 +222,16 @@ public:
                     modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
                     modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
                     shader.setMat4("model", modelAlieno);
-                    int modelIndex = map[i][j] - 1;
-                    if (modelIndex >= 0 && modelIndex < models.size()) {
-                        models[modelIndex].Draw(shader);
-                    }
+                    models[i].Draw(shader);
 
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
                     if (isHitted(proiettile, posAlieno)) {
                         map[i][j] = 0;
                         alieniEliminati++;
+                        if (alieniEliminati == righeAlieni * colonneAlieni) {
+                            caricaNuovoLivello();
+                        }
                     }
 
                     navicella.checkCollisionAlien(posAlieno, raggio);
@@ -209,6 +240,23 @@ public:
             }
         }
 
+    }
+
+    void caricaNuovoLivello() {
+        spawnaAlieni = false;
+        alieniEliminati = 0;
+        pos = glm::vec3(-(colonneAlieni / 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
+        colonneAlieni = colonneAlieni + 1;
+        resizeMap(righeAlieni,colonneAlieni);
+        startTimeLoadNewLevel = glfwGetTime();
+
+        speedx = 0.0f;
+        speedz = 0.0f;
+        speed = 0.07;
+        nStepDown = 0;
+        muoviVersoDx = false;
+        muoviVersoSx = false;
+        muoviVersoDown = false;
     }
 
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
@@ -294,8 +342,8 @@ public:
     }
 
     void stepVersoDx(int i) {
-        float newPosX_dx = -(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + i * raggio * 2.0f * spazio;
-        float limPosX_dx = -(pos.x + 2 * raggio * 2.0f * spazio) + pos.x + 2 * raggio * 2.0f * spazio;
+        float newPosX_dx = -(pos.x + ((colonneAlieni-1)/2) * raggio * 2.0f * spazio) + pos.x + i * raggio * 2.0f * spazio;
+        float limPosX_dx = -(colonneAlieni / 2 * raggio * 2.0f * spazio) + (colonneAlieni - 3) * raggio * 2.0f * spazio;
 
         if (pos.x < newPosX_dx) {
             speedx = speed;
@@ -313,8 +361,8 @@ public:
     }
 
     void stepVersoSx(int i) {
-        float newPosX_sx = (pos.x + 0 * raggio * 2.0f * spazio) - pos.x - i * raggio * 2.0f * spazio;
-        float limPosX_sx = (pos.x + 4 * raggio * 2.0f * spazio) - pos.x - 8 * raggio * 2.0f * spazio;
+        float newPosX_sx =  - i * raggio * 2.0f * spazio;
+        float limPosX_sx = (pos.x + (colonneAlieni-1) * raggio * 2.0f * spazio) - pos.x - ((colonneAlieni - 1)*2) * raggio * 2.0f * spazio;
 
         if (pos.x > newPosX_sx) {
             speedx = -speed;
@@ -333,7 +381,7 @@ public:
     }
 
     void stepVersoDown(float& intervallo) {
-        float newPosZ = -17.9f + nStepDown * raggio * 2.0f * spazio;
+        float newPosZ = -17.8f + nStepDown * raggio * 2.0f * spazio;
 
         if (pos.z < newPosZ) {
             speedz = speed;

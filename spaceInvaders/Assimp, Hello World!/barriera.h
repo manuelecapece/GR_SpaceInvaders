@@ -342,6 +342,26 @@ public:
         }
     }
 
+    void ripristina() {
+
+        int map[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1,1,1},
+                                                           {1,1,1,1,1,1,1,1,1,1},
+                                                           {1,1,1,1,1,1,1,1,1,1},
+                                                           {1,1,1,0,0,0,0,1,1,1},
+                                                           {1,1,1,0,0,0,0,1,1,1}};
+        
+        for (int i = 0; i < righeCubiBarriera; i++)
+        {
+            for (int j = 0; j < colonneCubiBarriera; j++)
+            {
+                map1[i][j] = map[i][j];
+                map2[i][j] = map[i][j];
+                map3[i][j] = map[i][j];
+            }
+        }
+
+    }
+
 };
 
 #endif 

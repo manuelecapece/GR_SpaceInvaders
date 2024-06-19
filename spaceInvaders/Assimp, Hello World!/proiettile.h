@@ -14,8 +14,6 @@
 #include <stack>
 #include "model.h"
 
-const int SIZE_VECTOR_COLPI = 1000;
-
 class Proiettile {
 private:
 
@@ -27,8 +25,10 @@ private:
     float limZNeg = -20;
     float limZPos = 10;
     float spread = 1.0f;
-    std::vector<glm::vec3> vectorPos   = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
-    std::vector<glm::vec3> vectorDir   = std::vector<glm::vec3>(SIZE_VECTOR_COLPI);
+
+    std::vector<glm::vec3> vectorPos;
+    std::vector<glm::vec3> vectorDir;
+
     int colpiSparati = -1;
 
     Shader shader;
@@ -100,11 +100,11 @@ public:
     }
 
     void inizializzaPos(glm::vec3 newPos) {
-        vectorPos[colpiSparati] = newPos;
+        vectorPos.push_back(newPos);
     }
 
     void inizializzaDir(glm::vec3 newDir) {
-        vectorDir[colpiSparati] = newDir;
+        vectorDir.push_back(newDir);
     }
 
     void incrementaColpi() {

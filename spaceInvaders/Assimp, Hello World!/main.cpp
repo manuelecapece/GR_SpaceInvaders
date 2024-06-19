@@ -68,7 +68,7 @@ Model modelPianeta5;
 
 float random_x;
 
-float startGameTime = 4.0f;
+float startTimeDelta = 4.0f;
 double startTime05s = glfwGetTime();
 double startTime1s  = glfwGetTime();
 double startTime2s  = glfwGetTime();
@@ -197,6 +197,7 @@ bool moveRight = false;
 bool spara = true;
 bool stopSpara = false;
 bool exitGame = false;
+bool respawnNavicella = false;
 
 unsigned int frameCount = 0;
 double previousTime = 0;
@@ -246,7 +247,7 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		if (spara && !navicella.getIsHitted()) {
+		if (spara && !navicella.getIsHitted() && alieno.getSpawnaAlieni()) {
 			navicella.inizializzaProiettile(proiettileNavicella);
 			spara = false;
 		}
@@ -290,7 +291,7 @@ void idle()
 	alieno.setTranslateSpeedProiettili(deltaTime);
 
 	//Inizia il gioco dopo 2 secondi
-	if (deltaTimeExecute >= startGameTime) {
+	if (deltaTimeExecute >= startTimeDelta) {
 
 		if (currentTime05s - startTime05s >= 0.5) {
 			ufo.inizializzaProiettile(proiettileUfo);
@@ -314,8 +315,33 @@ void idle()
 
 	}
 
+	if (navicella.getIsHitted() && (glfwGetTime() - navicella.getStartTimeHitted()) > 1.0f) {
+		respawnNavicella = true;
+	}
+
+	if (!alieno.getSpawnaAlieni() && (glfwGetTime() - alieno.getStartTimeLoadNewLevel() > 3.0f)) {
+		barriera.ripristina();
+		barriera.inizializzaMaps();
+		navicella.ripristinaPosizioneIniziale();
+		alieno.setSpawnaAlieni(true);
+		alieno.setMuoviVersoDx(true);
+		startTime = glfwGetTime();
+	}
+
 	if (vista == 1) {
 		muoviCamera(deltaTime);
+	}
+
+	if (!alieno.getSpawnaAlieni()) {
+		startTime05s = glfwGetTime();
+		startTime1s = glfwGetTime();
+		startTime20s = glfwGetTime();
+		stepDx = 1;
+		stepSx = 1;
+		intervallo = 1.5f;
+
+		proiettileNavicella.getVecPos().clear();
+		
 	}
 
 	checkGameWin();
@@ -337,15 +363,30 @@ void checkGameWin() {
 
 void muoviCamera(float deltaTime) {
 	float cameraSpeed = speed * deltaTime;
+	//cameraPos.x = navicella.getPos().x;
 
-	if (moveRight)
+	if (respawnNavicella && vista == 0 && navicella.getVite() > 0) {
+		navicella.setHisHitted(false);
+		respawnNavicella = false;
+	}
+
+	if (respawnNavicella && vista == 1 && navicella.getVite() > 0) {
+		//Vista dinamica frontale 
+		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
+		cameraAt = glm::vec3(0.0, 0.0, 0.0);
+		cameraUp = glm::vec3(0.0, 1.0, 0.0);
+		navicella.setHisHitted(false);
+		respawnNavicella = false;
+	}
+
+	if (moveRight && !navicella.getIsHitted())
 	{
 		cameraPos.x = cameraPos.x + cameraSpeed;
 		cameraAt.x = cameraAt.x + cameraSpeed;
 		cameraUp.x = cameraUp.x + cameraSpeed/100;
 		cameraUp = normalize(cameraUp);
 	}
-	if (moveLeft)
+	if (moveLeft && !navicella.getIsHitted())
 	{
 		cameraPos.x = cameraPos.x - cameraSpeed;
 		cameraAt.x = cameraPos.x - cameraSpeed;
@@ -360,7 +401,7 @@ void muoviAlieni() {
 		
 		if (alieno.getSpeedx() == 0 && !restart ) {
 			currentxs = glfwGetTime();
-			deltaxs = (currentxs - startTimexs) - startGameTime;
+			deltaxs = (currentxs - startTimexs) - startTimeDelta;
 			restart = true;
 		}
 
@@ -545,9 +586,11 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
-	vista = 0;
+	//NON USARE LA VISTA 0 SCOMPARE LA NAVICELLA
+	//TODO : sistemare bug
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -769,11 +812,7 @@ int main()
 
 	alieno.setShader(alienoShader);
 	alieno.setModelSfera(modelSfera);
-	alieno.setModel(0, modelAlieno1);
-	alieno.setModel(1, modelAlieno2);
-	alieno.setModel(2, modelAlieno3);
-	alieno.setModel(3, modelAlieno4);
-	alieno.setModel(4, modelAlieno5);
+	alieno.setModels(modelAlieno1, modelAlieno2, modelAlieno3, modelAlieno4, modelAlieno5);
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
@@ -940,35 +979,12 @@ void renderLimitiAlieniAsseZ() {
 
 }
 
-void renderLimitiAlieniAsseX() {
-	//Asse x+ ROSSO
-	frecciaShader.use();
-	glm::mat4 freccia = glm::mat4(1.0f);
-	freccia = glm::translate(freccia, glm::vec3(alieno.getLimXalieniPos(), 0.0f, 0.0f));
-	freccia = glm::scale(freccia, glm::vec3(0.3f, 0.3f, 0.3f));
-	freccia = glm::rotate(freccia, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-	frecciaShader.setMat4("model", freccia);
-	frecciaShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-	modelFreccia.Draw(frecciaShader);
-
-	//Asse x+ ROSSO
-	frecciaShader.use();
-	glm::mat4 freccia2 = glm::mat4(1.0f);
-	freccia2 = glm::translate(freccia2, glm::vec3(alieno.getLimXalieniNeg(), 0.0f, 0.0f));
-	freccia2 = glm::scale(freccia2, glm::vec3(0.3f, 0.3f, 0.3f));
-	freccia2 = glm::rotate(freccia2, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-	frecciaShader.setMat4("model", freccia2);
-	frecciaShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-	modelFreccia.Draw(frecciaShader);
-
-
-}
 
 void checkCollisioneAlieniBarriere() {
 	for (int i = 0; i < alieno.getRigheAlieni(); i++){
 		for (int j = 0; j < alieno.getColonneAlieni(); j++){
 
-			if (alieno.getmap()[i][j] != 0){
+			if (alieno.getMap()[i][j] != 0){
 
 				float x = (alieno.getPos().x + j * alieno.getRaggio() * 2.0f * alieno.getSpazio());
 				float z = (alieno.getPos().z + i * alieno.getRaggio() * 2.0f * alieno.getSpazio());
