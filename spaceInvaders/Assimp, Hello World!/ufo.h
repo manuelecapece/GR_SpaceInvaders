@@ -17,7 +17,7 @@
 
 class Ufo {
 private:
-    glm::vec3 pos = glm::vec3(35.0f, 0.0, -22.0f);
+    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 20.0f);
     glm::vec3 posIniziale = glm::vec3(-15.0f, 0.0, -20.0f);
     float raggio = 2.5f;
     float translateSpeed;
@@ -30,6 +30,7 @@ private:
     Shader shader;
     Model model;
     Model modelSfera;
+    int score = 0;
 
 public:
     // Costruttore
@@ -41,6 +42,10 @@ public:
 
     float getSpeed() const {
         return speed;
+    }
+
+    int getScore() const {
+        return score;
     }
 
     void setSpeed(float newSpeed) {
@@ -69,7 +74,7 @@ public:
 
     void render() {
 
-        if (colpiSubiti < 5) {
+        if (colpiSubiti < 10) {
             shader.use();
 
             //Per il modello sfera
@@ -115,7 +120,6 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.4);
             if (isPointInsideCircle(punto, centro)) {
-                //proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -100.0f));
                 proiettile.elimina(i);
                 colpiSubiti++;
 
@@ -144,11 +148,14 @@ public:
 
     void ripristinaPosizioneIniziale() {
         pos = posIniziale;
-        colpiSubiti = 0;
+        speed = 3.0f;
     }
 
     void ripristinaPos() {
-        pos = glm::vec3(35.0f, 0.0, -22.0f);
+        pos = glm::vec3(0.0f, 0.0f, 20.0f);
+        colpiSubiti = 0;
+        speed = 0.0f;
+        score = score + 500;
     }
 
     float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore) {

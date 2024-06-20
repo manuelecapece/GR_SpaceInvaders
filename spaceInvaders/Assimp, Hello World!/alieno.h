@@ -49,6 +49,9 @@ private:
     bool muoviVersoDown = false;
     int nStepDown = 0;
 
+    int score = 0;
+    int livello = 1;
+
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
 
 public:
@@ -125,6 +128,14 @@ public:
 
     bool getSpawnaAlieni() const {
         return spawnaAlieni;
+    }
+
+    int getScore() const {
+        return score;
+    }
+
+    int getLivello() const {
+        return livello;
     }
 
     void setRighe(float valore) {
@@ -228,6 +239,7 @@ public:
 
                     if (isHitted(proiettile, posAlieno)) {
                         map[i][j] = 0;
+                        score = score + 50;
                         alieniEliminati++;
                         if (alieniEliminati == righeAlieni * colonneAlieni) {
                             caricaNuovoLivello();
@@ -243,6 +255,7 @@ public:
     }
 
     void caricaNuovoLivello() {
+        livello++;
         spawnaAlieni = false;
         alieniEliminati = 0;
         pos = glm::vec3(-(colonneAlieni / 2 * raggio * 2.0f * spazio), 0.0, -18.0f);

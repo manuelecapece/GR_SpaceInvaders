@@ -77,11 +77,13 @@ double startTime20s = glfwGetTime();
 double startTimexs = glfwGetTime();
 double currentxs;
 double deltaxs = 0;
-float deltaSparoAlieni = 3.0f;
+float deltaSparoAlieni = 2.5f;
 float intervallo = 1.5f;
 int stepDx = 1;
 int stepSx = 1;
 bool restart = false;
+int score = 0;
+int record = 0;
 
 
 //Dichiarazione matrici di trasformazione
@@ -100,6 +102,8 @@ void checkGameWin();
 void checkGameLost();
 void ripristinaCameraPos();
 void ripristinaGioco();
+int leggiScoreDalFile(const std::string& nomeFile);
+void aggiornaScoreSeMaggiore(const std::string& nomeFile);
 
 const float PI = 3.14159265358979323846;
 
@@ -198,7 +202,6 @@ float lastFrame = 0.0f;
 bool moveLeft = false;
 bool moveRight = false;
 bool spara = true;
-bool stopSpara = false;
 bool exitGame = false;
 bool respawnNavicella = false;
 
@@ -238,6 +241,7 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || exitGame == true) {
 		glfwSetWindowShouldClose(window, true);
 		soundEngine->drop();
+		aggiornaScoreSeMaggiore("../src/score.txt");
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -269,6 +273,41 @@ void processInput(GLFWwindow* window)
 		
 }
 
+int leggiScoreDalFile(const std::string& nomeFile) {
+	int scoreDalFile = 0;
+	std::ifstream file(nomeFile);
+
+	if (file.is_open()) {
+		file >> scoreDalFile;
+		file.close();
+	}
+	else {
+		std::cerr << "Errore nell'apertura del file " << nomeFile << std::endl;
+	}
+
+	return scoreDalFile;
+}
+
+void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
+	int scoreDalFile = leggiScoreDalFile(nomeFile);
+	
+	if (score > scoreDalFile) {
+		std::ofstream file(nomeFile);
+
+		if (file.is_open()) {
+			file << score;
+			file.close();
+			std::cout << "Score aggiornato nel file " << nomeFile << std::endl;
+		}
+		else {
+			std::cerr << "Errore nell'apertura del file " << nomeFile << std::endl;
+		}
+	}
+	else {
+		std::cout << "Il valore dello score non è maggiore di quello nel file. Nessun aggiornamento effettuato." << std::endl;
+	}
+}
+
 void idle()
 {
 	double currentTime05s = glfwGetTime();
@@ -277,13 +316,13 @@ void idle()
 	double currentTime = glfwGetTime();
 	double currentTime20s = glfwGetTime();
 
-
-
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
 	double deltaTimeExecute = currentTime - startTime;
+
+	score = alieno.getScore() + ufo.getScore();
 
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
 	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
@@ -326,10 +365,6 @@ void idle()
 		ripristinaGioco();
 	}
 
-	//if (!alieno.getSpawnaAlieni()) {
-	//	proiettileNavicella.ripristinaColpiSparati();
-	//	proiettileUfo.ripristinaColpiSparati();
-	//}
 
 	if (vista == 1) {
 		muoviCamera(deltaTime);
@@ -609,6 +644,8 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
+	record = leggiScoreDalFile("../src/score.txt");
+
 	bool schermoIntero = false;
 
 	vista = 1;
@@ -1104,6 +1141,14 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glDisable(GL_DEPTH_TEST);
 	std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati()+1);
 	RenderText(colpiAttiviNavicella.c_str(), 0, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string viteNavicella = "Life: " + std::to_string(navicella.getVite());
+	RenderText(viteNavicella.c_str(), 0, SCR_HEIGHT - 60, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string punteggio = "Score: " + std::to_string(score);
+	RenderText(punteggio.c_str(), 0, SCR_HEIGHT - 90, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string livello = "Level: " + std::to_string(alieno.getLivello());
+	RenderText(livello.c_str(), 0, SCR_HEIGHT - 120, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string recordScore = "Record: " + std::to_string(record);
+	RenderText(recordScore.c_str(), 0, SCR_HEIGHT - 150, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
 	glEnable(GL_DEPTH_TEST);
 }
 
