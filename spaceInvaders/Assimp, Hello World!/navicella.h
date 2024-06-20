@@ -190,13 +190,16 @@ public:
             glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
                 startTimeHitted = glfwGetTime();
-                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
+                proiettile.elimina(i);
                 isHitted = true;
                 vite = vite - 1;
                 if (vite >= 0) {
                     ripristinaPosizioneIniziale();
                 }
                 return;
+            }
+            if (posBullet.z > 15) {
+                proiettile.elimina(i);
             }
 
         }

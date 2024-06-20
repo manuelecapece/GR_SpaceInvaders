@@ -9,6 +9,7 @@
 #include "shader_m.h"
 #include "camera.h"
 #include <iostream>
+#include <vector>
 #include <random>
 #include <cmath>
 #include <stack>
@@ -28,6 +29,8 @@ private:
 
     std::vector<glm::vec3> vectorPos;
     std::vector<glm::vec3> vectorDir;
+    //std::vector<glm::vec3>::iterator itDir;
+    //std::vector<glm::vec3>::iterator itPos;
 
     int colpiSparati = -1;
 
@@ -78,6 +81,11 @@ public:
         return vectorDir;
     }
 
+    void ripristinaColpiSparati() {
+        colpiSparati = -1;
+        vectorPos.clear();
+        vectorDir.clear();
+    }
 
     void setSpeed(float newSpeed) {
         speed = newSpeed;
@@ -172,6 +180,13 @@ public:
 
     }
 
+    void elimina(int i) {
+        std::vector<glm::vec3>::iterator itDir = vectorDir.begin() + i;
+        std::vector<glm::vec3>::iterator itPos = vectorPos.begin() + i;
+        vectorDir.erase(itDir);
+        vectorPos.erase(itPos);
+        colpiSparati = colpiSparati - 1;
+    }
 
 
 

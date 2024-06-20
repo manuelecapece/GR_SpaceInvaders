@@ -90,6 +90,9 @@ public:
             model.Draw(shader);
 
         }
+        else {
+            ripristinaPos();
+        }
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
     }
 
@@ -112,7 +115,8 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.4);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -100.0f));
+                //proiettile.setVecPos(i, glm::vec3(proiettile_x, 0.0f, -100.0f));
+                proiettile.elimina(i);
                 colpiSubiti++;
 
             }
@@ -141,6 +145,10 @@ public:
     void ripristinaPosizioneIniziale() {
         pos = posIniziale;
         colpiSubiti = 0;
+    }
+
+    void ripristinaPos() {
+        pos = glm::vec3(35.0f, 0.0, -22.0f);
     }
 
     float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore) {

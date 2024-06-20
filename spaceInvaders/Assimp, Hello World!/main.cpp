@@ -77,6 +77,7 @@ double startTime20s = glfwGetTime();
 double startTimexs = glfwGetTime();
 double currentxs;
 double deltaxs = 0;
+float deltaSparoAlieni = 3.0f;
 float intervallo = 1.5f;
 int stepDx = 1;
 int stepSx = 1;
@@ -97,6 +98,8 @@ void muoviAlieni();
 void muoviCamera(float deltaTime);
 void checkGameWin();
 void checkGameLost();
+void ripristinaCameraPos();
+void ripristinaGioco();
 
 const float PI = 3.14159265358979323846;
 
@@ -298,7 +301,7 @@ void idle()
 			startTime05s = currentTime05s;
 		}
 
-		if (currentTime1s - startTime1s >= 3.0f) {
+		if (currentTime1s - startTime1s >= deltaSparoAlieni && alieno.getSpawnaAlieni()) {
 			for (int id_riga = 0; id_riga < alieno.getRigheAlieni(); id_riga++) {
 				int id_colonna = generaNumeroCasualeInt(0, alieno.getColonneAlieni()-1);
 				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
@@ -320,33 +323,58 @@ void idle()
 	}
 
 	if (!alieno.getSpawnaAlieni() && (glfwGetTime() - alieno.getStartTimeLoadNewLevel() > 3.0f)) {
-		barriera.ripristina();
-		barriera.inizializzaMaps();
-		navicella.ripristinaPosizioneIniziale();
-		alieno.setSpawnaAlieni(true);
-		alieno.setMuoviVersoDx(true);
-		startTime = glfwGetTime();
+		ripristinaGioco();
 	}
+
+	//if (!alieno.getSpawnaAlieni()) {
+	//	proiettileNavicella.ripristinaColpiSparati();
+	//	proiettileUfo.ripristinaColpiSparati();
+	//}
 
 	if (vista == 1) {
 		muoviCamera(deltaTime);
 	}
 
-	if (!alieno.getSpawnaAlieni()) {
-		startTime05s = glfwGetTime();
-		startTime1s = glfwGetTime();
-		startTime20s = glfwGetTime();
-		stepDx = 1;
-		stepSx = 1;
-		intervallo = 1.5f;
-
-		proiettileNavicella.getVecPos().clear();
-		
+	if (respawnNavicella && vista == 0 && navicella.getVite() > 0) {
+		navicella.setHisHitted(false);
+		respawnNavicella = false;
 	}
 
 	checkGameWin();
 	checkGameLost();
 
+}
+
+void ripristinaGioco() {
+	barriera.ripristina();
+	barriera.inizializzaMaps();
+	navicella.ripristinaPosizioneIniziale();
+	ripristinaCameraPos();
+	alieno.setSpawnaAlieni(true);
+	alieno.setMuoviVersoDx(true);
+	startTime = glfwGetTime();
+	startTime05s = glfwGetTime();
+	startTime1s = glfwGetTime();
+	startTime20s = glfwGetTime();
+	if (deltaSparoAlieni > 0.5f) {
+		deltaSparoAlieni = deltaSparoAlieni - 0.25f;
+	}
+	stepDx = 1;
+	stepSx = 1;
+	intervallo = 1.5f;
+
+	proiettileNavicella.ripristinaColpiSparati();
+	proiettileUfo.ripristinaColpiSparati();
+	ufo.ripristinaPos();
+}
+
+void ripristinaCameraPos() {
+
+	if (vista == 1 ) {
+		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
+		cameraAt = glm::vec3(0.0, 0.0, 0.0);
+		cameraUp = glm::vec3(0.0, 1.0, 0.0);
+	}
 }
 
 void checkGameLost() {
@@ -365,13 +393,7 @@ void muoviCamera(float deltaTime) {
 	float cameraSpeed = speed * deltaTime;
 	//cameraPos.x = navicella.getPos().x;
 
-	if (respawnNavicella && vista == 0 && navicella.getVite() > 0) {
-		navicella.setHisHitted(false);
-		respawnNavicella = false;
-	}
-
 	if (respawnNavicella && vista == 1 && navicella.getVite() > 0) {
-		//Vista dinamica frontale 
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
 		cameraUp = glm::vec3(0.0, 1.0, 0.0);
@@ -386,6 +408,7 @@ void muoviCamera(float deltaTime) {
 		cameraUp.x = cameraUp.x + cameraSpeed/100;
 		cameraUp = normalize(cameraUp);
 	}
+
 	if (moveLeft && !navicella.getIsHitted())
 	{
 		cameraPos.x = cameraPos.x - cameraSpeed;
@@ -588,8 +611,6 @@ int main()
 {
 	bool schermoIntero = false;
 
-	//NON USARE LA VISTA 0 SCOMPARE LA NAVICELLA
-	//TODO : sistemare bug
 	vista = 1;
 
 	if (vista == 0) {
@@ -1081,8 +1102,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	renderQuad2();
 
 	glDisable(GL_DEPTH_TEST);
-	std::string bloomStatus = "Colpi sparati: " + std::to_string(proiettileNavicella.getColpiSparati());
-	RenderText(bloomStatus.c_str(), 0, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati()+1);
+	RenderText(colpiAttiviNavicella.c_str(), 0, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
 	glEnable(GL_DEPTH_TEST);
 }
 

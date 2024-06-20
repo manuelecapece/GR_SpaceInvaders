@@ -257,6 +257,8 @@ public:
         muoviVersoDx = false;
         muoviVersoSx = false;
         muoviVersoDown = false;
+
+        ripristinaColpiSparati();
     }
 
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
@@ -419,13 +421,17 @@ public:
     bool isHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
+
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -100.0f));
+                proiettile.elimina(i);
                 return true;
+            }
+            if (proiettile_z < -50) {
+                proiettile.elimina(i);
             }
         }
         return false;
@@ -437,6 +443,21 @@ public:
         std::uniform_real_distribution<float> dis(estremoInferiore, estremoSuperiore);
         float random = dis(gen);
         return random;
+    }
+
+    void ripristinaColpiSparati() {
+        int k = 0;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+
+                vectorProiettili[k].ripristinaColpiSparati();
+
+                k++;
+            }
+        }
     }
 };
 
