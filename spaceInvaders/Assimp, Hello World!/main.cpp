@@ -1149,14 +1149,14 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glDisable(GL_DEPTH_TEST);
 	std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati()+1);
 	RenderText(colpiAttiviNavicella.c_str(), 100, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string viteNavicella = "Life: " + std::to_string(navicella.getVite());
+	std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
 	RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string punteggio = "Score: " + std::to_string(score);
-	RenderText(punteggio.c_str(), 400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string livello = "Level: " + std::to_string(alieno.getLivello());
-	RenderText(livello.c_str(), 700, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string recordScore = "Record: " + std::to_string(record);
-	RenderText(recordScore.c_str(), 1300, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string punteggio = "SCORE:" + std::to_string(score);
+	RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
+	RenderText(livello.c_str(), 600, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string recordScore = "RECORD:" + std::to_string(record);
+	RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 	glEnable(GL_DEPTH_TEST);
 }
 
