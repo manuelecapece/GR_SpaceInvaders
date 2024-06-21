@@ -52,7 +52,7 @@ int initRenderText(const unsigned int SCR_WIDTH, const unsigned int SCR_HEIGHT)
 
   // find path to font
   //std::string font_name = "resources/fonts/Antonio-Bold.ttf";
-  std::string font_name = "../src/fonts/DidotLTPro-Bold.ttf";
+  std::string font_name = "../src/fonts/space_invaders.ttf";
   if (font_name.empty())
   {
     std::cout << "ERROR::FREETYPE: Failed to load font_name" << std::endl;
