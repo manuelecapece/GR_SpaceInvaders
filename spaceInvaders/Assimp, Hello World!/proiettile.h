@@ -29,8 +29,6 @@ private:
 
     std::vector<glm::vec3> vectorPos;
     std::vector<glm::vec3> vectorDir;
-    //std::vector<glm::vec3>::iterator itDir;
-    //std::vector<glm::vec3>::iterator itPos;
 
     int colpiSparati = -1;
 
@@ -130,7 +128,7 @@ public:
 
                 glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
                 vectorPos[i] = vectorPos[i] + translateSpeed * vectorDir[i];
-                modelCubo = glm::translate(modelCubo, glm::vec3(vectorPos[i].x, vectorPos[i].y, vectorPos[i].z));
+                modelCubo = glm::translate(modelCubo, vectorPos[i]);
 
                 if (color.x != 1.0f || color.y != 1.0f || color.z != 1.0f) {
                     angolo = calcolaAngolo(vectorDir[i],glm::vec3(0.0f, 0.0f, 1.0f));
@@ -180,7 +178,7 @@ public:
 
     }
 
-    void elimina(int i) {
+    void eliminaInPos(int i) {
         std::vector<glm::vec3>::iterator itDir = vectorDir.begin() + i;
         std::vector<glm::vec3>::iterator itPos = vectorPos.begin() + i;
         vectorDir.erase(itDir);

@@ -26,6 +26,7 @@
 #include "barriera.h"
 #include "roccia.h"
 #include "pianeta.h"
+#include "esplosione.h"
 
 //Dichiarazione classi
 Alieno alieno;
@@ -36,6 +37,7 @@ Ufo ufo;
 Barriera barriera;
 Roccia roccia;
 Pianeta pianeta;
+Esplosione esplosione;
 
 //Dichiarazione shader
 Shader frecciaShader;
@@ -304,7 +306,7 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 		}
 	}
 	else {
-		std::cout << "Il valore dello score non è maggiore di quello nel file. Nessun aggiornamento effettuato." << std::endl;
+		std::cout << "Il valore dello score non e' maggiore di quello nel file. Nessun aggiornamento effettuato." << std::endl;
 	}
 }
 
@@ -331,6 +333,7 @@ void idle()
 	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedProiettili(deltaTime);
+	esplosione.setTranslateSpeed(esplosione.getSpeed() * deltaTime);
 
 	//Inizia il gioco dopo 2 secondi
 	if (deltaTimeExecute >= startTimeDelta) {
@@ -646,7 +649,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
 	vista = 1;
 
@@ -927,6 +930,9 @@ int main()
 	proiettileUfo.setModel(modelCubo);
 	proiettileUfo.setSpeed(4.0f);
 
+	esplosione.setShader(proiettileShader);
+	esplosione.setModel(modelCubo);
+
 	barriera.setShader(barrieraShader);
 	barriera.setModel(modelCubo);
 	barriera.setPosX(alieno.getRaggio() * 2, alieno.getSpazio());
@@ -1084,10 +1090,11 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	//renderTerna();
 	//renderLimitiAlieniAsseZ();
 	//renderLimitiAlieniAsseX();
-	alieno.render(proiettileNavicella,navicella);
+
+	alieno.render(proiettileNavicella,navicella, modelCubo, esplosione);
 	navicella.render(moveRight,moveLeft);
 	proiettileNavicella.render(glm::vec3(1.0f,1.0f,1.0f));
-	alieno.renderProiettili(navicella,barriera);
+	alieno.renderProiettili(navicella, barriera, esplosione);
 
 	roccia.render();
 
@@ -1095,14 +1102,15 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		pianeta.render();
 	}
 
-	ufo.render();
+	ufo.render(esplosione);
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
-	navicella.checkIsHitted(proiettileUfo);
+	navicella.checkIsHitted(proiettileUfo,esplosione);
 	ufo.checkIsHitted(proiettileNavicella);
 
 	barriera.renderBarriere(proiettileNavicella);
 	barriera.renderBarriere(proiettileUfo);
 
+	esplosione.render();
 
 	checkCollisioneAlieniBarriere();
 

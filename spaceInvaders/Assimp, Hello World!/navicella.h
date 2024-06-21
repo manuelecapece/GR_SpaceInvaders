@@ -14,8 +14,10 @@
 #include <stack>
 #include "model.h"
 #include "proiettile.h"
+#include "esplosione.h"
 
 const float pigreco = 3.14159265358979323846;
+const int TIPO_NAVICELLA = 7;
 
 
 class Navicella {
@@ -150,7 +152,7 @@ public:
         return distSq <= radiusSq;
     }
 
-    void checkIsHitted(Proiettile& proiettile) {
+    void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
 
@@ -187,11 +189,12 @@ public:
                 punto = glm::vec2(rotatedHitPoint.x, rotatedHitPoint.z);
             }
 
-            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z +1.);
+            glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z + 1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
                 startTimeHitted = glfwGetTime();
-                proiettile.elimina(i);
+                proiettile.eliminaInPos(i);
                 isHitted = true;
+                esplosione.inizializza(pos, TIPO_NAVICELLA);
                 vite = vite - 1;
                 if (vite >= 0) {
                     ripristinaPosizioneIniziale();
@@ -199,7 +202,7 @@ public:
                 return;
             }
             if (posBullet.z > 15) {
-                proiettile.elimina(i);
+                proiettile.eliminaInPos(i);
             }
 
         }

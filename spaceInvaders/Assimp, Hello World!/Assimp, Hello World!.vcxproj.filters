@@ -143,5 +143,8 @@
     <ClInclude Include="pianeta.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="esplosione.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

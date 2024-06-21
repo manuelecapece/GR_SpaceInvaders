@@ -14,6 +14,9 @@
 #include <stack>
 #include "model.h"
 #include "proiettile.h"
+#include "esplosione.h"
+
+const int TIPO_UFO = 6;
 
 class Ufo {
 private:
@@ -72,7 +75,7 @@ public:
         modelSfera = newModel;
     }
 
-    void render() {
+    void render(Esplosione& esplosione) {
 
         if (colpiSubiti < 10) {
             shader.use();
@@ -96,6 +99,7 @@ public:
 
         }
         else {
+            esplosione.inizializza(pos, TIPO_UFO);
             ripristinaPos();
         }
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
@@ -120,7 +124,7 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.4);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.elimina(i);
+                proiettile.eliminaInPos(i);
                 colpiSubiti++;
 
             }

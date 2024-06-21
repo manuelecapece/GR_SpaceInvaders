@@ -202,6 +202,7 @@
     <ClInclude Include="alieno.h" />
     <ClInclude Include="barriera.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="esplosione.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="navicella.h" />

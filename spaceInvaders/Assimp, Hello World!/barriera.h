@@ -164,7 +164,7 @@ public:
             {
                 if (map1[i][j] != 0)
                 {
-                    map1[i][j] = generaNumeroCasualeInt(1, 2);
+                    map1[i][j] = generaNumeroCasualeInt(1, 3);
 
                 }
 

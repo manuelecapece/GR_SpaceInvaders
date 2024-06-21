@@ -16,6 +16,7 @@
 #include "proiettile.h"
 #include "navicella.h"
 #include "barriera.h"
+#include "esplosione.h"
 
 class Alieno {
 private:
@@ -204,7 +205,7 @@ public:
 
     }
 
-    void render(Proiettile& proiettile, Navicella& navicella) {
+    void render(Proiettile& proiettile, Navicella& navicella, Model modelCubo, Esplosione& esplosione) {
 
         shader.use();
 
@@ -238,6 +239,7 @@ public:
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
                     if (isHitted(proiettile, posAlieno)) {
+                        esplosione.inizializza(posAlieno, map[i][j]);
                         map[i][j] = 0;
                         score = score + 50;
                         alieniEliminati++;
@@ -319,7 +321,7 @@ public:
 
     }
 
-    void renderProiettili(Navicella& navicella, Barriera& barriera) {
+    void renderProiettili(Navicella& navicella, Barriera& barriera, Esplosione& esplosione) {
 
         int k = 0;
 
@@ -348,7 +350,7 @@ public:
 
                 }
 
-                navicella.checkIsHitted(vectorProiettili[k]);
+                navicella.checkIsHitted(vectorProiettili[k], esplosione);
                 barriera.renderBarriere(vectorProiettili[k]);
                 k++;
             }
@@ -440,11 +442,11 @@ public:
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
             if (isPointInsideCircle(punto, centro)) {
-                proiettile.elimina(i);
+                proiettile.eliminaInPos(i);
                 return true;
             }
             if (proiettile_z < -50) {
-                proiettile.elimina(i);
+                proiettile.eliminaInPos(i);
             }
         }
         return false;
