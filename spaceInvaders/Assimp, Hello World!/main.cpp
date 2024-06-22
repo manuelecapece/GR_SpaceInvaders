@@ -438,7 +438,7 @@ void muoviCamera(float deltaTime) {
 	float cameraSpeed = speed * deltaTime;
 	//cameraPos.x = navicella.getPos().x;
 
-	if (respawnNavicella && vista == 1 && navicella.getVite() > 0) {
+	if (respawnNavicella && vista == 1 && navicella.getVite() >= 0) {
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
 		cameraUp = glm::vec3(0.0, 1.0, 0.0);

@@ -231,6 +231,9 @@ public:
                     if (vite >= 0) {
                         ripristinaPosizioneIniziale();
                     }
+                    if (vite < 0) {
+                        scomparsaNavicella();
+                    }
                     return;
                 }
             }
