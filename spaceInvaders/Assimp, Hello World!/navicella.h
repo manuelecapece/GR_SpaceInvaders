@@ -199,6 +199,9 @@ public:
                 if (vite >= 0) {
                     ripristinaPosizioneIniziale();
                 }
+                if (vite < 0) {
+                    scomparsaNavicella();
+                }
                 return;
             }
             if (posBullet.z > 15) {
@@ -211,6 +214,10 @@ public:
 
     void ripristinaPosizioneIniziale() {
         pos = glm::vec3(0.05f, 0.0, 8.0f);
+    }
+
+    void scomparsaNavicella() {
+        pos = glm::vec3(100.05f, 0.0, 100.0f);
     }
 
     void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {

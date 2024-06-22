@@ -375,7 +375,7 @@ void idle()
 		muoviCamera(deltaTime);
 	}
 
-	if (respawnNavicella && vista == 0 && navicella.getVite() > 0) {
+	if (respawnNavicella && vista == 0 && navicella.getVite() >= 0) {
 		navicella.setHisHitted(false);
 		respawnNavicella = false;
 	}
@@ -1150,32 +1150,54 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	renderQuad2();
 
 	glDisable(GL_DEPTH_TEST);
-	std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati()+1);
-	RenderText(colpiAttiviNavicella.c_str(), 100, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
-	RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string punteggio = "SCORE:" + std::to_string(score);
-	RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
-	RenderText(livello.c_str(), 600, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	std::string recordScore = "RECORD:" + std::to_string(record);
-	RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
-	int vite = navicella.getVite();
-	if (vite == 0) {
+	if (navicella.getVite() >= 0) {
+		// Render the standard UI elements
+		std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati() + 1);
+		RenderText(colpiAttiviNavicella.c_str(), 100, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
+		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string punteggio = "SCORE:" + std::to_string(score);
+		RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
+		RenderText(livello.c_str(), 600, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string recordScore = "RECORD:" + std::to_string(record);
+		RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	}
+	else {
+		std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati() + 1);
+		RenderText(colpiAttiviNavicella.c_str(), 100, SCR_HEIGHT - 30, 0.5f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
+		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string punteggio = "SCORE:" + std::to_string(score);
+		RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
+		RenderText(livello.c_str(), 600, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		std::string recordScore = "RECORD:" + std::to_string(record);
+		RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		// Game over logic
 		float centerX = SCR_WIDTH / 2.0f;
 		float centerY = SCR_HEIGHT / 2.0f;
 
 		std::string gameOverText = "GAME OVER";
 		RenderText(gameOverText.c_str(), centerX - 200 * gameOverScale, centerY, gameOverScale, glm::vec3(1.0, 1.0f, 1.0f));
 
-		// Aumenta la dimensione del testo
+		// Increase the size of the text
 		gameOverScale += gameOverGrowthRate;
 
-		// Se vuoi fermare la crescita dopo una certa dimensione
+		// Stop growing after a certain size
 		if (gameOverScale > 2.0f) {
 			gameOverScale = 2.0f; // Max size
 		}
 	}
+
 	glEnable(GL_DEPTH_TEST);
 }
 
