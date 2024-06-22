@@ -233,13 +233,6 @@ public:
                     }
                     return;
                 }
-<<<<<<< Updated upstream
-                if (vite < 0) {
-                    scomparsaNavicella();
-                }
-                return;
-=======
->>>>>>> Stashed changes
             }
             if (posBullet.z > 15) {
                 proiettile.eliminaInPos(i);
