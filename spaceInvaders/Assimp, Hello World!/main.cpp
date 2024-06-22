@@ -379,7 +379,7 @@ void idle()
 		muoviCamera(deltaTime);
 	}
 
-	if (respawnNavicella && vista == 0 && navicella.getVite() >= 0) {
+	if (respawnNavicella && (vista == 0 || vista == 1) && navicella.getVite() >= 0) {
 		navicella.setHisHitted(false);
 		respawnNavicella = false;
 	}
@@ -415,7 +415,7 @@ void ripristinaGioco() {
 
 void ripristinaCameraPos() {
 
-	if (vista == 1 ) {
+	if (vista == 1) {
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
 		cameraUp = glm::vec3(0.0, 1.0, 0.0);
