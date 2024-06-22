@@ -119,14 +119,18 @@ public:
     void checkIsHitted(Proiettile& proiettile) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
+
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(pos.x, pos.z - 2.4);
-            if (isPointInsideCircle(punto, centro)) {
+            if (isPointInsideCircle(punto, centro) && !proiettile.getIsSpeciale()) {
                 proiettile.eliminaInPos(i);
                 colpiSubiti++;
-
+            }
+            if (isPointInsideCircle(punto, centro) && proiettile.getIsSpeciale()) {
+                proiettile.eliminaInPos(i);
+                colpiSubiti = 10;
             }
         }
     }

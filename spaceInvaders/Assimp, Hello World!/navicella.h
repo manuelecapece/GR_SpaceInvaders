@@ -30,7 +30,7 @@ private:
     float speed = 8;  // velocita della navicella
     float limX_pos = 999;
     bool isHitted = false;
-    int vite = 3;
+    int vite = 2;
     double startTimeHitted;
     Shader shader;
     Model model;
@@ -137,6 +137,15 @@ public:
                 sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
                 shader.setMat4("model", sferaModel);
                 modelSfera.Draw(shader);
+
+                //Per il modello navicella
+                glm::mat4 modelNavicella = glm::mat4(1.0f);
+                modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+                modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+                modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+                ruotaNavicella(moveRight, moveLeft, modelNavicella);
+                shader.setMat4("model", modelNavicella);
+                model.Draw(shader);
             }
             else {
                 scudo = false;
@@ -227,13 +236,21 @@ public:
                     startTimeHitted = glfwGetTime();
                     isHitted = true;
                     esplosione.inizializza(pos, TIPO_NAVICELLA);
-                    vite = vite - 1;
+
+                    if (vite >= 0) {
+                        vite = vite - 1;
+                    }
+                    
                     if (vite >= 0) {
                         ripristinaPosizioneIniziale();
+                    }
+                    else {
+                        pos = glm::vec3(0.0f, 0.0f, -30.0f);
                     }
                     return;
                 }
             }
+
             if (posBullet.z > 15) {
                 proiettile.eliminaInPos(i);
             }
@@ -244,10 +261,6 @@ public:
 
     void ripristinaPosizioneIniziale() {
         pos = glm::vec3(0.05f, 0.0, 8.0f);
-    }
-
-    void scomparsaNavicella() {
-        pos = glm::vec3(100.05f, 0.0, 100.0f);
     }
 
     void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {

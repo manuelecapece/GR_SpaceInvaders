@@ -382,6 +382,7 @@ void idle()
 	if (respawnNavicella && (vista == 0 || vista == 1) && navicella.getVite() >= 0) {
 		navicella.setHisHitted(false);
 		respawnNavicella = false;
+		ripristinaCameraPos();
 	}
 
 	checkGameWin();
@@ -656,7 +657,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	vista = 1;
 
