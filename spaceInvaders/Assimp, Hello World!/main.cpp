@@ -86,6 +86,8 @@ int stepSx = 1;
 bool restart = false;
 int score = 0;
 int record = 0;
+float gameOverScale = 0.1f;
+float gameOverGrowthRate = 0.02f; // La velocità con cui la scritta aumenta di dimensione
 
 
 //Dichiarazione matrici di trasformazione
@@ -969,6 +971,7 @@ int main()
 		roccia.update(deltaTime);
 		pianetaShader.use();
 		pianetaShader.setMat4("view", view);
+
 		for (auto& pianeta : pianeti) {
 			pianeta.update(deltaTime);
 		}
@@ -1157,6 +1160,22 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	RenderText(livello.c_str(), 600, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 	std::string recordScore = "RECORD:" + std::to_string(record);
 	RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	int vite = navicella.getVite();
+	if (vite == 0) {
+		float centerX = SCR_WIDTH / 2.0f;
+		float centerY = SCR_HEIGHT / 2.0f;
+
+		std::string gameOverText = "GAME OVER";
+		RenderText(gameOverText.c_str(), centerX - 200 * gameOverScale, centerY, gameOverScale, glm::vec3(1.0, 1.0f, 1.0f));
+
+		// Aumenta la dimensione del testo
+		gameOverScale += gameOverGrowthRate;
+
+		// Se vuoi fermare la crescita dopo una certa dimensione
+		if (gameOverScale > 2.0f) {
+			gameOverScale = 2.0f; // Max size
+		}
+	}
 	glEnable(GL_DEPTH_TEST);
 }
 
