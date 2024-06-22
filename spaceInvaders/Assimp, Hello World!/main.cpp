@@ -1166,6 +1166,10 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 		std::string recordScore = "RECORD:" + std::to_string(record);
 		RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+
+		if (navicella.getVite() == 0) {
+			RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 155, 0.65f, glm::vec3(1.0, 0.0f, 0.0f));
+		}
 	}
 	else {
 		std::string colpiAttiviNavicella = "Colpi attivi navicella: " + std::to_string(proiettileNavicella.getColpiSparati() + 1);
