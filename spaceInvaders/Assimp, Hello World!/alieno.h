@@ -55,6 +55,8 @@ private:
 
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
 
+    std::vector<std::vector<int>> mapBonus;
+
 public:
     // Costruttore
     Alieno() {}
@@ -205,7 +207,7 @@ public:
 
     }
 
-    void render(Proiettile& proiettile, Navicella& navicella, Model modelCubo, Esplosione& esplosione) {
+    void render(Proiettile& proiettile, Proiettile& proiettileSpeciale, Navicella& navicella, Esplosione& esplosione) {
 
         shader.use();
 
@@ -222,31 +224,53 @@ public:
                     float x = (pos.x + j * raggio * 2.0f * spazio);
                     float z = (pos.z + i * raggio * 2.0f * spazio);
 
-                    //Per modello sfera
-                    //glm::mat4 sferaModel = glm::mat4(1.0f);
-                    //sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
-                    //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                    //shader.setMat4("model", sferaModel);
-                    //modelSfera.Draw(shader);
+                    //RENDER ALIENO SENZA BONUS
+                    if (mapBonus[i][j] == 0) {
+                        //Per modello sfera
+                        //glm::mat4 sferaModel = glm::mat4(1.0f);
+                        //sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
+                        //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+                        //shader.setMat4("model", sferaModel);
+                        //modelSfera.Draw(shader);
 
-                    //Per modello alieno
-                    glm::mat4 modelAlieno = glm::mat4(1.0f);
-                    modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
-                    modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
-                    shader.setMat4("model", modelAlieno);
-                    models[i].Draw(shader);
+                        //Per modello alieno
+                        glm::mat4 modelAlieno = glm::mat4(1.0f);
+                        modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
+                        modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
+                        shader.setMat4("model", modelAlieno);
+                        models[i].Draw(shader);
+                    }
+                    //RENDER ALIENO CON BONUS
+                    else {
+                        //DISEGNA ALIENO IN STENCIL TESTING
+
+                        //Per modello sfera
+                        glm::mat4 sferaModel = glm::mat4(1.0f);
+                        sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
+                        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+                        shader.setMat4("model", sferaModel);
+                        modelSfera.Draw(shader);
+                    }
 
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
-                    if (isHitted(proiettile, posAlieno)) {
+                    if (isHitted(proiettile, posAlieno) || isHitted(proiettileSpeciale, posAlieno)) {
                         esplosione.inizializza(posAlieno, map[i][j]);
                         map[i][j] = 0;
+                        
                         score = score + 50;
                         alieniEliminati++;
                         if (alieniEliminati == righeAlieni * colonneAlieni) {
                             caricaNuovoLivello();
                         }
+
+                        if (mapBonus[i][j] != 0) {
+                            navicella.attivaBonus(mapBonus[i][j], proiettileSpeciale);
+                            mapBonus[i][j] = 0;
+                        }
+                        
                     }
+
 
                     navicella.checkCollisionAlien(posAlieno, raggio);
 
@@ -441,8 +465,11 @@ public:
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
             glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
-            if (isPointInsideCircle(punto, centro)) {
+            if (isPointInsideCircle(punto, centro) && !proiettile.getIsSpeciale()) {
                 proiettile.eliminaInPos(i);
+                return true;
+            }
+            if (isPointInsideCircle(punto, centro) && proiettile.getIsSpeciale()) {
                 return true;
             }
             if (proiettile_z < -50) {
@@ -474,6 +501,50 @@ public:
             }
         }
     }
+
+    void inizializzaBonus() {
+
+        mapBonus = map;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+                mapBonus[i][j] = 0;
+
+            }
+        }
+
+        for (int i = 0; i < livello; i++)
+        {
+            int idRiga = generaNumeroCasualeInt(0, righeAlieni - 1);
+            int idColonna = generaNumeroCasualeInt(0, colonneAlieni - 1);
+            int tipoBonus = generaNumeroCasualeInt(1, 2);
+
+            while (mapBonus[idRiga][idColonna] != 0) {
+                idRiga = generaNumeroCasualeInt(0, righeAlieni - 1);
+                idColonna = generaNumeroCasualeInt(0, colonneAlieni - 1);
+            }
+
+            mapBonus[idRiga][idColonna] = tipoBonus;
+        }
+
+        for (const auto& row : mapBonus) {
+            for (int value : row) {
+                std::cout << value << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(estremoInferiore, estremoSuperiore);
+        int random = dis(gen);
+        return random;
+    }
+
 };
 
  

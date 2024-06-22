@@ -146,5 +146,8 @@
     <ClInclude Include="esplosione.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bonus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

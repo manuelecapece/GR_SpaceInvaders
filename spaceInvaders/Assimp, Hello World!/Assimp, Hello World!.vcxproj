@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="alieno.h" />
     <ClInclude Include="barriera.h" />
+    <ClInclude Include="bonus.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="esplosione.h" />
     <ClInclude Include="mesh.h" />

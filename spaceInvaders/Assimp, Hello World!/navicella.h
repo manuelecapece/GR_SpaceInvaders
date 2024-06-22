@@ -36,6 +36,10 @@ private:
     Model model;
     Model modelSfera;
 
+    bool scudo = false;
+    double startTimeScudo;
+    float tempoScudo = 5.0f;
+
 public:
     // Costruttore
     Navicella() {}
@@ -104,21 +108,48 @@ public:
                 pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
             }
 
-            //Per il modello sfera
-            //glm::mat4 sferaModel = glm::mat4(1.0f);
-            //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-            //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-            //shader.setMat4("model", sferaModel);
-            //modelSfera.Draw(shader);
+            //DISEGNO LA NAVICELLA SENZA SCUDO
+            if (!scudo) {
+                //Per il modello sfera
+                //glm::mat4 sferaModel = glm::mat4(1.0f);
+                //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+                //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+                //shader.setMat4("model", sferaModel);
+                //modelSfera.Draw(shader);
 
-            //Per il modello navicella
-            glm::mat4 modelNavicella = glm::mat4(1.0f);
-            modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-            modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-            modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-            ruotaNavicella(moveRight, moveLeft, modelNavicella);
-            shader.setMat4("model", modelNavicella);
-            model.Draw(shader);
+                //Per il modello navicella
+                glm::mat4 modelNavicella = glm::mat4(1.0f);
+                modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+                modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+                modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+                ruotaNavicella(moveRight, moveLeft, modelNavicella);
+                shader.setMat4("model", modelNavicella);
+                model.Draw(shader);
+            }
+            //DISEGNO LA NAVICELLA CON SCUDO
+            else if (glfwGetTime() - startTimeScudo < tempoScudo) {
+
+                //DISEGNO NAVICELLA CON SFERA TRASPARENTE 
+
+                //Per il modello sfera
+                glm::mat4 sferaModel = glm::mat4(1.0f);
+                sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+                sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+                shader.setMat4("model", sferaModel);
+                modelSfera.Draw(shader);
+            }
+            else {
+                scudo = false;
+            }
+
+            ////Per il modello navicella
+            //glm::mat4 modelNavicella = glm::mat4(1.0f);
+            //modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+            //modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+            //modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+            //ruotaNavicella(moveRight, moveLeft, modelNavicella);
+            //shader.setMat4("model", modelNavicella);
+            //model.Draw(shader);
         }
 
     }
@@ -191,18 +222,24 @@ public:
 
             glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z + 1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
-                startTimeHitted = glfwGetTime();
                 proiettile.eliminaInPos(i);
-                isHitted = true;
-                esplosione.inizializza(pos, TIPO_NAVICELLA);
-                vite = vite - 1;
-                if (vite >= 0) {
-                    ripristinaPosizioneIniziale();
+                if (!scudo) {
+                    startTimeHitted = glfwGetTime();
+                    isHitted = true;
+                    esplosione.inizializza(pos, TIPO_NAVICELLA);
+                    vite = vite - 1;
+                    if (vite >= 0) {
+                        ripristinaPosizioneIniziale();
+                    }
+                    return;
                 }
+<<<<<<< Updated upstream
                 if (vite < 0) {
                     scomparsaNavicella();
                 }
                 return;
+=======
+>>>>>>> Stashed changes
             }
             if (posBullet.z > 15) {
                 proiettile.eliminaInPos(i);
@@ -233,6 +270,18 @@ public:
         //proiettile.inizializzaPos(pos);
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
+
+    }
+
+    void inizializzaProiettileSpeciale(Proiettile& proiettile) {
+        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < 1) {
+            proiettile.incrementaColpi();
+            proiettile.incrementaColpiSpecialiSparati();
+            proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
+            glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
+            proiettile.inizializzaDir(proiettileAt);
+        }
+
     }
 
     float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
@@ -244,6 +293,27 @@ public:
         float theta = glm::acos(cosTheta);
 
         return theta;
+    }
+
+    void attivaBonus(int bonus, Proiettile& proiettile) {
+
+        if (bonus == 1) {
+            attivaScudo();
+        }
+
+        if (bonus == 2) {
+            attivaProiettileSpeciale(proiettile);
+        }
+
+    }
+
+    void attivaScudo() {
+        startTimeScudo = glfwGetTime();
+        scudo = true;
+    }
+
+    void attivaProiettileSpeciale(Proiettile& proiettile) {
+        proiettile.setIsSpeciale(true);
     }
 
 };

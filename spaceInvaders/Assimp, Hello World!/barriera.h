@@ -255,11 +255,8 @@ public:
 
             glm::vec2 centroCirconf = glm::vec2(posCubo.x, posCubo.z);
             if (isPointInsideCircle(punto, centroCirconf)) {
-                if (dir.x == 0.0f) {
-                    proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, -100.0f));
-                }
-                else {
-                    proiettile.setVecPos(i, glm::vec3(0.0f, 0.0f, 20.0f));
+                if (!proiettile.getIsSpeciale()) {
+                    proiettile.eliminaInPos(i);
                 }
                 return true;
 

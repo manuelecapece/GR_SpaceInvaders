@@ -27,12 +27,14 @@
 #include "roccia.h"
 #include "pianeta.h"
 #include "esplosione.h"
+#include "bonus.h"
 
 //Dichiarazione classi
 Alieno alieno;
 Navicella navicella;
 Proiettile proiettileNavicella;
 Proiettile proiettileUfo;
+Proiettile proiettileSpeciale;
 Ufo ufo;
 Barriera barriera;
 Roccia roccia;
@@ -260,6 +262,7 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (spara && !navicella.getIsHitted() && alieno.getSpawnaAlieni()) {
 			navicella.inizializzaProiettile(proiettileNavicella);
+			navicella.inizializzaProiettileSpeciale(proiettileSpeciale);
 			spara = false;
 		}
 	}
@@ -333,6 +336,7 @@ void idle()
 	alieno.setTranslateSpeedx(alieno.getSpeedx() * deltaTime);
 	alieno.setTranslateSpeedz(alieno.getSpeedz() * deltaTime);
 	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
+	proiettileSpeciale.setTranslateSpeed(proiettileSpeciale.getSpeed() * deltaTime);
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedProiettili(deltaTime);
 	esplosione.setTranslateSpeed(esplosione.getSpeed() * deltaTime);
@@ -386,6 +390,7 @@ void idle()
 }
 
 void ripristinaGioco() {
+	alieno.inizializzaBonus();
 	barriera.ripristina();
 	barriera.inizializzaMaps();
 	navicella.ripristinaPosizioneIniziale();
@@ -653,14 +658,14 @@ int main()
 
 	bool schermoIntero = true;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
 		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
 		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
 	}
-
+	
 	if (vista == 1) {
 		//Vista dinamica frontale 
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
@@ -876,6 +881,7 @@ int main()
 	alieno.setShader(alienoShader);
 	alieno.setModelSfera(modelSfera);
 	alieno.setModels(modelAlieno1, modelAlieno2, modelAlieno3, modelAlieno4, modelAlieno5);
+	alieno.inizializzaBonus();
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
@@ -927,6 +933,8 @@ int main()
 
 	proiettileNavicella.setShader(proiettileShader);
 	proiettileNavicella.setModel(modelCubo);
+	proiettileSpeciale.setShader(proiettileShader);
+	proiettileSpeciale.setModel(modelCubo);
 
 	proiettileUfo.setShader(proiettileShader);
 	proiettileUfo.setModel(modelCubo);
@@ -1094,9 +1102,11 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	//renderLimitiAlieniAsseZ();
 	//renderLimitiAlieniAsseX();
 
-	alieno.render(proiettileNavicella,navicella, modelCubo, esplosione);
+	//alieno.render(proiettileNavicella, navicella, esplosione);
+	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
 	navicella.render(moveRight,moveLeft);
-	proiettileNavicella.render(glm::vec3(1.0f,1.0f,1.0f));
+	proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
+	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
 	alieno.renderProiettili(navicella, barriera, esplosione);
 
 	roccia.render();
@@ -1109,8 +1119,10 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
 	navicella.checkIsHitted(proiettileUfo,esplosione);
 	ufo.checkIsHitted(proiettileNavicella);
+	ufo.checkIsHitted(proiettileSpeciale);
 
 	barriera.renderBarriere(proiettileNavicella);
+	barriera.renderBarriere(proiettileSpeciale);
 	barriera.renderBarriere(proiettileUfo);
 
 	esplosione.render();

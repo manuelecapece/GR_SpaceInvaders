@@ -31,9 +31,12 @@ private:
     std::vector<glm::vec3> vectorDir;
 
     int colpiSparati = -1;
+    int colpiSpecialiSparati = 0;
+    bool isSpeciale = false;
 
     Shader shader;
     Model model;
+    
 
 public:
     // Costruttore
@@ -42,6 +45,10 @@ public:
     //glm::vec3 getPos() const {
     //    return pos;
     //}
+
+    int getColpiSpecialiSparati() const {
+        return colpiSpecialiSparati;
+    }
 
     float getSpread() {
         return spread;
@@ -105,6 +112,14 @@ public:
         vectorPos[i] = newPos;
     }
 
+    void setIsSpeciale(bool valore) {
+        isSpeciale = valore;
+    }
+
+    bool getIsSpeciale() const {
+        return isSpeciale;
+    }
+
     void inizializzaPos(glm::vec3 newPos) {
         vectorPos.push_back(newPos);
     }
@@ -115,6 +130,10 @@ public:
 
     void incrementaColpi() {
         colpiSparati++;
+    }
+
+    void incrementaColpiSpecialiSparati() {
+        colpiSpecialiSparati++;
     }
 
     void render(glm::vec3 color) {
@@ -138,11 +157,20 @@ public:
                     modelCubo = glm::rotate(modelCubo, angolo, glm::vec3(0.0f, 1.0f, 0.0f));
                 }
 
-                modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
-                shader.setMat4("model", modelCubo);
-                shader.setVec3("color", color);
-                //glDrawArrays(GL_TRIANGLES, 0, 36);
-                model.Draw(shader);
+                if (isSpeciale) {
+                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza * 1.5, altezza * 1.5, lunghezza * 1.5));
+                    shader.setMat4("model", modelCubo);
+                    shader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+                    model.Draw(shader);    
+                }
+
+                else {
+                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
+                    shader.setMat4("model", modelCubo);
+                    shader.setVec3("color", color);
+                    //glDrawArrays(GL_TRIANGLES, 0, 36);
+                    model.Draw(shader);
+                }
             
         }
     }
