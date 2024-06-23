@@ -14,7 +14,7 @@
 #include <stack>
 #include "model.h"
 #include "proiettile.h"
-
+#include "suono.h"
 
 class Barriera {
 private:
@@ -28,6 +28,7 @@ private:
     float spazio;
     int static const righeCubiBarriera = 5;
     int static const colonneCubiBarriera = 10;
+    Suono suono;
 
     int map1[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1,1,1},
                                                         {1,1,1,1,1,1,1,1,1,1},
@@ -47,6 +48,24 @@ private:
                                                         {1,1,1,0,0,0,0,1,1,1},
                                                         {1,1,1,0,0,0,0,1,1,1}};
 
+    //int map1[righeCubiBarriera][colonneCubiBarriera] = { {0,0,0,0,0,0,0,0,0,0},
+    //                                                {0,0,0,0,0,0,0,0,0,0},
+    //                                                {0,0,0,0,0,0,0,0,0,0},
+    //                                                {0,0,0,0,0,0,0,0,0,0},
+    //                                                {0,0,0,0,0,0,0,0,0,0} };
+
+    //int map2[righeCubiBarriera][colonneCubiBarriera] = {{0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0} };
+
+    //int map3[righeCubiBarriera][colonneCubiBarriera] = {{0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0},
+    //                                                    {0,0,0,0,0,0,0,0,0,0} };
+
 
     Shader shader;
     Model model;
@@ -54,6 +73,10 @@ private:
 public:
     // Costruttore
     Barriera() {}
+
+    void setSuono(Suono newSuono) {
+        suono = newSuono;
+    }
 
     float getPosX() {
         return posX;
@@ -148,6 +171,7 @@ public:
 
                     if (isHitted(proiettile, posCubo)) {
                         map[i][j] = 0;
+                        suono.soundDistruggiBarriera();
                     }
 
                 }

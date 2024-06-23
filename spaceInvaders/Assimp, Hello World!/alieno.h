@@ -17,6 +17,7 @@
 #include "navicella.h"
 #include "barriera.h"
 #include "esplosione.h"
+#include "suono.h"
 
 class Alieno {
 private:
@@ -28,6 +29,12 @@ private:
                                          {3,3,3,3,3},
                                          {4,4,4,4,4},
                                          {5,5,5,5,5}};
+
+    //std::vector<std::vector<int>> map = { {1,1,1,1,1},
+    //                                      {0,0,0,0,0},
+    //                                      {0,0,0,0,0},
+    //                                      {0,0,0,0,0},
+    //                                      {0,0,0,0,0} };
 
     float raggio = 1.0f;
     float spazio = 1.3f;
@@ -56,6 +63,8 @@ private:
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
 
     std::vector<std::vector<int>> mapBonus;
+
+    Suono suono;
 
 public:
     // Costruttore
@@ -139,6 +148,10 @@ public:
 
     int getLivello() const {
         return livello;
+    }
+
+    void setSuono(Suono newSuono) {
+        suono = newSuono;
     }
 
     void setRighe(float valore) {
@@ -280,6 +293,7 @@ public:
     }
 
     void caricaNuovoLivello() {
+        suono.soundCaricaNuovoLivello();
         livello++;
         spawnaAlieni = false;
         alieniEliminati = 0;
@@ -352,24 +366,20 @@ public:
             for (int j = 0; j < colonneAlieni; j++)
             {
 
-                if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
-                {
-                    if (map[i][j] == 1) {
-                        vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 0.0f));
-                    }
-                    if (map[i][j] == 2) {
-                        vectorProiettili[k].render(glm::vec3(0.0f, 0.0f, 1.0f));
-                    }
-                    if (i == 2) {
-                        vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 0.0f));
-                    }
-                    if (i == 3) {
-                        vectorProiettili[k].render(glm::vec3(0.541f, 0.168f, 0.886f));
-                    }
-                    if (i == 4) {
-                        vectorProiettili[k].render(glm::vec3(1.0f, 1.0f, 0.0f));
-                    }
-
+                if (i == 0) {
+                    vectorProiettili[k].render(glm::vec3(0.0f, 1.0f, 0.0f));
+                }
+                if (i == 1) {
+                    vectorProiettili[k].render(glm::vec3(0.0f, 0.0f, 1.0f));
+                }
+                if (i == 2) {
+                    vectorProiettili[k].render(glm::vec3(1.0f, 0.0f, 0.0f));
+                }
+                if (i == 3) {
+                    vectorProiettili[k].render(glm::vec3(0.541f, 0.168f, 0.886f));
+                }
+                if (i == 4) {
+                    vectorProiettili[k].render(glm::vec3(1.0f, 1.0f, 0.0f));
                 }
 
                 navicella.checkIsHitted(vectorProiettili[k], esplosione, spawnaAlieni);
@@ -381,6 +391,8 @@ public:
     }
 
     void stepVersoDx(int i) {
+        suono.soundMovimentoAlieni();
+
         float newPosX_dx = -(pos.x + ((colonneAlieni-1)/2) * raggio * 2.0f * spazio) + pos.x + i * raggio * 2.0f * spazio;
         float limPosX_dx = -(colonneAlieni / 2 * raggio * 2.0f * spazio) + (colonneAlieni - 3) * raggio * 2.0f * spazio;
 
@@ -400,6 +412,7 @@ public:
     }
 
     void stepVersoSx(int i) {
+        suono.soundMovimentoAlieni();
         float newPosX_sx =  - i * raggio * 2.0f * spazio;
         float limPosX_sx = (pos.x + (colonneAlieni-1) * raggio * 2.0f * spazio) - pos.x - ((colonneAlieni - 1)*2) * raggio * 2.0f * spazio;
 
@@ -547,6 +560,21 @@ public:
         std::uniform_int_distribution<int> dis(estremoInferiore, estremoSuperiore);
         int random = dis(gen);
         return random;
+    }
+
+    bool isAllProiettiliOut() {
+        int k = 0;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+                if (vectorProiettili[k].getVecPos().size() != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 };

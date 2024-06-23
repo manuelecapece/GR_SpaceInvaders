@@ -15,25 +15,29 @@
 #include "model.h"
 #include "proiettile.h"
 #include "esplosione.h"
+#include "suono.h"
 
 const int TIPO_UFO = 6;
 
 class Ufo {
 private:
-    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 20.0f);
-    glm::vec3 posIniziale = glm::vec3(-15.0f, 0.0, -20.0f);
+    glm::vec3 pos = glm::vec3(20.0f, 0.0f, 20.0f);
     float raggio = 2.5f;
     float translateSpeed;
     float speed = 3;  
     float speedProiettili = 6;
+
     float rangeSparoNeg = -10.0f;
     float rangeSparoPos = 10.0f;
+    glm::vec3 posIniziale = glm::vec3(rangeSparoNeg, 0.0, -20.0f);
+
     int colpiSubiti = 0;
     float rotation = 0;
     Shader shader;
     Model model;
     Model modelSfera;
     int score = 0;
+    Suono suono;
 
 public:
     // Costruttore
@@ -75,7 +79,13 @@ public:
         modelSfera = newModel;
     }
 
+    void setSuono(Suono newSuono) {
+        suono = newSuono;
+    }
+
     void render(Esplosione& esplosione) {
+
+        pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
 
         if (colpiSubiti < 10) {
             shader.use();
@@ -100,9 +110,14 @@ public:
         }
         else {
             esplosione.inizializza(pos, TIPO_UFO);
+            distruggiUfo();
+        }
+
+        if (pos.x > rangeSparoPos && pos.x < 20.0f ) {
             ripristinaPos();
         }
-        pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
+
+        
     }
 
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {
@@ -127,6 +142,7 @@ public:
             if (isPointInsideCircle(punto, centro) && !proiettile.getIsSpeciale()) {
                 proiettile.eliminaInPos(i);
                 colpiSubiti++;
+                suono.soundColpisciUfo();
             }
             if (isPointInsideCircle(punto, centro) && proiettile.getIsSpeciale()) {
                 proiettile.eliminaInPos(i);
@@ -155,15 +171,26 @@ public:
     }
 
     void ripristinaPosizioneIniziale() {
+        suono.soundMovimentoUfo();
         pos = posIniziale;
         speed = 3.0f;
     }
 
-    void ripristinaPos() {
+    void distruggiUfo() {
+        suono.setPlayMovimentoUfo(true);
+        suono.stopSoundMovimentoUfo();
         pos = glm::vec3(0.0f, 0.0f, 20.0f);
         colpiSubiti = 0;
         speed = 0.0f;
         score = score + 500;
+    }
+
+    void ripristinaPos() {
+        suono.setPlayMovimentoUfo(true);
+        suono.stopSoundMovimentoUfo();
+        pos = glm::vec3(0.0f, 0.0f, 20.0f);
+        colpiSubiti = 0;
+        speed = 0.0f;
     }
 
     float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore) {
