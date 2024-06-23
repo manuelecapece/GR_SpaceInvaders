@@ -192,7 +192,12 @@ public:
         return distSq <= radiusSq;
     }
 
-    void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione) {
+    void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione, bool spawnaAlieni) {
+
+        if (!spawnaAlieni) {
+            return;
+        }
+
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
 
@@ -254,7 +259,6 @@ public:
             if (posBullet.z > 15) {
                 proiettile.eliminaInPos(i);
             }
-
         }
 
     }
@@ -273,13 +277,12 @@ public:
     void inizializzaProiettile(Proiettile& proiettile) {
         proiettile.incrementaColpi();
         proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
-        //proiettile.inizializzaPos(pos);
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
 
     }
 
-    void inizializzaProiettileSpeciale(Proiettile& proiettile) {
+    void inizializzaProiettileSpeciale(Proiettile& proiettile, int livello) {
         if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < 1) {
             proiettile.incrementaColpi();
             proiettile.incrementaColpiSpecialiSparati();

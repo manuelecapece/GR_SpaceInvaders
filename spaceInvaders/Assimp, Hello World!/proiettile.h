@@ -214,6 +214,13 @@ public:
         colpiSparati = colpiSparati - 1;
     }
 
+    void ripristinaColpiSpeciali() {
+        isSpeciale = false;
+        colpiSpecialiSparati = 0;
+        vectorPos.clear();
+        vectorDir.clear();
+    }
+
 
 
 };

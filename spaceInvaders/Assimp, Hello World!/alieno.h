@@ -271,7 +271,6 @@ public:
                         
                     }
 
-
                     navicella.checkCollisionAlien(posAlieno, raggio);
 
                 }
@@ -302,7 +301,6 @@ public:
 
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
 
-        //int k = i * (righeAlieni - 1) + j;
         int k = i * (colonneAlieni) + j;
         
         if (map[i][j] != 0)
@@ -374,7 +372,7 @@ public:
 
                 }
 
-                navicella.checkIsHitted(vectorProiettili[k], esplosione);
+                navicella.checkIsHitted(vectorProiettili[k], esplosione, spawnaAlieni);
                 barriera.renderBarriere(vectorProiettili[k]);
                 k++;
             }
@@ -460,21 +458,27 @@ public:
     bool isHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
+            if (proiettile.getVecPos().size() > 0) {
+                float proiettile_x = proiettile.getVecPos()[i].x;
+                float proiettile_z = proiettile.getVecPos()[i].z;
+                glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
+                glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
+                if (isPointInsideCircle(punto, centro) && !proiettile.getIsSpeciale()) {
+                    proiettile.eliminaInPos(i);
+                    return true;
+                }
+                if (isPointInsideCircle(punto, centro) && proiettile.getIsSpeciale()) {
+                    return true;
+                }
+                if (proiettile_z < -50) {
+                    proiettile.eliminaInPos(i);
+                    if (proiettile.getIsSpeciale()) {
+                        proiettile.ripristinaColpiSpeciali();
+                    }
+                }
+            }
 
-            float proiettile_x = proiettile.getVecPos()[i].x;
-            float proiettile_z = proiettile.getVecPos()[i].z;
-            glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
-            glm::vec2 centro = glm::vec2(posAlieno.x, posAlieno.z);
-            if (isPointInsideCircle(punto, centro) && !proiettile.getIsSpeciale()) {
-                proiettile.eliminaInPos(i);
-                return true;
-            }
-            if (isPointInsideCircle(punto, centro) && proiettile.getIsSpeciale()) {
-                return true;
-            }
-            if (proiettile_z < -50) {
-                proiettile.eliminaInPos(i);
-            }
+
         }
         return false;
     }

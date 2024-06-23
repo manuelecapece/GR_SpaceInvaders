@@ -262,7 +262,7 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (spara && !navicella.getIsHitted() && alieno.getSpawnaAlieni()) {
 			navicella.inizializzaProiettile(proiettileNavicella);
-			navicella.inizializzaProiettileSpeciale(proiettileSpeciale);
+			navicella.inizializzaProiettileSpeciale(proiettileSpeciale, alieno.getLivello());
 			spara = false;
 		}
 	}
@@ -391,7 +391,6 @@ void idle()
 }
 
 void ripristinaGioco() {
-	alieno.inizializzaBonus();
 	barriera.ripristina();
 	barriera.inizializzaMaps();
 	navicella.ripristinaPosizioneIniziale();
@@ -402,6 +401,7 @@ void ripristinaGioco() {
 	startTime05s = glfwGetTime();
 	startTime1s = glfwGetTime();
 	startTime20s = glfwGetTime();
+
 	if (deltaSparoAlieni > 0.5f) {
 		deltaSparoAlieni = deltaSparoAlieni - 0.25f;
 	}
@@ -411,7 +411,11 @@ void ripristinaGioco() {
 
 	proiettileNavicella.ripristinaColpiSparati();
 	proiettileUfo.ripristinaColpiSparati();
+	
 	ufo.ripristinaPos();
+
+	alieno.inizializzaBonus();
+	proiettileSpeciale.ripristinaColpiSpeciali();
 }
 
 void ripristinaCameraPos() {
@@ -659,7 +663,7 @@ int main()
 
 	bool schermoIntero = false;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -1118,7 +1122,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	ufo.render(esplosione);
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
-	navicella.checkIsHitted(proiettileUfo,esplosione);
+	navicella.checkIsHitted(proiettileUfo,esplosione, alieno.getSpawnaAlieni());
 	ufo.checkIsHitted(proiettileNavicella);
 	ufo.checkIsHitted(proiettileSpeciale);
 
