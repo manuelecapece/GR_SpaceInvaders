@@ -15,6 +15,7 @@
 #include "model.h"
 #include "proiettile.h"
 #include "esplosione.h"
+#include "suono.h"
 
 const float pigreco = 3.14159265358979323846;
 const int TIPO_NAVICELLA = 7;
@@ -39,6 +40,7 @@ private:
     bool scudo = false;
     double startTimeScudo;
     float tempoScudo = 5.0f;
+    Suono suono;
 
 public:
     // Costruttore
@@ -70,6 +72,10 @@ public:
 
     void setSpeed(float newSpeed) {
         speed = newSpeed;
+    }
+
+    void setSuono(Suono newSuono) {
+        suono = newSuono;
     }
 
     void setTranslateSpeed(float newTranslateSpeed) {
@@ -192,7 +198,8 @@ public:
         return distSq <= radiusSq;
     }
 
-    void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione) {
+    void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione, bool spawnaAlieni) {
+
         for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
         {
 
@@ -254,7 +261,6 @@ public:
             if (posBullet.z > 15) {
                 proiettile.eliminaInPos(i);
             }
-
         }
 
     }
@@ -270,22 +276,24 @@ public:
         }
     }
 
-    void inizializzaProiettile(Proiettile& proiettile) {
+    void inizializzaProiettile(Proiettile& proiettile, Suono suono) {
         proiettile.incrementaColpi();
         proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
-        //proiettile.inizializzaPos(pos);
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
+        suono.soundSparoNavicella();
 
     }
 
-    void inizializzaProiettileSpeciale(Proiettile& proiettile) {
+    void inizializzaProiettileSpeciale(Proiettile& proiettile, int livello) {
         if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < 1) {
+
             proiettile.incrementaColpi();
             proiettile.incrementaColpiSpecialiSparati();
             proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
             glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
             proiettile.inizializzaDir(proiettileAt);
+            suono.soundSparoProiettileSpeciale();
         }
 
     }
@@ -302,6 +310,7 @@ public:
     }
 
     void attivaBonus(int bonus, Proiettile& proiettile) {
+        suono.soundCaricaBonus();
 
         if (bonus == 1) {
             attivaScudo();

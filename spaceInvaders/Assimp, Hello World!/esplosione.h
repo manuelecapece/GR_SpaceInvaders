@@ -19,6 +19,7 @@
 #include "proiettile.h"
 #include "navicella.h"
 #include "barriera.h"
+#include "suono.h"
 
 const float M_PI = 3.14159265358979323846;
 
@@ -31,6 +32,7 @@ private:
     float speed = 2.5;
     float raggio = 2.0f;
     int nCubi = 15;
+    Suono suono;
 
     std::vector<glm::vec3> vecPosInit;
     std::vector<std::vector<glm::vec3>> vecDirRnd;
@@ -54,6 +56,10 @@ public:
         return speed;
     }
 
+    void setSuono(Suono newSuono) {
+        suono = newSuono;
+    }
+
     void setShader(Shader newShader) {
         shader = newShader;
     }
@@ -67,12 +73,39 @@ public:
     }
 
     void inizializza(glm::vec3 posizione, int tipo) {
+        suonoEsplosione(tipo);
         vecPosInit.push_back(posizione);
         glm::vec3 direzione = glm::vec3(rndFloat(), rndFloat(), rndFloat());
         inizializzaDirezioniCasuali(direzione);
         inizializzaPosizioni(posizione);
         inizializzaRotazioniCasuali();
         inizializzaColori(tipo);
+    }
+
+    void suonoEsplosione(int tipo) {
+        switch (tipo) {
+        case 1:
+            suono.soundEsplosioneAlieno();
+            break;
+        case 2:
+            suono.soundEsplosioneAlieno();
+            break;
+        case 3:
+            suono.soundEsplosioneAlieno();
+            break;
+        case 4:
+            suono.soundEsplosioneAlieno();
+            break;
+        case 5:
+            suono.soundEsplosioneAlieno();
+            break;
+        case 6:
+            suono.soundEsplosioneUfo();
+            break;
+        case 7:
+            suono.soundEsplosioneNavicella();
+            break;
+        }
     }
 
     void inizializzaColori() {

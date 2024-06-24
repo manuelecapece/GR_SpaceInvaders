@@ -142,7 +142,7 @@ public:
         shader.use();
         float angolo = 0;
 
-        for (int i = 0; i < colpiSparati + 1; i++)
+        for (int i = 0; i < vectorPos.size(); i++)
         {
 
                 glm::mat4 modelCubo = glm::mat4(1.0f);	//identity matrix
@@ -162,9 +162,7 @@ public:
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
                     model.Draw(shader);    
-                }
-
-                else {
+                }else {
                     modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", color);
@@ -212,6 +210,13 @@ public:
         vectorDir.erase(itDir);
         vectorPos.erase(itPos);
         colpiSparati = colpiSparati - 1;
+    }
+
+    void ripristinaColpiSpeciali() {
+        isSpeciale = false;
+        colpiSpecialiSparati = 0;
+        vectorPos.clear();
+        vectorDir.clear();
     }
 
 

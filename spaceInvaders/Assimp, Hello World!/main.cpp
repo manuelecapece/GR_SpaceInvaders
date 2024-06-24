@@ -27,7 +27,7 @@
 #include "roccia.h"
 #include "pianeta.h"
 #include "esplosione.h"
-#include "bonus.h"
+#include "suono.h"
 
 //Dichiarazione classi
 Alieno alieno;
@@ -40,6 +40,7 @@ Barriera barriera;
 Roccia roccia;
 Pianeta pianeta;
 Esplosione esplosione;
+Suono suono;
 
 //Dichiarazione shader
 Shader frecciaShader;
@@ -112,9 +113,6 @@ int leggiScoreDalFile(const std::string& nomeFile);
 void aggiornaScoreSeMaggiore(const std::string& nomeFile);
 
 const float PI = 3.14159265358979323846;
-
-using namespace irrklang;
-ISoundEngine* soundEngine;
 
 // settings
 int SCR_WIDTH = 1920;
@@ -246,7 +244,7 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || exitGame == true) {
 		glfwSetWindowShouldClose(window, true);
-		soundEngine->drop();
+		suono.dropSoundEngine();
 		aggiornaScoreSeMaggiore("../src/score.txt");
 	}
 
@@ -261,8 +259,8 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (spara && !navicella.getIsHitted() && alieno.getSpawnaAlieni()) {
-			navicella.inizializzaProiettile(proiettileNavicella);
-			navicella.inizializzaProiettileSpeciale(proiettileSpeciale);
+			navicella.inizializzaProiettile(proiettileNavicella, suono);
+			navicella.inizializzaProiettileSpeciale(proiettileSpeciale, alieno.getLivello());
 			spara = false;
 		}
 	}
@@ -317,6 +315,8 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 
 void idle()
 {
+	suono.soundGameStart();
+
 	double currentTime05s = glfwGetTime();
 	double currentTime1s = glfwGetTime();
 	double currentTime2s = glfwGetTime();
@@ -352,6 +352,9 @@ void idle()
 		if (currentTime1s - startTime1s >= deltaSparoAlieni && alieno.getSpawnaAlieni()) {
 			for (int id_riga = 0; id_riga < alieno.getRigheAlieni(); id_riga++) {
 				int id_colonna = generaNumeroCasualeInt(0, alieno.getColonneAlieni()-1);
+				if (alieno.getMap()[id_riga][id_colonna] != 0) {
+					suono.soundSparoAlieno();
+				}
 				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
 				startTime1s = currentTime1s;
 			}
@@ -391,7 +394,6 @@ void idle()
 }
 
 void ripristinaGioco() {
-	alieno.inizializzaBonus();
 	barriera.ripristina();
 	barriera.inizializzaMaps();
 	navicella.ripristinaPosizioneIniziale();
@@ -402,6 +404,7 @@ void ripristinaGioco() {
 	startTime05s = glfwGetTime();
 	startTime1s = glfwGetTime();
 	startTime20s = glfwGetTime();
+
 	if (deltaSparoAlieni > 0.5f) {
 		deltaSparoAlieni = deltaSparoAlieni - 0.25f;
 	}
@@ -411,7 +414,13 @@ void ripristinaGioco() {
 
 	proiettileNavicella.ripristinaColpiSparati();
 	proiettileUfo.ripristinaColpiSparati();
+	
 	ufo.ripristinaPos();
+
+	alieno.inizializzaBonus();
+	proiettileSpeciale.ripristinaColpiSpeciali();
+
+	suono.ripristina();
 }
 
 void ripristinaCameraPos() {
@@ -482,7 +491,10 @@ void muoviAlieni() {
 
 			if (alieno.getSpeedx() == 0.0f) {
 				stepDx++;
+				suono.setPlayMovimentoAlieni(true);
+				alieno.setSuono(suono);
 				restart = false;
+
 			}
 
 		}
@@ -495,10 +507,15 @@ void muoviAlieni() {
 		double delta = current - currentxs;
 
 		if (delta > (intervallo * (stepDx + stepSx - 1))) {
+			suono.soundMovimentoAlieni();
 			alieno.stepVersoDown(intervallo);
 			stepDx = -1;
 			stepSx = 1;
 
+		}
+		else {
+			suono.setPlayMovimentoAlieni(true);
+			alieno.setSuono(suono);
 		}
 
 	}
@@ -518,6 +535,8 @@ void muoviAlieni() {
 
 			if (alieno.getSpeedx() == 0.0f) {
 				stepSx++;
+				suono.setPlayMovimentoAlieni(true);
+				alieno.setSuono(suono);
 				restart = false;
 			}
 		}
@@ -673,6 +692,8 @@ int main()
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
 	}
 
+	suono.inizializza();
+
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
 
@@ -682,7 +703,6 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	soundEngine = createIrrKlangDevice();
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
@@ -883,14 +903,17 @@ int main()
 	alieno.setModelSfera(modelSfera);
 	alieno.setModels(modelAlieno1, modelAlieno2, modelAlieno3, modelAlieno4, modelAlieno5);
 	alieno.inizializzaBonus();
+	alieno.setSuono(suono);
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
 	navicella.setModelSfera(modelSfera);
+	navicella.setSuono(suono);
 
 	ufo.setShader(ufoRetroShader);
 	ufo.setModel(modelUfoRetro);
 	ufo.setModelSfera(modelSfera);
+	ufo.setSuono(suono);
 
 	roccia.setShader(rocciaShader);
 	roccia.setModel(modelRoccia);
@@ -943,12 +966,14 @@ int main()
 
 	esplosione.setShader(proiettileShader);
 	esplosione.setModel(modelCubo);
+	esplosione.setSuono(suono);
 
 	barriera.setShader(barrieraShader);
 	barriera.setModel(modelCubo);
 	barriera.setPosX(alieno.getRaggio() * 2, alieno.getSpazio());
 	barriera.setSpazio(alieno.getRaggio() * 2, alieno.getSpazio());
 	barriera.inizializzaMaps();
+	barriera.setSuono(suono);
 
 	//float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
 	//navicella.setLimXpos(limX_pos);
@@ -1118,7 +1143,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	ufo.render(esplosione);
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
-	navicella.checkIsHitted(proiettileUfo,esplosione);
+	navicella.checkIsHitted(proiettileUfo,esplosione, alieno.getSpawnaAlieni());
 	ufo.checkIsHitted(proiettileNavicella);
 	ufo.checkIsHitted(proiettileSpeciale);
 
@@ -1182,6 +1207,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		}
 	}
 	else {
+		suono.soundGameOver();
+
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
