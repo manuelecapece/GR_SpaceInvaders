@@ -383,6 +383,13 @@ public:
 
     }
 
+    glm::vec3 convert(float r, float g, float b) {
+        float gamma = 2.2;
+        glm::vec3 result = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
+        //result = pow(result, glm::vec3(1.0 / gamma));
+        return result;
+    }
+
 };
 
 #endif 

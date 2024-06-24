@@ -51,19 +51,15 @@ private:
     Model modelSfera;
     bool spawnaAlieni = true;
     double startTimeLoadNewLevel;
-
     bool muoviVersoDx = true;
     bool muoviVersoSx = false;
     bool muoviVersoDown = false;
     int nStepDown = 0;
-
     int score = 0;
     int livello = 1;
-
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
-
     std::vector<std::vector<int>> mapBonus;
-
+    std::vector<std::vector<int>> mapHitted;
     Suono suono;
 
 public:
@@ -250,6 +246,9 @@ public:
                         glm::mat4 modelAlieno = glm::mat4(1.0f);
                         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
                         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
+                        if (mapHitted[i][j] == 1) {
+                            modelAlieno = glm::rotate(modelAlieno, pigreco/10, glm::vec3(1.0f, 0.0f, 0.0f));
+                        }
                         shader.setMat4("model", modelAlieno);
                         models[i].Draw(shader);
                     }
@@ -261,6 +260,9 @@ public:
                         glm::mat4 sferaModel = glm::mat4(1.0f);
                         sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
                         sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+                        if (mapHitted[i][j] == 1) {
+                            sferaModel = glm::rotate(sferaModel, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+                        }
                         shader.setMat4("model", sferaModel);
                         modelSfera.Draw(shader);
                     }
@@ -268,19 +270,29 @@ public:
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
                     if (isHitted(proiettile, posAlieno) || isHitted(proiettileSpeciale, posAlieno)) {
-                        esplosione.inizializza(posAlieno, map[i][j]);
-                        map[i][j] = 0;
-                        
-                        score = score + 50;
-                        alieniEliminati++;
-                        if (alieniEliminati == righeAlieni * colonneAlieni) {
-                            caricaNuovoLivello();
+                        mapHitted[i][j]++;
+
+                        if (livello > 3 && mapHitted[i][j] < 2) {
+                            //return;
+                            suono.soundDistruggiBarriera();
+                        }
+                        else {
+                            esplosione.inizializza(posAlieno, map[i][j]);
+                            map[i][j] = 0;
+
+                            score = score + 50;
+                            alieniEliminati++;
+                            if (alieniEliminati == righeAlieni * colonneAlieni) {
+                                caricaNuovoLivello();
+                            }
+
+                            if (mapBonus[i][j] != 0) {
+                                navicella.attivaBonus(mapBonus[i][j], proiettileSpeciale);
+                                mapBonus[i][j] = 0;
+                            }
                         }
 
-                        if (mapBonus[i][j] != 0) {
-                            navicella.attivaBonus(mapBonus[i][j], proiettileSpeciale);
-                            mapBonus[i][j] = 0;
-                        }
+
                         
                     }
 
@@ -551,6 +563,20 @@ public:
                 std::cout << value << " ";
             }
             std::cout << std::endl;
+        }
+    }
+
+    void inizializzaMapHitted() {
+
+        mapHitted = map;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+                mapHitted[i][j] = 0;
+
+            }
         }
     }
 

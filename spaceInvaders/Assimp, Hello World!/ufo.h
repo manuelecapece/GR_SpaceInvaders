@@ -27,11 +27,12 @@ private:
     float speed = 3;  
     float speedProiettili = 6;
 
-    float rangeSparoNeg = -10.0f;
-    float rangeSparoPos = 10.0f;
+    float rangeSparoNeg = -18.0f;
+    float rangeSparoPos = 18.0f;
     glm::vec3 posIniziale = glm::vec3(rangeSparoNeg, 0.0, -20.0f);
 
     int colpiSubiti = 0;
+    int vite = 10;//Colpi da subire prima di esplodere
     float rotation = 0;
     Shader shader;
     Model model;
@@ -87,7 +88,7 @@ public:
 
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
 
-        if (colpiSubiti < 10) {
+        if (colpiSubiti < vite) {
             shader.use();
 
             //Per il modello sfera
@@ -104,6 +105,8 @@ public:
             modelUfo = glm::rotate(modelUfo, -pigreco/2 , glm::vec3(1.0f, 0.0, 0.0f));
             rotation = rotation + translateSpeed;
             modelUfo = glm::rotate(modelUfo, rotation, glm::vec3(0.0f, 1.0, 0.0f));
+            modelUfo = glm::rotate(modelUfo, (-pigreco/30)*colpiSubiti, glm::vec3(1.0f, 1, 0.0f));
+
             shader.setMat4("model", modelUfo);
             model.Draw(shader);
 
@@ -159,7 +162,7 @@ public:
     }
 
     void inizializzaProiettile(Proiettile& proiettile) {
-        if (isInRangeSparo() && colpiSubiti < 5 && speed != 0.0f) {
+        if (isInRangeSparo() && colpiSubiti < vite && speed != 0.0f) {
             proiettile.setSpeed(speedProiettili);
             proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);

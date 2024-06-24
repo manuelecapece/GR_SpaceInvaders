@@ -112,6 +112,7 @@ public:
     }
 
     void soundDistruggiBarriera() {
+        distruggiBarriera->setDefaultVolume(0.5f);
         soundEngine->play2D(distruggiBarriera, false);
     }
 
@@ -150,7 +151,9 @@ public:
     }
 
     void stopSoundMovimentoUfo() {
-        suonoUfo->stop();
+        if (suonoUfo != nullptr) {
+            suonoUfo->stop();
+        }
     }
 
     void ripristina() {
