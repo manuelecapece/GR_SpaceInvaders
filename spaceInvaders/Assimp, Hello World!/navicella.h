@@ -126,8 +126,6 @@ public:
             //DISEGNO LA NAVICELLA SENZA SCUDO
             if (!scudo) {
                 if (isInvincibile) {
-                    //DISEGNA NAVICELLA CON TRASPARENZA
-
                     disegnaNavicellaTrasparente(moveRight, moveLeft);
                 }
                 else {
@@ -174,14 +172,11 @@ public:
     }
 
     void disegnaNavicellaTrasparente(bool moveRight, bool moveLeft) {
-        //Per il modello navicella
-        glm::mat4 modelNavicella = glm::mat4(1.0f);
-        modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.15f, 0.15f, 0.15f));
-        modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-        ruotaNavicella(moveRight, moveLeft, modelNavicella);
-        shader.setMat4("model", modelNavicella);
-        model.Draw(shader);
+        //DISEGNA NAVICELLA CON TRASPARENZA
+        int val = generaNumeroCasualeInt(0, 1);
+        if (val == 1) {
+            disegnaNavicella(moveRight, moveLeft);
+        }
     }
 
     void ruotaNavicella(bool moveRight, bool moveLeft, glm::mat4& modelNavicella) {
@@ -345,6 +340,14 @@ public:
     void attivaProiettileSpeciale(Proiettile& proiettile) {
         proiettile.setIsSpeciale(true);
         proiettile.incrementaColpiSpecialiDisponibili();
+    }
+
+    float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(estremoInferiore, estremoSuperiore);
+        int random = dis(gen);
+        return random;
     }
 
 };

@@ -696,7 +696,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
 	vista = 1;
 
