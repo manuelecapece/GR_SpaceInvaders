@@ -229,36 +229,14 @@ public:
 
                     //RENDER ALIENO SENZA BONUS
                     if (mapBonus[i][j] == 0) {
-                        //Per modello sfera
-                        //glm::mat4 sferaModel = glm::mat4(1.0f);
-                        //sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
-                        //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                        //shader.setMat4("model", sferaModel);
-                        //modelSfera.Draw(shader);
 
-                        //Per modello alieno
-                        glm::mat4 modelAlieno = glm::mat4(1.0f);
-                        modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
-                        modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
-                        if (mapHitted[i][j] == 1) {
-                            modelAlieno = glm::rotate(modelAlieno, pigreco/10, glm::vec3(1.0f, 0.0f, 0.0f));
-                        }
-                        shader.setMat4("model", modelAlieno);
-                        models[i].Draw(shader);
+                        disegnaAlieno(x, z, i, j);
                     }
                     //RENDER ALIENO CON BONUS
                     else {
                         //DISEGNA ALIENO IN STENCIL TESTING
 
-                        //Per modello sfera
-                        glm::mat4 sferaModel = glm::mat4(1.0f);
-                        sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
-                        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                        if (mapHitted[i][j] == 1) {
-                            sferaModel = glm::rotate(sferaModel, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
-                        }
-                        shader.setMat4("model", sferaModel);
-                        modelSfera.Draw(shader);
+                        disegnaSfera(x, z, i, j);
                     }
 
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
@@ -267,7 +245,6 @@ public:
                         mapHitted[i][j]++;
 
                         if (livello > 3 && mapHitted[i][j] < 2) {
-                            //return;
                             suono.soundDistruggiBarriera();
                         }
                         else {
@@ -286,8 +263,6 @@ public:
                             }
                         }
 
-
-                        
                     }
 
                     navicella.checkCollisionAlien(posAlieno, raggio);
@@ -296,6 +271,30 @@ public:
             }
         }
 
+    }
+
+    void disegnaSfera(float x, float z, int i, int j) {
+        //Per modello sfera
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+        if (mapHitted[i][j] == 1) {
+            sferaModel = glm::rotate(sferaModel, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+        shader.setMat4("model", sferaModel);
+        modelSfera.Draw(shader);
+    }
+
+    void disegnaAlieno(float x, float z, int i, int j) {
+        //Per modello alieno
+        glm::mat4 modelAlieno = glm::mat4(1.0f);
+        modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
+        modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
+        if (mapHitted[i][j] == 1) {
+            modelAlieno = glm::rotate(modelAlieno, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+        shader.setMat4("model", modelAlieno);
+        models[i].Draw(shader);
     }
 
     void caricaNuovoLivello() {
@@ -329,7 +328,6 @@ public:
             float z = pos.z + i * raggio * 2.0f * spazio;
 
             vectorProiettili[k].setSpeed(speedProiettili);
-            //vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);

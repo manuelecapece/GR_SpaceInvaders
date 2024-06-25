@@ -36,6 +36,7 @@ private:
     Shader shader;
     Model model;
     Model modelSfera;
+    bool isInvincibile = false;
 
     bool scudo = false;
     double startTimeScudo;
@@ -64,6 +65,14 @@ public:
 
     double getStartTimeHitted() const {
         return startTimeHitted;
+    }
+
+    bool getIsInvincibile() const {
+        return isInvincibile;
+    }
+
+    void setIsInvincibile(bool val) {
+        isInvincibile = val;
     }
 
     void setPos(glm::vec3 newPos) {
@@ -116,57 +125,63 @@ public:
 
             //DISEGNO LA NAVICELLA SENZA SCUDO
             if (!scudo) {
-                //Per il modello sfera
-                //glm::mat4 sferaModel = glm::mat4(1.0f);
-                //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-                //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                //shader.setMat4("model", sferaModel);
-                //modelSfera.Draw(shader);
+                if (isInvincibile) {
+                    //DISEGNA NAVICELLA CON TRASPARENZA
 
-                //Per il modello navicella
-                glm::mat4 modelNavicella = glm::mat4(1.0f);
-                modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-                modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-                modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-                ruotaNavicella(moveRight, moveLeft, modelNavicella);
-                shader.setMat4("model", modelNavicella);
-                model.Draw(shader);
+                    disegnaNavicellaTrasparente(moveRight, moveLeft);
+                }
+                else {
+                    //disegnaSfera(moveRight, moveLeft);
+                    disegnaNavicella(moveRight, moveLeft);
+                }
+
             }
             //DISEGNO LA NAVICELLA CON SCUDO
             else if (glfwGetTime() - startTimeScudo < tempoScudo) {
 
                 //DISEGNO NAVICELLA CON SFERA TRASPARENTE 
-
-                //Per il modello sfera
-                glm::mat4 sferaModel = glm::mat4(1.0f);
-                sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-                sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                shader.setMat4("model", sferaModel);
-                modelSfera.Draw(shader);
-
-                //Per il modello navicella
-                glm::mat4 modelNavicella = glm::mat4(1.0f);
-                modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-                modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-                modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-                ruotaNavicella(moveRight, moveLeft, modelNavicella);
-                shader.setMat4("model", modelNavicella);
-                model.Draw(shader);
+                disegnaNavicellaConScudo(moveRight, moveLeft);
             }
             else {
                 scudo = false;
             }
-
-            ////Per il modello navicella
-            //glm::mat4 modelNavicella = glm::mat4(1.0f);
-            //modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-            //modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-            //modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-            //ruotaNavicella(moveRight, moveLeft, modelNavicella);
-            //shader.setMat4("model", modelNavicella);
-            //model.Draw(shader);
         }
 
+    }
+
+    void disegnaNavicellaConScudo(bool moveRight, bool moveLeft) {
+        disegnaSfera(moveRight, moveLeft);
+        disegnaNavicella(moveRight, moveLeft);
+    }
+
+    void disegnaSfera(bool moveRight, bool moveLeft) {
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+        shader.setMat4("model", sferaModel);
+        modelSfera.Draw(shader);
+    }
+
+    void disegnaNavicella(bool moveRight, bool moveLeft) {
+        //Per il modello navicella
+        glm::mat4 modelNavicella = glm::mat4(1.0f);
+        modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+        modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+        ruotaNavicella(moveRight, moveLeft, modelNavicella);
+        shader.setMat4("model", modelNavicella);
+        model.Draw(shader);
+    }
+
+    void disegnaNavicellaTrasparente(bool moveRight, bool moveLeft) {
+        //Per il modello navicella
+        glm::mat4 modelNavicella = glm::mat4(1.0f);
+        modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.15f, 0.15f, 0.15f));
+        modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+        ruotaNavicella(moveRight, moveLeft, modelNavicella);
+        shader.setMat4("model", modelNavicella);
+        model.Draw(shader);
     }
 
     void ruotaNavicella(bool moveRight, bool moveLeft, glm::mat4& modelNavicella) {
@@ -239,12 +254,12 @@ public:
             glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z + 1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
                 proiettile.eliminaInPos(i);
-                if (!scudo) {
+                if (!scudo && !isInvincibile) {
                     startTimeHitted = glfwGetTime();
                     isHitted = true;
                     esplosione.inizializza(pos, TIPO_NAVICELLA);
 
-                    if (vite >= 0) {
+                    if (vite >= 0 ) {
                         vite = vite - 1;
                     }
                     
@@ -286,7 +301,7 @@ public:
     }
 
     void inizializzaProiettileSpeciale(Proiettile& proiettile, int livello) {
-        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < 1) {
+        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < proiettile.getColpiSpecialiDisponibili()) {
 
             //proiettile.incrementaColpi();
             proiettile.incrementaColpiSpecialiSparati();
@@ -329,6 +344,7 @@ public:
 
     void attivaProiettileSpeciale(Proiettile& proiettile) {
         proiettile.setIsSpeciale(true);
+        proiettile.incrementaColpiSpecialiDisponibili();
     }
 
 };

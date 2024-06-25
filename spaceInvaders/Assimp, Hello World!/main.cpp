@@ -112,6 +112,7 @@ void ripristinaCameraPos();
 void ripristinaGioco();
 int leggiScoreDalFile(const std::string& nomeFile);
 void aggiornaScoreSeMaggiore(const std::string& nomeFile);
+void checkNavicellaIsInvincibile();
 
 const float PI = 3.14159265358979323846;
 
@@ -376,6 +377,7 @@ void idle()
 
 	if (navicella.getIsHitted() && (glfwGetTime() - navicella.getStartTimeHitted()) > 1.0f) {
 		respawnNavicella = true;
+		navicella.setIsInvincibile(true);
 	}
 
 	if (!alieno.getSpawnaAlieni() && (glfwGetTime() - alieno.getStartTimeLoadNewLevel() > 3.0f)) {
@@ -393,9 +395,20 @@ void idle()
 		ripristinaCameraPos();
 	}
 
+	checkNavicellaIsInvincibile();
 	checkGameWin();
 	checkGameLost();
 
+}
+
+void checkNavicellaIsInvincibile() {
+	if (!navicella.getIsInvincibile()) {
+		return;
+	}
+
+	if (navicella.getIsInvincibile() && glfwGetTime() - navicella.getStartTimeHitted() > 3.0f) {
+		navicella.setIsInvincibile(false);
+	}
 }
 
 void ripristinaGioco() {
@@ -683,7 +696,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	vista = 1;
 
@@ -967,6 +980,9 @@ int main()
 	proiettileNavicella.setModel(modelCubo);
 	proiettileSpeciale.setShader(proiettileShader);
 	proiettileSpeciale.setModel(modelCubo);
+	proiettileSpeciale.setAltezza(proiettileSpeciale.getAltezza() * 1.5f);
+	proiettileSpeciale.setLunghezza(proiettileSpeciale.getLunghezza() * 1.5f);
+	proiettileSpeciale.setLarghezza(proiettileSpeciale.getLarghezza() * 1.5f);
 
 	proiettileUfo.setShader(proiettileShader);
 	proiettileUfo.setModel(modelCubo);

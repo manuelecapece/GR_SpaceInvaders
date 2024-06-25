@@ -18,9 +18,9 @@
 class Proiettile {
 private:
 
-    const float lunghezza = 0.5f;
-    const float larghezza = 0.10f;
-    const float altezza = 0.15f;
+    float lunghezza = 0.5f;
+    float larghezza = 0.10f;
+    float altezza = 0.15f;
     float translateSpeed;
     float speed = 15;  
     float limZNeg = -20;
@@ -32,6 +32,7 @@ private:
 
     //int colpiSparati = -1;
     int colpiSpecialiSparati = 0;
+    int colpiSpecialiDisponibili = 0;
     bool isSpeciale = false;
 
     Shader shader;
@@ -62,6 +63,10 @@ public:
     //    return colpiSparati;
     //}
 
+    float getAltezza() const {
+        return altezza;
+    }
+
     float getLunghezza() const {
         return lunghezza;
     }
@@ -84,6 +89,22 @@ public:
 
     std::vector<glm::vec3> getVecDir() const {
         return vectorDir;
+    }
+
+    int getColpiSpecialiDisponibili() const {
+        return colpiSpecialiDisponibili;
+    }
+
+    void setAltezza(float newAltezza) {
+        altezza = newAltezza;
+    }
+
+    void setLarghezza(float newLarghezza) {
+        larghezza = newLarghezza;
+    }
+
+    void setLunghezza(float newLunghezza) {
+        lunghezza = newLunghezza;
     }
 
     void ripristinaColpiSparati() {
@@ -138,7 +159,6 @@ public:
 
     void render(glm::vec3 color) {
 
-        //glBindVertexArray(cubeVAO);
         shader.use();
         float angolo = 0;
 
@@ -158,7 +178,7 @@ public:
                 }
 
                 if (isSpeciale) {
-                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza * 1.5, altezza * 1.5, lunghezza * 1.5));
+                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
                     model.Draw(shader);    
@@ -166,12 +186,12 @@ public:
                     modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", color);
-                    //glDrawArrays(GL_TRIANGLES, 0, 36);
                     model.Draw(shader);
                 }
             
         }
     }
+
 
     float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
         // Calcolo del prodotto scalare
@@ -215,11 +235,14 @@ public:
     void ripristinaColpiSpeciali() {
         isSpeciale = false;
         colpiSpecialiSparati = 0;
+        colpiSpecialiDisponibili = 0;
         vectorPos.clear();
         vectorDir.clear();
     }
 
-
+    void incrementaColpiSpecialiDisponibili() {
+        colpiSpecialiDisponibili++;
+    }
 
 };
 

@@ -91,24 +91,8 @@ public:
         if (colpiSubiti < vite) {
             shader.use();
 
-            //Per il modello sfera
-            //glm::mat4 sferaModel = glm::mat4(1.0f);
-            //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-            //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-            //shader.setMat4("model", sferaModel);
-            //modelSfera.Draw(shader);
-
-            //Per il modello ufo
-            glm::mat4 modelUfo = glm::mat4(1.0f);
-            modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
-            modelUfo = glm::scale(modelUfo, glm::vec3(5.2, 5.2, 5.2));
-            modelUfo = glm::rotate(modelUfo, -pigreco/2 , glm::vec3(1.0f, 0.0, 0.0f));
-            rotation = rotation + translateSpeed;
-            modelUfo = glm::rotate(modelUfo, rotation, glm::vec3(0.0f, 1.0, 0.0f));
-            modelUfo = glm::rotate(modelUfo, (-pigreco/30)*colpiSubiti, glm::vec3(1.0f, 1, 0.0f));
-
-            shader.setMat4("model", modelUfo);
-            model.Draw(shader);
+            //disegnaSfera();
+            disegnaUfo();
 
         }
         else {
@@ -121,6 +105,28 @@ public:
         }
 
         
+    }
+
+    void disegnaSfera() {
+        //Per il modello sfera
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+        shader.setMat4("model", sferaModel);
+        modelSfera.Draw(shader);
+    }
+
+    void disegnaUfo() {
+        //Per il modello ufo
+        glm::mat4 modelUfo = glm::mat4(1.0f);
+        modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
+        modelUfo = glm::scale(modelUfo, glm::vec3(5.2, 5.2, 5.2));
+        modelUfo = glm::rotate(modelUfo, -pigreco / 2, glm::vec3(1.0f, 0.0, 0.0f));
+        rotation = rotation + translateSpeed;
+        modelUfo = glm::rotate(modelUfo, rotation, glm::vec3(0.0f, 1.0, 0.0f));
+        modelUfo = glm::rotate(modelUfo, (-pigreco / 30) * colpiSubiti, glm::vec3(1.0f, 1, 0.0f));
+        shader.setMat4("model", modelUfo);
+        model.Draw(shader);
     }
 
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {
@@ -163,7 +169,6 @@ public:
     void inizializzaProiettile(Proiettile& proiettile) {
         if (isInRangeSparo() && colpiSubiti < vite && speed != 0.0f) {
             proiettile.setSpeed(speedProiettili);
-            //proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);
