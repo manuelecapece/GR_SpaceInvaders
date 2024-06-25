@@ -13,8 +13,9 @@
 #include <cmath>
 #include <stack>
 #include "model.h"
-#include "proiettile.h"
+
 #include "suono.h"
+#include "proiettile.h"
 
 class Barriera {
 private:

@@ -94,10 +94,10 @@
     <None Include="pianeta.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="2.stencil_single_color.fs">
+    <None Include="stencilTesting.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="2.stencil_testing.vs">
+    <None Include="stencilTesting.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -298,7 +298,7 @@ public:
         glStencilMask(0x00);
         glDisable(GL_DEPTH_TEST);
         bonusShader.use();
-        bonusShader.setVec3("color", glm::vec3(1.0, 1.0, 0.26));
+        bonusShader.setInt("val", 1);
 
         modelAlieno = glm::mat4(1.0f);
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
@@ -309,7 +309,7 @@ public:
         shader.setMat4("model", modelAlieno);
         models[i].Draw(bonusShader);
 
-        glBindVertexArray(0);
+        //glBindVertexArray(0);
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 0, 0xFF);
         glEnable(GL_DEPTH_TEST);

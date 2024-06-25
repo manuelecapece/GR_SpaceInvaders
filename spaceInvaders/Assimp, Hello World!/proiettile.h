@@ -15,6 +15,7 @@
 #include <stack>
 #include "model.h"
 
+
 class Proiettile {
 private:
 
@@ -246,6 +247,15 @@ public:
 
     void decrementaColpiSpecialiDisponibili() {
         colpiSpecialiDisponibili--;
+    }
+
+    void checkColpiBonus(bool isHittedNavicella) {
+        if (!isSpeciale) {
+            return;
+        }
+        else if(colpiSpecialiDisponibili > 0 && isHittedNavicella){
+            colpiSpecialiDisponibili--;
+        }
     }
 
 };

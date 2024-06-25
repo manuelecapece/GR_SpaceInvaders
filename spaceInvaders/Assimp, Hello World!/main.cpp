@@ -115,6 +115,7 @@ void ripristinaGioco();
 int leggiScoreDalFile(const std::string& nomeFile);
 void aggiornaScoreSeMaggiore(const std::string& nomeFile);
 void checkNavicellaIsInvincibile();
+void renderText();
 
 const float PI = 3.14159265358979323846;
 
@@ -800,7 +801,7 @@ int main()
 	rocciaShader = Shader("roccia.vs", "roccia.fs");
 	pianetaShader = Shader("pianeta.vs", "pianeta.fs");
 	blendingShader = Shader("blending.vs", "blending.fs");
-	stencilShader = Shader("2.stencil_testing.vs", "2.stencil_single_color.fs");
+	stencilShader = Shader("stencilTesting.vs", "stencilTesting.fs");
 
 	
 	// build and compile shaders
@@ -1082,58 +1083,6 @@ int main()
 	return 0;
 }
 
-void renderTerna() {
-	//Disegno la terna di riferimento
-
-	//Asse x+ ROSSO
-	frecciaShader.use();
-	glm::mat4 freccia = glm::mat4(1.0f);
-	freccia = glm::translate(freccia, glm::vec3(0.0f, 0.0f, 0.0f));
-	freccia = glm::scale(freccia, glm::vec3(0.3f, 0.3f, 0.3f));
-	freccia = glm::rotate(freccia, -PI / 2, glm::vec3(0.0f, 0.0f, 1.0f));
-	frecciaShader.setMat4("model", freccia);
-	frecciaShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
-	modelFreccia.Draw(frecciaShader);
-
-	//Asse y+ BLU
-	freccia = glm::rotate(freccia, PI / 2, glm::vec3(0.0f, 0.0f, 1.0f));
-	frecciaShader.setMat4("model", freccia);
-	frecciaShader.setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
-	modelFreccia.Draw(frecciaShader);
-
-	//Asse z+ VERDE
-	freccia = glm::translate(freccia, glm::vec3(0.0f, 0.0f, 0.0f));
-	freccia = glm::rotate(freccia, PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
-	frecciaShader.setMat4("model", freccia);
-	frecciaShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-	modelFreccia.Draw(frecciaShader);
-}
-
-void renderLimitiAlieniAsseZ() {
-	//Disegno la terna di riferimento
-
-	//Asse x+ ROSSO
-	frecciaShader.use();
-	glm::mat4 freccia = glm::mat4(1.0f);
-	freccia = glm::translate(freccia, glm::vec3(0.0f, 0.0f, -20.0f));
-	freccia = glm::scale(freccia, glm::vec3(0.3f, 0.3f, 0.3f));
-	freccia = glm::rotate(freccia, -PI / 2, glm::vec3(0.0f, 0.0f, 1.0f));
-	frecciaShader.setMat4("model", freccia);
-	frecciaShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
-	modelFreccia.Draw(frecciaShader);
-
-	//Asse x+ ROSSO
-	glm::mat4 freccia2 = glm::mat4(1.0f);
-	freccia2 = glm::translate(freccia2, glm::vec3(0.0f, 0.0f, 10.0f));
-	freccia2 = glm::scale(freccia2, glm::vec3(0.3f, 0.3f, 0.3f));
-	freccia2 = glm::rotate(freccia2, -PI / 2, glm::vec3(0.0f, 0.0f, 1.0f));
-	frecciaShader.setMat4("model", freccia2);
-	frecciaShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
-	modelFreccia.Draw(frecciaShader);
-
-}
-
-
 void checkCollisioneAlieniBarriere() {
 	for (int i = 0; i < alieno.getRigheAlieni(); i++){
 		for (int j = 0; j < alieno.getColonneAlieni(); j++){
@@ -1199,11 +1148,10 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	ufo.checkIsHitted(proiettileNavicella);
 	ufo.checkIsHitted(proiettileSpeciale);
 
-
-
 	esplosione.render();
-
+	proiettileSpeciale.checkColpiBonus(navicella.getIsHitted());
 	checkCollisioneAlieniBarriere();
+
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1238,38 +1186,42 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	renderQuad2();
 
 	glDisable(GL_DEPTH_TEST);
-	if (navicella.getVite() >= 0) {
-		// Render the standard UI elements
-		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
-		RenderText(viteNavicella.c_str(), SCR_WIDTH / 2, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	
+	renderText();
 
-		std::string punteggio = "SCORE:" + std::to_string(score);
-		RenderText(punteggio.c_str(), SCR_WIDTH/15, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	glEnable(GL_DEPTH_TEST);
+}
 
-		std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
-		RenderText(livello.c_str(), SCR_WIDTH / 4, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+void renderText() {
 
-		std::string recordScore = "RECORD:" + std::to_string(record);
-		RenderText(recordScore.c_str(), (SCR_WIDTH / 2) + (SCR_WIDTH/8), SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	float centro = SCR_WIDTH / 2.0f;
+	float delta = SCR_WIDTH / 5.0f;
+	float puntoAltezza = SCR_HEIGHT - (SCR_HEIGHT / 10.0f);
+	float dimensione = 0.5f * (SCR_HEIGHT/1000.0f);
 
-		if (navicella.getVite() == 0) {
-			RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 0.0f, 0.0f));
-		}
+	std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
+
+	if (navicella.getVite() > 0) {
+		RenderText(viteNavicella.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 	}
 
-	else {
+	std::string recordScore = "RECORD:" + std::to_string(record);
+	RenderText(recordScore.c_str(), centro + delta, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 
-		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
-		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
+	RenderText(livello.c_str(), centro - delta, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 
-		std::string punteggio = "SCORE:" + std::to_string(score);
-		RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	std::string punteggio = "SCORE:" + std::to_string(score);
+	RenderText(punteggio.c_str(), centro - (delta * 2), puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 
-		std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
-		RenderText(livello.c_str(), 600, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	if (navicella.getVite() == 0) {
+		RenderText(viteNavicella.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 0.0f, 0.0f));
+	}
 
-		std::string recordScore = "RECORD:" + std::to_string(record);
-		RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+	if (navicella.getVite() < 0) {
+		viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
+		RenderText(viteNavicella.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
+
 		// Game over logic
 		float centerX = SCR_WIDTH / 2.0f;
 		float centerY = SCR_HEIGHT / 2.0f;
@@ -1281,12 +1233,10 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		gameOverScale += gameOverGrowthRate;
 
 		// Stop growing after a certain size
-		if (gameOverScale > 2.0f) {
-			gameOverScale = 2.0f; // Max size
+		if (gameOverScale > dimensione * 4) {
+			gameOverScale = dimensione * 4; // Max size
 		}
 	}
-	
-	glEnable(GL_DEPTH_TEST);
 }
 
 // renders a 1x1 quad in NDC with manually calculated tangent vectors

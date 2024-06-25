@@ -215,7 +215,7 @@ public:
         glStencilMask(0x00);
         glDisable(GL_DEPTH_TEST);
         shaderStencil.use();
-        shaderStencil.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+        shaderStencil.setInt("val", 2);
 
 
         modelNavicella = glm::mat4(1.0f);

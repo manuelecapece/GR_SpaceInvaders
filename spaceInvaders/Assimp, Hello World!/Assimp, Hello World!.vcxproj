@@ -166,8 +166,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="2.stencil_single_color.fs" />
-    <None Include="2.stencil_testing.vs" />
+    <None Include="stencilTesting.fs" />
+    <None Include="stencilTesting.vs" />
     <None Include="alieno.fs" />
     <None Include="alieno.vs" />
     <None Include="barriera.fs" />
