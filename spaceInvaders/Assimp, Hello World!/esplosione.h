@@ -329,6 +329,8 @@ public:
 
     void render() {
 
+        shader.use();
+
         for (int i = 0; i < vecPos.size(); i++) {
 
             for (int j = 0; j < nCubi; j++) {

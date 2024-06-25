@@ -35,6 +35,7 @@ private:
     double startTimeHitted;
     Shader shader;
     Shader bonusShader;
+    Shader shaderStencil;
     Model model;
     Model modelSfera;
     bool isInvincibile = false;
@@ -100,6 +101,10 @@ public:
         shader = newShader;
     }
 
+    void setShaderStencil(Shader newShader) {
+        shaderStencil = newShader;
+    }
+
     void setModel(Model newModel) {
         model = newModel;
     }
@@ -116,7 +121,7 @@ public:
         modelSfera = newModel;
     }
 
-    void render(bool moveRight, bool moveLeft) {
+    void render(bool moveRight, bool moveLeft, Proiettile proiettileSpeciale) {
 
         if (!isHitted) {
             shader.use();  
@@ -133,7 +138,14 @@ public:
                     disegnaNavicellaTrasparente(moveRight, moveLeft);
                 }
                 else {
-                    disegnaNavicella(moveRight, moveLeft);
+                    
+
+                    if (proiettileSpeciale.getColpiSpecialiDisponibili() > 0) {
+                        disegnaNavicellaStencil(moveRight, moveLeft);
+                    }
+                    else {
+                        disegnaNavicella(moveRight, moveLeft);
+                    }
                 }
 
             }
@@ -181,6 +193,45 @@ public:
         ruotaNavicella(moveRight, moveLeft, modelNavicella);
         shader.setMat4("model", modelNavicella);
         model.Draw(shader);
+    }
+
+    void disegnaNavicellaStencil(bool moveRight, bool moveLeft) {
+
+
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilMask(0xFF);
+
+        //Per il modello navicella
+        shader.use();
+        glm::mat4 modelNavicella = glm::mat4(1.0f);
+        modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+        modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+        ruotaNavicella(moveRight, moveLeft, modelNavicella);
+        shader.setMat4("model", modelNavicella);
+        model.Draw(shader);
+
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilMask(0x00);
+        glDisable(GL_DEPTH_TEST);
+        shaderStencil.use();
+        shaderStencil.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+
+
+        modelNavicella = glm::mat4(1.0f);
+        modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.27f, 0.27f, 0.27f));
+        modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+        ruotaNavicella(moveRight, moveLeft, modelNavicella);
+        shader.setMat4("model", modelNavicella);
+        model.Draw(shaderStencil);
+
+
+        glBindVertexArray(0);
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 0, 0xFF);
+        glEnable(GL_DEPTH_TEST);
+
     }
 
     void disegnaNavicellaTrasparente(bool moveRight, bool moveLeft) {
@@ -316,6 +367,7 @@ public:
 
             //proiettile.incrementaColpi();
             proiettile.incrementaColpiSpecialiSparati();
+            proiettile.decrementaColpiSpecialiDisponibili();
             proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
             glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
             proiettile.inizializzaDir(proiettileAt);

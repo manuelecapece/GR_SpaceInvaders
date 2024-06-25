@@ -698,7 +698,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	vista = 0;
 
@@ -761,20 +761,13 @@ int main()
 		return -1;
 	}
 
-
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
-	//glEnable(GL_STENCIL_TEST);
-	//glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
+	// configure global opengl state
+	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-	//glEnable(GL_CULL_FACE);
 
 	initRenderText(SCR_WIDTH, SCR_HEIGHT);
 
@@ -815,13 +808,13 @@ int main()
 	Shader shaderBlur("blur.vs", "blur.fs");
 	Shader shaderBloomFinal("bloom_final.vs", "bloom_final.fs");
 
-	//Textures
-
 
 	// configure (floating point) framebuffers
 	// ---------------------------------------
 	glGenFramebuffers(1, &hdrFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+
 
 	// create 2 floating point color buffers (1 for normal rendering, other for brightness threshold values)
 
@@ -837,12 +830,15 @@ int main()
 		// attach texture to framebuffer
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
 	}
-	// create and attach depth buffer (renderbuffer)
-	unsigned int rboDepth;
-	glGenRenderbuffers(1, &rboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+	// Crea il renderbuffer per depth e stencil
+	unsigned int rboDepthStencil;
+	glGenRenderbuffers(1, &rboDepthStencil);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
+
+
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
@@ -869,6 +865,8 @@ int main()
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete!" << std::endl;
 	}
+
+
 
 	//Binding per mattoni con texture diffuse e speculari
 	glGenVertexArrays(1, &cubeVAO);
@@ -948,6 +946,7 @@ int main()
 	alieno.setBonusShader(stencilShader);
 
 	navicella.setShader(navicellaShader);
+	navicella.setShaderStencil(stencilShader);
 	navicella.setModel(modelNavicella);
 	navicella.setModelSfera(modelSfera);
 	navicella.setSuono(suono);
@@ -1010,7 +1009,7 @@ int main()
 	proiettileUfo.setModel(modelCubo);
 	proiettileUfo.setSpeed(4.0f);
 
-	esplosione.setShader(proiettileShader);
+	esplosione.setShader(barrieraShader);
 	esplosione.setModel(modelCubo);
 	esplosione.setSuono(suono);
 
@@ -1058,6 +1057,7 @@ int main()
 		blendingShader.setFloat("alpha", 0.2);
 		stencilShader.use();
 		stencilShader.setMat4("view", view);
+		//stencilShader.setVec3("color", glm::vec3(1.0f, 1.0f, 0.26f));
 		
 		for (auto& pianeta : pianeti) {
 			pianeta.update(deltaTime);
@@ -1170,28 +1170,28 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 {
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // don't forget to clear the stencil buffer!
 	// 1. render scene into floating point framebuffer
 	// -----------------------------------------------
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	//renderTerna();
-	//renderLimitiAlieniAsseZ();
-	//renderLimitiAlieniAsseX();
 
 	//alieno.render(proiettileNavicella, navicella, esplosione);
-
-	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
-	navicella.render(moveRight, moveLeft);proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
-	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
-	alieno.renderProiettili(navicella, barriera, esplosione);
-	roccia.render();
-
 	for (auto& pianeta : pianeti) {
 		pianeta.render();
 	}
+
+	barriera.renderBarriere(proiettileNavicella);
+	barriera.renderBarriere(proiettileSpeciale);
+	barriera.renderBarriere(proiettileUfo);
+
+	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
+	navicella.render(moveRight, moveLeft, proiettileSpeciale);
+	proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
+	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
+	alieno.renderProiettili(navicella, barriera, esplosione);
+	roccia.render();
 
 	ufo.render(esplosione);
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
@@ -1199,9 +1199,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	ufo.checkIsHitted(proiettileNavicella);
 	ufo.checkIsHitted(proiettileSpeciale);
 
-	barriera.renderBarriere(proiettileNavicella);
-	barriera.renderBarriere(proiettileSpeciale);
-	barriera.renderBarriere(proiettileUfo);
+
 
 	esplosione.render();
 
@@ -1229,7 +1227,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
 	// --------------------------------------------------------------------------------------------------------------------------
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	shaderBloomFinal.use();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
@@ -1243,22 +1241,26 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	if (navicella.getVite() >= 0) {
 		// Render the standard UI elements
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
-		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(viteNavicella.c_str(), SCR_WIDTH / 2, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		std::string punteggio = "SCORE:" + std::to_string(score);
-		RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(punteggio.c_str(), SCR_WIDTH/15, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
-		RenderText(livello.c_str(), 600, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(livello.c_str(), SCR_WIDTH / 4, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		std::string recordScore = "RECORD:" + std::to_string(record);
-		RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(recordScore.c_str(), (SCR_WIDTH / 2) + (SCR_WIDTH/8), SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		if (navicella.getVite() == 0) {
 			RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 0.0f, 0.0f));
 		}
 	}
+<<<<<<< HEAD
 	else { 
+=======
+	else {
+>>>>>>> 88edffa7407557a33e70523bdd59b31925fa83f5
 
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
@@ -1286,7 +1288,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 			gameOverScale = 2.0f; // Max size
 		}
 	}
-
+	
 	glEnable(GL_DEPTH_TEST);
 }
 
