@@ -700,7 +700,7 @@ int main()
 
 	bool schermoIntero = true;
 
-	vista = 1;
+	vista = 0;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -780,7 +780,7 @@ int main()
 
 	// load models
 	modelFreccia = Model("../src/models/freccia/freccia.obj");
-	modelSfera = Model("../src/models/sfera/sfera.obj");
+	modelSfera = Model("../src/models/sfera/sphere.obj");
 	modelCubo = Model("../src/models/cubo.obj");
 	modelNavicella = Model("../src/models/navicella/navicella.obj");
 	modelUfoRetro = Model("../src/models/retroUfo/retroUfo.obj");
@@ -1059,12 +1059,9 @@ int main()
 		stencilShader.use();
 		stencilShader.setMat4("view", view);
 		
-		
-
 		for (auto& pianeta : pianeti) {
 			pianeta.update(deltaTime);
 		}
-
 
 		render(shaderBlur, shaderBloomFinal);
 
@@ -1261,10 +1258,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 			RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 0.0f, 0.0f));
 		}
 	}
-	else {
-
-
-		
+	else { 
 
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
