@@ -46,7 +46,9 @@ private:
     float speed = 0.07;
     float speedProiettili = 6;
     int alieniEliminati = 0;
+    float alpha = 0.3;
     Shader shader;
+    Shader bonusShader;
     std::vector<Model> models =  std::vector<Model>(5);
     Model modelSfera;
     bool spawnaAlieni = true;
@@ -182,6 +184,10 @@ public:
         shader = newShader;
     }
 
+    void setBonusShader(Shader newBonusShader) {
+        bonusShader = newBonusShader;
+    }
+
     void setModelSfera(Model newModel) {
         modelSfera = newModel;
     }
@@ -239,13 +245,6 @@ public:
 
                     //RENDER ALIENO SENZA BONUS
                     if (mapBonus[i][j] == 0) {
-                        //Per modello sfera
-                        //glm::mat4 sferaModel = glm::mat4(1.0f);
-                        //sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
-                        //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                        //shader.setMat4("model", sferaModel);
-                        //modelSfera.Draw(shader);
-
                         //Per modello alieno
                         glm::mat4 modelAlieno = glm::mat4(1.0f);
                         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
@@ -255,15 +254,37 @@ public:
                     }
                     //RENDER ALIENO CON BONUS
                     else {
-                        //DISEGNA ALIENO IN STENCIL TESTING
+                    // Step 1: Draw alien into stencil buffer
+                        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+                        glStencilMask(0xFF);
 
-                        //Per modello sfera
+                        bonusShader.use();
                         glm::mat4 sferaModel = glm::mat4(1.0f);
                         sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
-                        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                        shader.setMat4("model", sferaModel);
-                        modelSfera.Draw(shader);
+                        sferaModel = glm::scale(sferaModel, glm::vec3(0.345f, 0.345f, 0.345f));
+                        bonusShader.setMat4("model", sferaModel);
+                        models[i].Draw(bonusShader);
+
+                        // Step 2: Draw outline where stencil is not 1
+                        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+                        glStencilMask(0x00);
+                        glDisable(GL_DEPTH_TEST);
+
+                        shader.use();  // Use a different shader for the outline
+                        glm::mat4 modelOutline = glm::mat4(1.0f);
+                        modelOutline = glm::translate(modelOutline, glm::vec3(x, 0.0f, z));
+                        modelOutline = glm::scale(modelOutline, glm::vec3(0.3f, 0.3f, 0.3f));  // Slightly larger for the outline
+                        shader.setMat4("model", modelOutline);
+                        models[i].Draw(shader);
+
+                         // Reset to default stencil state
+                        glStencilMask(0xFF);
+                        glStencilFunc(GL_ALWAYS, 0, 0xFF);
+                        glEnable(GL_DEPTH_TEST);
+
                     }
+
+                    shader.use();
 
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 

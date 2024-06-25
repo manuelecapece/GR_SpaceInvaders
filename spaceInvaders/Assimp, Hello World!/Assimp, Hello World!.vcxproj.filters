@@ -94,6 +94,12 @@
     <None Include="pianeta.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="2.stencil_single_color.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="2.stencil_testing.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

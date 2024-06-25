@@ -51,6 +51,8 @@ Shader navicellaShader;
 Shader ufoRetroShader;
 Shader rocciaShader;
 Shader pianetaShader;
+Shader blendingShader;
+Shader stencilShader;
 
 //Dichiarazione modelli
 Model modelFreccia;
@@ -678,7 +680,7 @@ int main()
 
 	bool schermoIntero = true;
 
-	vista = 1;
+	vista = 0;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -739,9 +741,18 @@ int main()
 		return -1;
 	}
 
+
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LESS);
+	//glEnable(GL_STENCIL_TEST);
+	//glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	//glEnable(GL_CULL_FACE);
 
@@ -749,7 +760,7 @@ int main()
 
 	// load models
 	modelFreccia = Model("../src/models/freccia/freccia.obj");
-	modelSfera = Model("../src/models/sfera/sferaRaggio1metro.obj");
+	modelSfera = Model("../src/models/sfera/sfera.obj");
 	modelCubo = Model("../src/models/cubo.obj");
 	modelNavicella = Model("../src/models/navicella/navicella.obj");
 	modelUfoRetro = Model("../src/models/retroUfo/retroUfo.obj");
@@ -775,6 +786,9 @@ int main()
 	ufoRetroShader = Shader("ufoRetro.vs", "ufoRetro.fs");
 	rocciaShader = Shader("roccia.vs", "roccia.fs");
 	pianetaShader = Shader("pianeta.vs", "pianeta.fs");
+	blendingShader = Shader("blending.vs", "blending.fs");
+	stencilShader = Shader("2.stencil_testing.vs", "2.stencil_single_color.fs");
+
 	
 	// build and compile shaders
 	// -------------------------
@@ -887,6 +901,12 @@ int main()
 	pianetaShader.use();
 	pianetaShader.setMat4("projection", projection);
 
+	blendingShader.use();
+	blendingShader.setMat4("projection", projection);
+
+	stencilShader.use();
+	stencilShader.setMat4("projection", projection);
+
 
 	// shader configuration
 	// --------------------
@@ -904,11 +924,13 @@ int main()
 	alieno.setModels(modelAlieno1, modelAlieno2, modelAlieno3, modelAlieno4, modelAlieno5);
 	alieno.inizializzaBonus();
 	alieno.setSuono(suono);
+	alieno.setBonusShader(stencilShader);
 
 	navicella.setShader(navicellaShader);
 	navicella.setModel(modelNavicella);
 	navicella.setModelSfera(modelSfera);
 	navicella.setSuono(suono);
+	navicella.setBonusShader(blendingShader);
 
 	ufo.setShader(ufoRetroShader);
 	ufo.setModel(modelUfoRetro);
@@ -978,9 +1000,11 @@ int main()
 	//float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
 	//navicella.setLimXpos(limX_pos);
 
+
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
+		
 		// input
 		processInput(window);
 		idle();
@@ -1005,10 +1029,18 @@ int main()
 		roccia.update(deltaTime);
 		pianetaShader.use();
 		pianetaShader.setMat4("view", view);
+		blendingShader.use();
+		blendingShader.setMat4("view", view);
+		blendingShader.setFloat("alpha", 0.2);
+		stencilShader.use();
+		stencilShader.setMat4("view", view);
+		
+		
 
 		for (auto& pianeta : pianeti) {
 			pianeta.update(deltaTime);
 		}
+
 
 		render(shaderBlur, shaderBloomFinal);
 
@@ -1117,24 +1149,23 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 {
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
 	// 1. render scene into floating point framebuffer
 	// -----------------------------------------------
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//renderTerna();
 	//renderLimitiAlieniAsseZ();
 	//renderLimitiAlieniAsseX();
 
 	//alieno.render(proiettileNavicella, navicella, esplosione);
+
 	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
-	navicella.render(moveRight,moveLeft);
-	proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
+	navicella.render(moveRight, moveLeft);proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
 	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
 	alieno.renderProiettili(navicella, barriera, esplosione);
-
 	roccia.render();
 
 	for (auto& pianeta : pianeti) {
@@ -1177,7 +1208,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
 	// --------------------------------------------------------------------------------------------------------------------------
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	shaderBloomFinal.use();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);

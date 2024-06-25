@@ -34,6 +34,7 @@ private:
     int vite = 2;
     double startTimeHitted;
     Shader shader;
+    Shader bonusShader;
     Model model;
     Model modelSfera;
 
@@ -94,6 +95,10 @@ public:
         model = newModel;
     }
 
+    void setBonusShader(Shader newBonusShader) {
+        bonusShader = newBonusShader;
+    }
+
     void setHisHitted(bool newValue) {
         isHitted = newValue;
     }
@@ -136,15 +141,7 @@ public:
             else if (glfwGetTime() - startTimeScudo < tempoScudo) {
 
                 //DISEGNO NAVICELLA CON SFERA TRASPARENTE 
-
-                //Per il modello sfera
-                glm::mat4 sferaModel = glm::mat4(1.0f);
-                sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-                sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                shader.setMat4("model", sferaModel);
-                modelSfera.Draw(shader);
-
-                //Per il modello navicella
+               
                 glm::mat4 modelNavicella = glm::mat4(1.0f);
                 modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
                 modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
@@ -152,10 +149,22 @@ public:
                 ruotaNavicella(moveRight, moveLeft, modelNavicella);
                 shader.setMat4("model", modelNavicella);
                 model.Draw(shader);
+
+                glEnable(GL_BLEND);
+                bonusShader.use();
+                glm::mat4 sferaModel = glm::mat4(1.0f);
+                sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.35f));
+                sferaModel = glm::scale(sferaModel, glm::vec3(1.55, 1.55, 1.55));
+                sferaModel = glm::rotate(sferaModel, pigreco/2, glm::vec3(0.0f, 1, 0.0f));
+                bonusShader.setMat4("model", sferaModel);
+                modelSfera.Draw(bonusShader);
+                glDisable(GL_BLEND);
+               
             }
             else {
                 scudo = false;
             }
+            
 
             ////Per il modello navicella
             //glm::mat4 modelNavicella = glm::mat4(1.0f);
