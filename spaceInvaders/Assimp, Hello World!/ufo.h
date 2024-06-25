@@ -135,9 +135,8 @@ public:
     }
 
     void checkIsHitted(Proiettile& proiettile) {
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        for (int i = 0; i < proiettile.getVecPos().size() ; i++)
         {
-
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
@@ -164,7 +163,7 @@ public:
     void inizializzaProiettile(Proiettile& proiettile) {
         if (isInRangeSparo() && colpiSubiti < vite && speed != 0.0f) {
             proiettile.setSpeed(speedProiettili);
-            proiettile.incrementaColpi();
+            //proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);

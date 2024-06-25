@@ -42,6 +42,7 @@ private:
     ISoundSource* movimentoUfo;
     ISoundSource* colpisciUfo;
     ISound* suonoUfo;
+    double startTimeGameOver = 9999999999;
 
 public:
     // Costruttore
@@ -75,6 +76,10 @@ public:
 
     void setPlayMovimentoUfo(bool val) {
         playMovimentoUfo = val;
+    }
+
+    void inizializzaStartTimeGameOver() {
+        startTimeGameOver = glfwGetTime();
     }
 
     void soundGameStart() {

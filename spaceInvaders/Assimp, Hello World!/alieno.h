@@ -30,12 +30,6 @@ private:
                                          {4,4,4,4,4},
                                          {5,5,5,5,5}};
 
-    //std::vector<std::vector<int>> map = { {1,1,1,1,1},
-    //                                      {0,0,0,0,0},
-    //                                      {0,0,0,0,0},
-    //                                      {0,0,0,0,0},
-    //                                      {0,0,0,0,0} };
-
     float raggio = 1.0f;
     float spazio = 1.3f;
     glm::vec3 pos = glm::vec3(-(colonneAlieni/2 * raggio * 2.0f * spazio), 0.0, -17.8f);
@@ -335,7 +329,7 @@ public:
             float z = pos.z + i * raggio * 2.0f * spazio;
 
             vectorProiettili[k].setSpeed(speedProiettili);
-            vectorProiettili[k].incrementaColpi();
+            //vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);
@@ -481,7 +475,7 @@ public:
 
 
     bool isHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        for (int i = 0; i < proiettile.getVecPos().size(); i++)
         {
             if (proiettile.getVecPos().size() > 0) {
                 float proiettile_x = proiettile.getVecPos()[i].x;
@@ -558,12 +552,12 @@ public:
             mapBonus[idRiga][idColonna] = tipoBonus;
         }
 
-        for (const auto& row : mapBonus) {
-            for (int value : row) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
-        }
+        //for (const auto& row : mapBonus) {
+        //    for (int value : row) {
+        //        std::cout << value << " ";
+        //    }
+        //    std::cout << std::endl;
+        //}
     }
 
     void inizializzaMapHitted() {

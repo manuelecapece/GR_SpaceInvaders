@@ -73,6 +73,7 @@ public:
     }
 
     void inizializza(glm::vec3 posizione, int tipo) {
+        suono.inizializzaStartTimeGameOver();
         suonoEsplosione(tipo);
         vecPosInit.push_back(posizione);
         glm::vec3 direzione = glm::vec3(rndFloat(), rndFloat(), rndFloat());

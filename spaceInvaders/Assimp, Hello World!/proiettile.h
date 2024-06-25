@@ -30,7 +30,7 @@ private:
     std::vector<glm::vec3> vectorPos;
     std::vector<glm::vec3> vectorDir;
 
-    int colpiSparati = -1;
+    //int colpiSparati = -1;
     int colpiSpecialiSparati = 0;
     bool isSpeciale = false;
 
@@ -58,9 +58,9 @@ public:
         return speed;
     }
 
-    int getColpiSparati() const {
-        return colpiSparati;
-    }
+    //int getColpiSparati() const {
+    //    return colpiSparati;
+    //}
 
     float getLunghezza() const {
         return lunghezza;
@@ -87,7 +87,7 @@ public:
     }
 
     void ripristinaColpiSparati() {
-        colpiSparati = -1;
+        //colpiSparati = -1;
         vectorPos.clear();
         vectorDir.clear();
     }
@@ -128,9 +128,9 @@ public:
         vectorDir.push_back(newDir);
     }
 
-    void incrementaColpi() {
-        colpiSparati++;
-    }
+    //void incrementaColpi() {
+    //    colpiSparati++;
+    //}
 
     void incrementaColpiSpecialiSparati() {
         colpiSpecialiSparati++;
@@ -192,7 +192,7 @@ public:
 
     bool isAllProiettiliAlienoOut() {
 
-        for (int i = 0; i < colpiSparati + 1; i++)
+        for (int i = 0; i < vectorPos.size(); i++)
         {
             if (vectorPos[i].z < limZPos)
             {
@@ -209,7 +209,7 @@ public:
         std::vector<glm::vec3>::iterator itPos = vectorPos.begin() + i;
         vectorDir.erase(itDir);
         vectorPos.erase(itPos);
-        colpiSparati = colpiSparati - 1;
+        //colpiSparati = colpiSparati - 1;
     }
 
     void ripristinaColpiSpeciali() {

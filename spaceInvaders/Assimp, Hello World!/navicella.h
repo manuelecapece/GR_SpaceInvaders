@@ -24,7 +24,7 @@ const int TIPO_NAVICELLA = 7;
 class Navicella {
 private:
 
-    glm::vec3 pos = glm::vec3(0.05f, 0.0, 8.0f);
+    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.0f);
     float raggio = 1.0f;
     float rotation = 0.0f;
     float translateSpeed;
@@ -200,7 +200,7 @@ public:
 
     void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione, bool spawnaAlieni) {
 
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        for (int i = 0; i < proiettile.getVecPos().size(); i++)
         {
 
             glm::vec3 centroRect = glm::vec3(proiettile.getVecPos()[i].x, 0.0f, proiettile.getVecPos()[i].z);
@@ -266,7 +266,7 @@ public:
     }
 
     void ripristinaPosizioneIniziale() {
-        pos = glm::vec3(0.05f, 0.0, 8.0f);
+        pos = glm::vec3(0.0f, 0.0, 8.0f);
     }
 
     void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {
@@ -277,7 +277,7 @@ public:
     }
 
     void inizializzaProiettile(Proiettile& proiettile, Suono suono) {
-        proiettile.incrementaColpi();
+        //proiettile.incrementaColpi();
         proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
@@ -288,7 +288,7 @@ public:
     void inizializzaProiettileSpeciale(Proiettile& proiettile, int livello) {
         if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < 1) {
 
-            proiettile.incrementaColpi();
+            //proiettile.incrementaColpi();
             proiettile.incrementaColpiSpecialiSparati();
             proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
             glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);

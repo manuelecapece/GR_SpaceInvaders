@@ -78,8 +78,9 @@ double stSparoUfo = glfwGetTime();
 double stSparoAlieni  = glfwGetTime();
 double startTime2s  = glfwGetTime();
 double startTime = glfwGetTime();
-double startTime20s = glfwGetTime();
+double stSpawnUfo = glfwGetTime();
 double startTimexs = glfwGetTime();
+double startTimeGameOver = 0;
 double currentxs;
 double deltaxs = 0;
 float deltaSparoAlieni = 2.0f;
@@ -320,10 +321,10 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 void idle()
 {
 	suono.soundGameStart();
-	double ctSparoUfo = glfwGetTime();
+	double ctSparoUfo = glfwGetTime(); 
 	double ctSparoAlieni = glfwGetTime();
 	double currentTime2s = glfwGetTime();
-	double currentTime20s = glfwGetTime();
+	double ctSpawnUfo = glfwGetTime();
 
 	double currentTime = glfwGetTime();
 	double currentFrame = glfwGetTime();
@@ -366,9 +367,9 @@ void idle()
 
 		muoviAlieni();
 
-		if (currentTime20s - startTime20s >= 20.0f) {
+		if (ctSpawnUfo - stSpawnUfo >= 30.0f) {
 			ufo.ripristinaPosizioneIniziale();
-			startTime20s = currentTime20s;
+			stSpawnUfo = ctSpawnUfo;
 		}
 
 	}
@@ -407,7 +408,7 @@ void ripristinaGioco() {
 	startTime = glfwGetTime();
 	stSparoUfo = glfwGetTime();
 	stSparoAlieni = glfwGetTime();
-	startTime20s = glfwGetTime();
+	stSpawnUfo = glfwGetTime();
 
 	if (deltaSparoAlieni > 0.5f) {
 		deltaSparoAlieni = deltaSparoAlieni - 0.25f;
@@ -435,7 +436,11 @@ void ripristinaCameraPos() {
 }
 
 void checkGameLost() {
-
+	if (navicella.getVite() < 0 && startTimeGameOver == 0) {
+		startTimeGameOver = glfwGetTime();
+	}else if (glfwGetTime() - startTimeGameOver > 0.5f && startTimeGameOver != 0) {
+		suono.soundGameOver();
+	}
 }
 
 void checkGameWin() {
@@ -1210,7 +1215,9 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		}
 	}
 	else {
-		suono.soundGameOver();
+
+
+		
 
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
