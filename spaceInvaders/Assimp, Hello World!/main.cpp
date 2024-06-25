@@ -406,7 +406,7 @@ void checkNavicellaIsInvincibile() {
 		return;
 	}
 
-	if (navicella.getIsInvincibile() && glfwGetTime() - navicella.getStartTimeHitted() > 3.0f) {
+	if (navicella.getIsInvincibile() && glfwGetTime() - navicella.getStartTimeHitted() > 4.0f) {
 		navicella.setIsInvincibile(false);
 	}
 }

@@ -210,6 +210,10 @@ public:
 
     void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione, bool spawnaAlieni) {
 
+        if (isInvincibile) {
+            return;
+        }
+
         for (int i = 0; i < proiettile.getVecPos().size(); i++)
         {
 
