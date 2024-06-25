@@ -6,9 +6,13 @@ in vec2 TexCoords;
 
 uniform sampler2D texture_diffuse1;
 
+uniform vec3 color;
+
 void main()
 {
+    
+    //FragColor = vec4(color, 1.0);
     FragColor = vec4(1.00, 1.00, 0.26, 1.0);
-
+    BrightColor = vec4(FragColor.rgb, 1.0);
 }
 

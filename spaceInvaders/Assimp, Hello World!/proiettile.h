@@ -244,6 +244,10 @@ public:
         colpiSpecialiDisponibili++;
     }
 
+    void decrementaColpiSpecialiDisponibili() {
+        colpiSpecialiDisponibili--;
+    }
+
 };
 
 #endif 

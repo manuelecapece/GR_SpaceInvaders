@@ -698,7 +698,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	vista = 1;
 
@@ -946,6 +946,7 @@ int main()
 	alieno.setBonusShader(stencilShader);
 
 	navicella.setShader(navicellaShader);
+	navicella.setShaderStencil(stencilShader);
 	navicella.setModel(modelNavicella);
 	navicella.setModelSfera(modelSfera);
 	navicella.setSuono(suono);
@@ -1008,7 +1009,7 @@ int main()
 	proiettileUfo.setModel(modelCubo);
 	proiettileUfo.setSpeed(4.0f);
 
-	esplosione.setShader(proiettileShader);
+	esplosione.setShader(barrieraShader);
 	esplosione.setModel(modelCubo);
 	esplosione.setSuono(suono);
 
@@ -1056,6 +1057,7 @@ int main()
 		blendingShader.setFloat("alpha", 0.2);
 		stencilShader.use();
 		stencilShader.setMat4("view", view);
+		//stencilShader.setVec3("color", glm::vec3(1.0f, 1.0f, 0.26f));
 		
 		
 
@@ -1183,8 +1185,13 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		pianeta.render();
 	}
 
+	barriera.renderBarriere(proiettileNavicella);
+	barriera.renderBarriere(proiettileSpeciale);
+	barriera.renderBarriere(proiettileUfo);
+
 	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
-	navicella.render(moveRight, moveLeft);proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
+	navicella.render(moveRight, moveLeft, proiettileSpeciale);
+	proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
 	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
 	alieno.renderProiettili(navicella, barriera, esplosione);
 	roccia.render();
@@ -1195,9 +1202,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	ufo.checkIsHitted(proiettileNavicella);
 	ufo.checkIsHitted(proiettileSpeciale);
 
-	barriera.renderBarriere(proiettileNavicella);
-	barriera.renderBarriere(proiettileSpeciale);
-	barriera.renderBarriere(proiettileUfo);
+
 
 	esplosione.render();
 
@@ -1239,16 +1244,16 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	if (navicella.getVite() >= 0) {
 		// Render the standard UI elements
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite());
-		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - (SCR_HEIGHT/10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(viteNavicella.c_str(), SCR_WIDTH / 2, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		std::string punteggio = "SCORE:" + std::to_string(score);
-		RenderText(punteggio.c_str(), 200, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(punteggio.c_str(), SCR_WIDTH/15, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		std::string livello = "LEVEL:" + std::to_string(alieno.getLivello());
-		RenderText(livello.c_str(), 600, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(livello.c_str(), SCR_WIDTH / 4, SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		std::string recordScore = "RECORD:" + std::to_string(record);
-		RenderText(recordScore.c_str(), 1400, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
+		RenderText(recordScore.c_str(), (SCR_WIDTH / 2) + (SCR_WIDTH/8), SCR_HEIGHT - (SCR_HEIGHT / 10.0f), 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
 
 		if (navicella.getVite() == 0) {
 			RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 0.0f, 0.0f));
