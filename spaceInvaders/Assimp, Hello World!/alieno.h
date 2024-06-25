@@ -233,54 +233,15 @@ public:
                     float x = (pos.x + j * raggio * 2.0f * spazio);
                     float z = (pos.z + i * raggio * 2.0f * spazio);
 
-                    //RENDER ALIENO SENZA BONUS
                     if (mapBonus[i][j] == 0) {
-<<<<<<< HEAD
-                        //Per modello alieno
-                        glm::mat4 modelAlieno = glm::mat4(1.0f);
-                        modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
-                        modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
-                        shader.setMat4("model", modelAlieno);
-                        models[i].Draw(shader);
-=======
 
                         disegnaAlieno(x, z, i, j);
->>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
+
                     }
-                    //RENDER ALIENO CON BONUS
                     else {
-                    // Step 1: Draw alien into stencil buffer
-                        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-                        glStencilMask(0xFF);
 
-<<<<<<< HEAD
-                        bonusShader.use();
-                        glm::mat4 sferaModel = glm::mat4(1.0f);
-                        sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
-                        sferaModel = glm::scale(sferaModel, glm::vec3(0.345f, 0.345f, 0.345f));
-                        bonusShader.setMat4("model", sferaModel);
-                        models[i].Draw(bonusShader);
+                        disegnaAlienoStencil(x, z, i, j);
 
-                        // Step 2: Draw outline where stencil is not 1
-                        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-                        glStencilMask(0x00);
-                        glDisable(GL_DEPTH_TEST);
-
-                        shader.use();  // Use a different shader for the outline
-                        glm::mat4 modelOutline = glm::mat4(1.0f);
-                        modelOutline = glm::translate(modelOutline, glm::vec3(x, 0.0f, z));
-                        modelOutline = glm::scale(modelOutline, glm::vec3(0.3f, 0.3f, 0.3f));  // Slightly larger for the outline
-                        shader.setMat4("model", modelOutline);
-                        models[i].Draw(shader);
-
-                         // Reset to default stencil state
-                        glStencilMask(0xFF);
-                        glStencilFunc(GL_ALWAYS, 0, 0xFF);
-                        glEnable(GL_DEPTH_TEST);
-
-=======
-                        disegnaSfera(x, z, i, j);
->>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
                     }
 
                     shader.use();
@@ -308,7 +269,6 @@ public:
                                 mapBonus[i][j] = 0;
                             }
                         }
-
                     }
 
                     navicella.checkCollisionAlien(posAlieno, raggio);
@@ -317,6 +277,37 @@ public:
             }
         }
 
+    }
+
+    void disegnaAlienoStencil(float x, float z, int i, int j) {
+        // Step 1: Draw alien into stencil buffer
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilMask(0xFF);
+
+        bonusShader.use();
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(0.345f, 0.345f, 0.345f));
+        bonusShader.setMat4("model", sferaModel);
+        models[i].Draw(bonusShader);
+
+        // Step 2: Draw outline where stencil is not 1
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilMask(0x00);
+        glDisable(GL_DEPTH_TEST);
+
+        shader.use();  // Use a different shader for the outline
+        glm::mat4 modelOutline = glm::mat4(1.0f);
+        modelOutline = glm::translate(modelOutline, glm::vec3(x, 0.0f, z));
+        modelOutline = glm::scale(modelOutline, glm::vec3(0.3f, 0.3f, 0.3f));  // Slightly larger for the outline
+        //modelOutline = glm::rotate(modelOutline, pigreco, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.setMat4("model", modelOutline);
+        models[i].Draw(shader);
+
+        // Reset to default stencil state
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 0, 0xFF);
+        glEnable(GL_DEPTH_TEST);
     }
 
     void disegnaSfera(float x, float z, int i, int j) {

@@ -128,68 +128,40 @@ public:
                 pos = glm::vec3(pos.x - translateSpeed, pos.y, pos.z);
             }
 
-            //DISEGNO LA NAVICELLA SENZA SCUDO
             if (!scudo) {
                 if (isInvincibile) {
                     disegnaNavicellaTrasparente(moveRight, moveLeft);
                 }
                 else {
-                    //disegnaSfera(moveRight, moveLeft);
                     disegnaNavicella(moveRight, moveLeft);
                 }
 
             }
-            //DISEGNO LA NAVICELLA CON SCUDO
             else if (glfwGetTime() - startTimeScudo < tempoScudo) {
 
-                //DISEGNO NAVICELLA CON SFERA TRASPARENTE 
-<<<<<<< HEAD
-               
-                glm::mat4 modelNavicella = glm::mat4(1.0f);
-                modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-                modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-                modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-                ruotaNavicella(moveRight, moveLeft, modelNavicella);
-                shader.setMat4("model", modelNavicella);
-                model.Draw(shader);
-
-                glEnable(GL_BLEND);
-                bonusShader.use();
-                glm::mat4 sferaModel = glm::mat4(1.0f);
-                sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.35f));
-                sferaModel = glm::scale(sferaModel, glm::vec3(1.55, 1.55, 1.55));
-                sferaModel = glm::rotate(sferaModel, pigreco/2, glm::vec3(0.0f, 1, 0.0f));
-                bonusShader.setMat4("model", sferaModel);
-                modelSfera.Draw(bonusShader);
-                glDisable(GL_BLEND);
-               
-=======
                 disegnaNavicellaConScudo(moveRight, moveLeft);
->>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
+
             }
             else {
                 scudo = false;
             }
-<<<<<<< HEAD
-            
-
-            ////Per il modello navicella
-            //glm::mat4 modelNavicella = glm::mat4(1.0f);
-            //modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-            //modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-            //modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-            //ruotaNavicella(moveRight, moveLeft, modelNavicella);
-            //shader.setMat4("model", modelNavicella);
-            //model.Draw(shader);
-=======
->>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
         }
-
     }
 
     void disegnaNavicellaConScudo(bool moveRight, bool moveLeft) {
-        disegnaSfera(moveRight, moveLeft);
+
         disegnaNavicella(moveRight, moveLeft);
+
+        glEnable(GL_BLEND);
+        bonusShader.use();
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.35f));
+        sferaModel = glm::scale(sferaModel, glm::vec3(1.55, 1.55, 1.55));
+        sferaModel = glm::rotate(sferaModel, pigreco / 2, glm::vec3(0.0f, 1, 0.0f));
+        bonusShader.setMat4("model", sferaModel);
+        modelSfera.Draw(bonusShader);
+        glDisable(GL_BLEND);
+
     }
 
     void disegnaSfera(bool moveRight, bool moveLeft) {

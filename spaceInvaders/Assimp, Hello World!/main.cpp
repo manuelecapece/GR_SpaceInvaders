@@ -700,7 +700,7 @@ int main()
 
 	bool schermoIntero = true;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
