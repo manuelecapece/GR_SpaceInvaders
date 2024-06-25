@@ -698,9 +698,9 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
-	vista = 0;
+	vista = 1;
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -1256,11 +1256,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 			RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 0.0f, 0.0f));
 		}
 	}
-<<<<<<< HEAD
-	else { 
-=======
+
 	else {
->>>>>>> 88edffa7407557a33e70523bdd59b31925fa83f5
 
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
