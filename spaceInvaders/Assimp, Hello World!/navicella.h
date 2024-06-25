@@ -24,7 +24,7 @@ const int TIPO_NAVICELLA = 7;
 class Navicella {
 private:
 
-    glm::vec3 pos = glm::vec3(0.05f, 0.0, 8.0f);
+    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.0f);
     float raggio = 1.0f;
     float rotation = 0.0f;
     float translateSpeed;
@@ -37,6 +37,7 @@ private:
     Shader bonusShader;
     Model model;
     Model modelSfera;
+    bool isInvincibile = false;
 
     bool scudo = false;
     double startTimeScudo;
@@ -65,6 +66,14 @@ public:
 
     double getStartTimeHitted() const {
         return startTimeHitted;
+    }
+
+    bool getIsInvincibile() const {
+        return isInvincibile;
+    }
+
+    void setIsInvincibile(bool val) {
+        isInvincibile = val;
     }
 
     void setPos(glm::vec3 newPos) {
@@ -121,26 +130,20 @@ public:
 
             //DISEGNO LA NAVICELLA SENZA SCUDO
             if (!scudo) {
-                //Per il modello sfera
-                //glm::mat4 sferaModel = glm::mat4(1.0f);
-                //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-                //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-                //shader.setMat4("model", sferaModel);
-                //modelSfera.Draw(shader);
+                if (isInvincibile) {
+                    disegnaNavicellaTrasparente(moveRight, moveLeft);
+                }
+                else {
+                    //disegnaSfera(moveRight, moveLeft);
+                    disegnaNavicella(moveRight, moveLeft);
+                }
 
-                //Per il modello navicella
-                glm::mat4 modelNavicella = glm::mat4(1.0f);
-                modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-                modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
-                modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
-                ruotaNavicella(moveRight, moveLeft, modelNavicella);
-                shader.setMat4("model", modelNavicella);
-                model.Draw(shader);
             }
             //DISEGNO LA NAVICELLA CON SCUDO
             else if (glfwGetTime() - startTimeScudo < tempoScudo) {
 
                 //DISEGNO NAVICELLA CON SFERA TRASPARENTE 
+<<<<<<< HEAD
                
                 glm::mat4 modelNavicella = glm::mat4(1.0f);
                 modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
@@ -160,10 +163,14 @@ public:
                 modelSfera.Draw(bonusShader);
                 glDisable(GL_BLEND);
                
+=======
+                disegnaNavicellaConScudo(moveRight, moveLeft);
+>>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
             }
             else {
                 scudo = false;
             }
+<<<<<<< HEAD
             
 
             ////Per il modello navicella
@@ -174,8 +181,42 @@ public:
             //ruotaNavicella(moveRight, moveLeft, modelNavicella);
             //shader.setMat4("model", modelNavicella);
             //model.Draw(shader);
+=======
+>>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
         }
 
+    }
+
+    void disegnaNavicellaConScudo(bool moveRight, bool moveLeft) {
+        disegnaSfera(moveRight, moveLeft);
+        disegnaNavicella(moveRight, moveLeft);
+    }
+
+    void disegnaSfera(bool moveRight, bool moveLeft) {
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+        shader.setMat4("model", sferaModel);
+        modelSfera.Draw(shader);
+    }
+
+    void disegnaNavicella(bool moveRight, bool moveLeft) {
+        //Per il modello navicella
+        glm::mat4 modelNavicella = glm::mat4(1.0f);
+        modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+        modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
+        ruotaNavicella(moveRight, moveLeft, modelNavicella);
+        shader.setMat4("model", modelNavicella);
+        model.Draw(shader);
+    }
+
+    void disegnaNavicellaTrasparente(bool moveRight, bool moveLeft) {
+        //DISEGNA NAVICELLA CON TRASPARENZA
+        int val = generaNumeroCasualeInt(0, 1);
+        if (val == 1) {
+            disegnaNavicella(moveRight, moveLeft);
+        }
     }
 
     void ruotaNavicella(bool moveRight, bool moveLeft, glm::mat4& modelNavicella) {
@@ -209,7 +250,11 @@ public:
 
     void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione, bool spawnaAlieni) {
 
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        if (isInvincibile) {
+            return;
+        }
+
+        for (int i = 0; i < proiettile.getVecPos().size(); i++)
         {
 
             glm::vec3 centroRect = glm::vec3(proiettile.getVecPos()[i].x, 0.0f, proiettile.getVecPos()[i].z);
@@ -248,12 +293,12 @@ public:
             glm::vec2 centroCirconf = glm::vec2(pos.x, pos.z + 1.);
             if (isPointInsideCircle(punto, centroCirconf)) {
                 proiettile.eliminaInPos(i);
-                if (!scudo) {
+                if (!scudo && !isInvincibile) {
                     startTimeHitted = glfwGetTime();
                     isHitted = true;
                     esplosione.inizializza(pos, TIPO_NAVICELLA);
 
-                    if (vite >= 0) {
+                    if (vite >= 0 ) {
                         vite = vite - 1;
                     }
                     
@@ -275,7 +320,7 @@ public:
     }
 
     void ripristinaPosizioneIniziale() {
-        pos = glm::vec3(0.05f, 0.0, 8.0f);
+        pos = glm::vec3(0.0f, 0.0, 8.0f);
     }
 
     void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {
@@ -286,7 +331,7 @@ public:
     }
 
     void inizializzaProiettile(Proiettile& proiettile, Suono suono) {
-        proiettile.incrementaColpi();
+        //proiettile.incrementaColpi();
         proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
         glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
         proiettile.inizializzaDir(proiettileAt);
@@ -295,9 +340,9 @@ public:
     }
 
     void inizializzaProiettileSpeciale(Proiettile& proiettile, int livello) {
-        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < 1) {
+        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < proiettile.getColpiSpecialiDisponibili()) {
 
-            proiettile.incrementaColpi();
+            //proiettile.incrementaColpi();
             proiettile.incrementaColpiSpecialiSparati();
             proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
             glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -338,6 +383,15 @@ public:
 
     void attivaProiettileSpeciale(Proiettile& proiettile) {
         proiettile.setIsSpeciale(true);
+        proiettile.incrementaColpiSpecialiDisponibili();
+    }
+
+    float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(estremoInferiore, estremoSuperiore);
+        int random = dis(gen);
+        return random;
     }
 
 };

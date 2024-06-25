@@ -42,6 +42,7 @@ private:
     ISoundSource* movimentoUfo;
     ISoundSource* colpisciUfo;
     ISound* suonoUfo;
+    double startTimeGameOver = 9999999999;
 
 public:
     // Costruttore
@@ -75,6 +76,10 @@ public:
 
     void setPlayMovimentoUfo(bool val) {
         playMovimentoUfo = val;
+    }
+
+    void inizializzaStartTimeGameOver() {
+        startTimeGameOver = glfwGetTime();
     }
 
     void soundGameStart() {
@@ -112,6 +117,7 @@ public:
     }
 
     void soundDistruggiBarriera() {
+        distruggiBarriera->setDefaultVolume(0.5f);
         soundEngine->play2D(distruggiBarriera, false);
     }
 
@@ -150,7 +156,9 @@ public:
     }
 
     void stopSoundMovimentoUfo() {
-        suonoUfo->stop();
+        if (suonoUfo != nullptr) {
+            suonoUfo->stop();
+        }
     }
 
     void ripristina() {

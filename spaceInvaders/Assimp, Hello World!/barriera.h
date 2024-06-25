@@ -235,7 +235,7 @@ public:
         float distSq = (point.x - center.x) * (point.x - center.x) + (point.y - center.y) * (point.y - center.y);
 
         // Calcola il raggio al quadrato
-        float radiusSq = (larghezza/2) * (larghezza / 2);
+        float radiusSq = (larghezza/1.5f) * (larghezza / 1.5f);
 
         // Controlla se la distanza al quadrato è minore o uguale al raggio al quadrato
         return distSq <= radiusSq;
@@ -243,7 +243,7 @@ public:
 
 
     bool isHitted(Proiettile& proiettile, glm::vec3 posCubo) {
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        for (int i = 0; i < proiettile.getVecPos().size(); i++)
         {
             glm::vec3 centroRect = glm::vec3(proiettile.getVecPos()[i].x,0.0f, proiettile.getVecPos()[i].z);
             glm::vec3 hitPoint;
@@ -381,6 +381,13 @@ public:
             }
         }
 
+    }
+
+    glm::vec3 convert(float r, float g, float b) {
+        float gamma = 2.2;
+        glm::vec3 result = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
+        //result = pow(result, glm::vec3(1.0 / gamma));
+        return result;
     }
 
 };

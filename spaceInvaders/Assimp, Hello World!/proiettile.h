@@ -18,9 +18,9 @@
 class Proiettile {
 private:
 
-    const float lunghezza = 0.5f;
-    const float larghezza = 0.10f;
-    const float altezza = 0.15f;
+    float lunghezza = 0.5f;
+    float larghezza = 0.10f;
+    float altezza = 0.15f;
     float translateSpeed;
     float speed = 15;  
     float limZNeg = -20;
@@ -30,8 +30,9 @@ private:
     std::vector<glm::vec3> vectorPos;
     std::vector<glm::vec3> vectorDir;
 
-    int colpiSparati = -1;
+    //int colpiSparati = -1;
     int colpiSpecialiSparati = 0;
+    int colpiSpecialiDisponibili = 0;
     bool isSpeciale = false;
 
     Shader shader;
@@ -58,8 +59,12 @@ public:
         return speed;
     }
 
-    int getColpiSparati() const {
-        return colpiSparati;
+    //int getColpiSparati() const {
+    //    return colpiSparati;
+    //}
+
+    float getAltezza() const {
+        return altezza;
     }
 
     float getLunghezza() const {
@@ -86,8 +91,24 @@ public:
         return vectorDir;
     }
 
+    int getColpiSpecialiDisponibili() const {
+        return colpiSpecialiDisponibili;
+    }
+
+    void setAltezza(float newAltezza) {
+        altezza = newAltezza;
+    }
+
+    void setLarghezza(float newLarghezza) {
+        larghezza = newLarghezza;
+    }
+
+    void setLunghezza(float newLunghezza) {
+        lunghezza = newLunghezza;
+    }
+
     void ripristinaColpiSparati() {
-        colpiSparati = -1;
+        //colpiSparati = -1;
         vectorPos.clear();
         vectorDir.clear();
     }
@@ -128,9 +149,9 @@ public:
         vectorDir.push_back(newDir);
     }
 
-    void incrementaColpi() {
-        colpiSparati++;
-    }
+    //void incrementaColpi() {
+    //    colpiSparati++;
+    //}
 
     void incrementaColpiSpecialiSparati() {
         colpiSpecialiSparati++;
@@ -138,7 +159,6 @@ public:
 
     void render(glm::vec3 color) {
 
-        //glBindVertexArray(cubeVAO);
         shader.use();
         float angolo = 0;
 
@@ -158,7 +178,7 @@ public:
                 }
 
                 if (isSpeciale) {
-                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza * 1.5, altezza * 1.5, lunghezza * 1.5));
+                    modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
                     model.Draw(shader);    
@@ -166,12 +186,12 @@ public:
                     modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", color);
-                    //glDrawArrays(GL_TRIANGLES, 0, 36);
                     model.Draw(shader);
                 }
             
         }
     }
+
 
     float calcolaAngolo(glm::vec3 u, glm::vec3 v) {
         // Calcolo del prodotto scalare
@@ -192,7 +212,7 @@ public:
 
     bool isAllProiettiliAlienoOut() {
 
-        for (int i = 0; i < colpiSparati + 1; i++)
+        for (int i = 0; i < vectorPos.size(); i++)
         {
             if (vectorPos[i].z < limZPos)
             {
@@ -209,17 +229,20 @@ public:
         std::vector<glm::vec3>::iterator itPos = vectorPos.begin() + i;
         vectorDir.erase(itDir);
         vectorPos.erase(itPos);
-        colpiSparati = colpiSparati - 1;
+        //colpiSparati = colpiSparati - 1;
     }
 
     void ripristinaColpiSpeciali() {
         isSpeciale = false;
         colpiSpecialiSparati = 0;
+        colpiSpecialiDisponibili = 0;
         vectorPos.clear();
         vectorDir.clear();
     }
 
-
+    void incrementaColpiSpecialiDisponibili() {
+        colpiSpecialiDisponibili++;
+    }
 
 };
 

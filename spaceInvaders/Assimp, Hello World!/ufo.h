@@ -27,11 +27,12 @@ private:
     float speed = 3;  
     float speedProiettili = 6;
 
-    float rangeSparoNeg = -10.0f;
-    float rangeSparoPos = 10.0f;
+    float rangeSparoNeg = -18.0f;
+    float rangeSparoPos = 18.0f;
     glm::vec3 posIniziale = glm::vec3(rangeSparoNeg, 0.0, -20.0f);
 
     int colpiSubiti = 0;
+    int vite = 10;//Colpi da subire prima di esplodere
     float rotation = 0;
     Shader shader;
     Model model;
@@ -87,25 +88,11 @@ public:
 
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
 
-        if (colpiSubiti < 10) {
+        if (colpiSubiti < vite) {
             shader.use();
 
-            //Per il modello sfera
-            //glm::mat4 sferaModel = glm::mat4(1.0f);
-            //sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
-            //sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-            //shader.setMat4("model", sferaModel);
-            //modelSfera.Draw(shader);
-
-            //Per il modello ufo
-            glm::mat4 modelUfo = glm::mat4(1.0f);
-            modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
-            modelUfo = glm::scale(modelUfo, glm::vec3(5.2, 5.2, 5.2));
-            modelUfo = glm::rotate(modelUfo, -pigreco/2 , glm::vec3(1.0f, 0.0, 0.0f));
-            rotation = rotation + translateSpeed;
-            modelUfo = glm::rotate(modelUfo, rotation, glm::vec3(0.0f, 1.0, 0.0f));
-            shader.setMat4("model", modelUfo);
-            model.Draw(shader);
+            //disegnaSfera();
+            disegnaUfo();
 
         }
         else {
@@ -120,6 +107,28 @@ public:
         
     }
 
+    void disegnaSfera() {
+        //Per il modello sfera
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+        shader.setMat4("model", sferaModel);
+        modelSfera.Draw(shader);
+    }
+
+    void disegnaUfo() {
+        //Per il modello ufo
+        glm::mat4 modelUfo = glm::mat4(1.0f);
+        modelUfo = glm::translate(modelUfo, glm::vec3(pos.x, 0.0f, pos.z));
+        modelUfo = glm::scale(modelUfo, glm::vec3(5.2, 5.2, 5.2));
+        modelUfo = glm::rotate(modelUfo, -pigreco / 2, glm::vec3(1.0f, 0.0, 0.0f));
+        rotation = rotation + translateSpeed;
+        modelUfo = glm::rotate(modelUfo, rotation, glm::vec3(0.0f, 1.0, 0.0f));
+        modelUfo = glm::rotate(modelUfo, (-pigreco / 30) * colpiSubiti, glm::vec3(1.0f, 1, 0.0f));
+        shader.setMat4("model", modelUfo);
+        model.Draw(shader);
+    }
+
     bool isPointInsideCircle(const glm::vec2& point, const glm::vec2& center) {
         // Calcola la distanza al quadrato tra il punto e il centro della circonferenza
         float distSq = (point.x - center.x) * (point.x - center.x) + (point.y - center.y) * (point.y - center.y);
@@ -132,9 +141,8 @@ public:
     }
 
     void checkIsHitted(Proiettile& proiettile) {
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        for (int i = 0; i < proiettile.getVecPos().size() ; i++)
         {
-
             float proiettile_x = proiettile.getVecPos()[i].x;
             float proiettile_z = proiettile.getVecPos()[i].z;
             glm::vec2 punto = glm::vec2(proiettile_x, proiettile_z - (proiettile.getLunghezza() / 2));
@@ -159,9 +167,8 @@ public:
     }
 
     void inizializzaProiettile(Proiettile& proiettile) {
-        if (isInRangeSparo() && colpiSubiti < 5 && speed != 0.0f) {
+        if (isInRangeSparo() && colpiSubiti < vite && speed != 0.0f) {
             proiettile.setSpeed(speedProiettili);
-            proiettile.incrementaColpi();
             proiettile.inizializzaPos(pos);
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);

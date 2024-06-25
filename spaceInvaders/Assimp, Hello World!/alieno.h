@@ -30,12 +30,6 @@ private:
                                          {4,4,4,4,4},
                                          {5,5,5,5,5}};
 
-    //std::vector<std::vector<int>> map = { {1,1,1,1,1},
-    //                                      {0,0,0,0,0},
-    //                                      {0,0,0,0,0},
-    //                                      {0,0,0,0,0},
-    //                                      {0,0,0,0,0} };
-
     float raggio = 1.0f;
     float spazio = 1.3f;
     glm::vec3 pos = glm::vec3(-(colonneAlieni/2 * raggio * 2.0f * spazio), 0.0, -17.8f);
@@ -53,19 +47,15 @@ private:
     Model modelSfera;
     bool spawnaAlieni = true;
     double startTimeLoadNewLevel;
-
     bool muoviVersoDx = true;
     bool muoviVersoSx = false;
     bool muoviVersoDown = false;
     int nStepDown = 0;
-
     int score = 0;
     int livello = 1;
-
     std::vector<Proiettile> vectorProiettili = std::vector<Proiettile>(righeAlieni * colonneAlieni);
-
     std::vector<std::vector<int>> mapBonus;
-
+    std::vector<std::vector<int>> mapHitted;
     Suono suono;
 
 public:
@@ -245,12 +235,17 @@ public:
 
                     //RENDER ALIENO SENZA BONUS
                     if (mapBonus[i][j] == 0) {
+<<<<<<< HEAD
                         //Per modello alieno
                         glm::mat4 modelAlieno = glm::mat4(1.0f);
                         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
                         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
                         shader.setMat4("model", modelAlieno);
                         models[i].Draw(shader);
+=======
+
+                        disegnaAlieno(x, z, i, j);
+>>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
                     }
                     //RENDER ALIENO CON BONUS
                     else {
@@ -258,6 +253,7 @@ public:
                         glStencilFunc(GL_ALWAYS, 1, 0xFF);
                         glStencilMask(0xFF);
 
+<<<<<<< HEAD
                         bonusShader.use();
                         glm::mat4 sferaModel = glm::mat4(1.0f);
                         sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
@@ -282,6 +278,9 @@ public:
                         glStencilFunc(GL_ALWAYS, 0, 0xFF);
                         glEnable(GL_DEPTH_TEST);
 
+=======
+                        disegnaSfera(x, z, i, j);
+>>>>>>> 1238cc3fc8289558edccd57c38a387e08e30f351
                     }
 
                     shader.use();
@@ -289,20 +288,27 @@ public:
                     glm::vec3 posAlieno = glm::vec3(x, 0.0f, z);
 
                     if (isHitted(proiettile, posAlieno) || isHitted(proiettileSpeciale, posAlieno)) {
-                        esplosione.inizializza(posAlieno, map[i][j]);
-                        map[i][j] = 0;
-                        
-                        score = score + 50;
-                        alieniEliminati++;
-                        if (alieniEliminati == righeAlieni * colonneAlieni) {
-                            caricaNuovoLivello();
+                        mapHitted[i][j]++;
+
+                        if (livello > 3 && mapHitted[i][j] < 2) {
+                            suono.soundDistruggiBarriera();
+                        }
+                        else {
+                            esplosione.inizializza(posAlieno, map[i][j]);
+                            map[i][j] = 0;
+
+                            score = score + 50;
+                            alieniEliminati++;
+                            if (alieniEliminati == righeAlieni * colonneAlieni) {
+                                caricaNuovoLivello();
+                            }
+
+                            if (mapBonus[i][j] != 0) {
+                                navicella.attivaBonus(mapBonus[i][j], proiettileSpeciale);
+                                mapBonus[i][j] = 0;
+                            }
                         }
 
-                        if (mapBonus[i][j] != 0) {
-                            navicella.attivaBonus(mapBonus[i][j], proiettileSpeciale);
-                            mapBonus[i][j] = 0;
-                        }
-                        
                     }
 
                     navicella.checkCollisionAlien(posAlieno, raggio);
@@ -311,6 +317,30 @@ public:
             }
         }
 
+    }
+
+    void disegnaSfera(float x, float z, int i, int j) {
+        //Per modello sfera
+        glm::mat4 sferaModel = glm::mat4(1.0f);
+        sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
+        sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
+        if (mapHitted[i][j] == 1) {
+            sferaModel = glm::rotate(sferaModel, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+        shader.setMat4("model", sferaModel);
+        modelSfera.Draw(shader);
+    }
+
+    void disegnaAlieno(float x, float z, int i, int j) {
+        //Per modello alieno
+        glm::mat4 modelAlieno = glm::mat4(1.0f);
+        modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
+        modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
+        if (mapHitted[i][j] == 1) {
+            modelAlieno = glm::rotate(modelAlieno, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+        shader.setMat4("model", modelAlieno);
+        models[i].Draw(shader);
     }
 
     void caricaNuovoLivello() {
@@ -344,7 +374,6 @@ public:
             float z = pos.z + i * raggio * 2.0f * spazio;
 
             vectorProiettili[k].setSpeed(speedProiettili);
-            vectorProiettili[k].incrementaColpi();
             vectorProiettili[k].inizializzaPos(glm::vec3(x, 0.0f, z));
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
             glm::vec3 proiettileAt = glm::vec3(random, 0.0f, 1.0f);
@@ -490,7 +519,7 @@ public:
 
 
     bool isHitted(Proiettile& proiettile, glm::vec3 posAlieno) {
-        for (int i = 0; i < proiettile.getColpiSparati() + 1; i++)
+        for (int i = 0; i < proiettile.getVecPos().size(); i++)
         {
             if (proiettile.getVecPos().size() > 0) {
                 float proiettile_x = proiettile.getVecPos()[i].x;
@@ -567,11 +596,25 @@ public:
             mapBonus[idRiga][idColonna] = tipoBonus;
         }
 
-        for (const auto& row : mapBonus) {
-            for (int value : row) {
-                std::cout << value << " ";
+        //for (const auto& row : mapBonus) {
+        //    for (int value : row) {
+        //        std::cout << value << " ";
+        //    }
+        //    std::cout << std::endl;
+        //}
+    }
+
+    void inizializzaMapHitted() {
+
+        mapHitted = map;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+                mapHitted[i][j] = 0;
+
             }
-            std::cout << std::endl;
         }
     }
 

@@ -75,16 +75,17 @@ Model modelPianeta5;
 
 float random_x;
 
-float startTimeDelta = 4.0f;
-double startTime05s = glfwGetTime();
-double startTime1s  = glfwGetTime();
+float startTimeDelta = 5.0f;
+double stSparoUfo = glfwGetTime();
+double stSparoAlieni  = glfwGetTime();
 double startTime2s  = glfwGetTime();
 double startTime = glfwGetTime();
-double startTime20s = glfwGetTime();
+double stSpawnUfo = glfwGetTime();
 double startTimexs = glfwGetTime();
+double startTimeGameOver = 0;
 double currentxs;
 double deltaxs = 0;
-float deltaSparoAlieni = 2.5f;
+float deltaSparoAlieni = 2.0f;
 float intervallo = 1.5f;
 int stepDx = 1;
 int stepSx = 1;
@@ -113,12 +114,17 @@ void ripristinaCameraPos();
 void ripristinaGioco();
 int leggiScoreDalFile(const std::string& nomeFile);
 void aggiornaScoreSeMaggiore(const std::string& nomeFile);
+void checkNavicellaIsInvincibile();
 
 const float PI = 3.14159265358979323846;
 
 // settings
 int SCR_WIDTH = 1920;
 int SCR_HEIGHT = 1080;
+
+//// settings
+//int SCR_WIDTH = 2560;
+//int SCR_HEIGHT = 1440;
 
 //Bloom settings
 bool bloom = true;
@@ -246,7 +252,7 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || exitGame == true) {
 		glfwSetWindowShouldClose(window, true);
-		suono.dropSoundEngine();
+		//suono.dropSoundEngine();
 		aggiornaScoreSeMaggiore("../src/score.txt");
 	}
 
@@ -318,13 +324,12 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 void idle()
 {
 	suono.soundGameStart();
-
-	double currentTime05s = glfwGetTime();
-	double currentTime1s = glfwGetTime();
+	double ctSparoUfo = glfwGetTime(); 
+	double ctSparoAlieni = glfwGetTime();
 	double currentTime2s = glfwGetTime();
-	double currentTime = glfwGetTime();
-	double currentTime20s = glfwGetTime();
+	double ctSpawnUfo = glfwGetTime();
 
+	double currentTime = glfwGetTime();
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
@@ -343,36 +348,38 @@ void idle()
 	alieno.setTranslateSpeedProiettili(deltaTime);
 	esplosione.setTranslateSpeed(esplosione.getSpeed() * deltaTime);
 
-	//Inizia il gioco dopo 2 secondi
+	//Inizia il gioco dopo startTimeDelta secondi
 	if (deltaTimeExecute >= startTimeDelta) {
 
-		if (currentTime05s - startTime05s >= 0.5) {
+
+		if (ctSparoUfo - stSparoUfo >= 0.5) {
 			ufo.inizializzaProiettile(proiettileUfo);
-			startTime05s = currentTime05s;
+			stSparoUfo = ctSparoUfo;
 		}
 
-		if (currentTime1s - startTime1s >= deltaSparoAlieni && alieno.getSpawnaAlieni()) {
-			for (int id_riga = 0; id_riga < alieno.getRigheAlieni(); id_riga++) {
-				int id_colonna = generaNumeroCasualeInt(0, alieno.getColonneAlieni()-1);
-				if (alieno.getMap()[id_riga][id_colonna] != 0) {
-					suono.soundSparoAlieno();
-				}
+		if (ctSparoAlieni - stSparoAlieni >= deltaSparoAlieni && alieno.getSpawnaAlieni()) {
+			for (int id_colonna = 0; id_colonna < alieno.getColonneAlieni(); id_colonna++) {
+				int id_riga = generaNumeroCasualeInt(0, alieno.getRigheAlieni()-1);
+				//if (alieno.getMap()[id_riga][id_colonna] != 0) {
+				//	suono.soundSparoAlieno();
+				//}
 				alieno.inizializzaProiettili(proiettileShader, modelCubo, id_riga, id_colonna);
-				startTime1s = currentTime1s;
+				stSparoAlieni = ctSparoAlieni;
 			}
 		}
 
 		muoviAlieni();
 
-		if (currentTime20s - startTime20s >= 20.0f) {
+		if (ctSpawnUfo - stSpawnUfo >= 30.0f) {
 			ufo.ripristinaPosizioneIniziale();
-			startTime20s = currentTime20s;
+			stSpawnUfo = ctSpawnUfo;
 		}
 
 	}
 
 	if (navicella.getIsHitted() && (glfwGetTime() - navicella.getStartTimeHitted()) > 1.0f) {
 		respawnNavicella = true;
+		navicella.setIsInvincibile(true);
 	}
 
 	if (!alieno.getSpawnaAlieni() && (glfwGetTime() - alieno.getStartTimeLoadNewLevel() > 3.0f)) {
@@ -390,9 +397,20 @@ void idle()
 		ripristinaCameraPos();
 	}
 
+	checkNavicellaIsInvincibile();
 	checkGameWin();
 	checkGameLost();
 
+}
+
+void checkNavicellaIsInvincibile() {
+	if (!navicella.getIsInvincibile()) {
+		return;
+	}
+
+	if (navicella.getIsInvincibile() && glfwGetTime() - navicella.getStartTimeHitted() > 4.0f) {
+		navicella.setIsInvincibile(false);
+	}
 }
 
 void ripristinaGioco() {
@@ -403,9 +421,9 @@ void ripristinaGioco() {
 	alieno.setSpawnaAlieni(true);
 	alieno.setMuoviVersoDx(true);
 	startTime = glfwGetTime();
-	startTime05s = glfwGetTime();
-	startTime1s = glfwGetTime();
-	startTime20s = glfwGetTime();
+	stSparoUfo = glfwGetTime();
+	stSparoAlieni = glfwGetTime();
+	stSpawnUfo = glfwGetTime();
 
 	if (deltaSparoAlieni > 0.5f) {
 		deltaSparoAlieni = deltaSparoAlieni - 0.25f;
@@ -416,12 +434,10 @@ void ripristinaGioco() {
 
 	proiettileNavicella.ripristinaColpiSparati();
 	proiettileUfo.ripristinaColpiSparati();
-	
 	ufo.ripristinaPos();
-
 	alieno.inizializzaBonus();
+	alieno.inizializzaMapHitted();
 	proiettileSpeciale.ripristinaColpiSpeciali();
-
 	suono.ripristina();
 }
 
@@ -435,7 +451,11 @@ void ripristinaCameraPos() {
 }
 
 void checkGameLost() {
-
+	if (navicella.getVite() < 0 && startTimeGameOver == 0) {
+		startTimeGameOver = glfwGetTime();
+	}else if (glfwGetTime() - startTimeGameOver > 0.5f && startTimeGameOver != 0) {
+		suono.soundGameOver();
+	}
 }
 
 void checkGameWin() {
@@ -923,6 +943,7 @@ int main()
 	alieno.setModelSfera(modelSfera);
 	alieno.setModels(modelAlieno1, modelAlieno2, modelAlieno3, modelAlieno4, modelAlieno5);
 	alieno.inizializzaBonus();
+	alieno.inizializzaMapHitted();
 	alieno.setSuono(suono);
 	alieno.setBonusShader(stencilShader);
 
@@ -981,6 +1002,9 @@ int main()
 	proiettileNavicella.setModel(modelCubo);
 	proiettileSpeciale.setShader(proiettileShader);
 	proiettileSpeciale.setModel(modelCubo);
+	proiettileSpeciale.setAltezza(proiettileSpeciale.getAltezza() * 1.5f);
+	proiettileSpeciale.setLunghezza(proiettileSpeciale.getLunghezza() * 1.5f);
+	proiettileSpeciale.setLarghezza(proiettileSpeciale.getLarghezza() * 1.5f);
 
 	proiettileUfo.setShader(proiettileShader);
 	proiettileUfo.setModel(modelCubo);
@@ -1238,7 +1262,9 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		}
 	}
 	else {
-		suono.soundGameOver();
+
+
+		
 
 		std::string viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), 1000, SCR_HEIGHT - 100, 0.65f, glm::vec3(1.0, 1.0f, 1.0f));
