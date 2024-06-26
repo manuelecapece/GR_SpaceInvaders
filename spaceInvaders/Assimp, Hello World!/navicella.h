@@ -42,7 +42,7 @@ private:
 
     bool scudo = false;
     double startTimeScudo;
-    float tempoScudo = 5.0f;
+    float tempoScudo = 10.0f;
     Suono suono;
 
 public:
@@ -149,14 +149,35 @@ public:
                 }
 
             }
-            else if (glfwGetTime() - startTimeScudo < tempoScudo) {
-
-                disegnaNavicellaConScudo(moveRight, moveLeft);
+            else if (scudo) {
+                if (isInvincibile) {
+                    disegnaNavicellaTrasparente(moveRight, moveLeft);
+                }
+                else {
+                    if ((glfwGetTime() - startTimeScudo) <= tempoScudo && (proiettileSpeciale.getColpiSpecialiDisponibili() > 0)) {
+                        disegnaNavicellaStencil(moveRight, moveLeft);
+                        disegnaNavicellaConScudo(moveRight, moveLeft);
+                    }
+                    else if (proiettileSpeciale.getColpiSpecialiDisponibili() > 0 && ((glfwGetTime() - startTimeScudo) > tempoScudo)) {
+                        scudo = false;
+                        disegnaNavicellaStencil(moveRight, moveLeft);
+                    }
+                    else if ((glfwGetTime() - startTimeScudo) <= tempoScudo) {
+                        disegnaNavicellaConScudo(moveRight, moveLeft);
+                    }
+                    else {
+                        scudo = false;
+                        disegnaNavicella(moveRight, moveLeft);
+                    }
+                }
 
             }
             else {
                 scudo = false;
             }
+        }
+        else {
+            scudo = false;
         }
     }
 
@@ -167,15 +188,16 @@ public:
         glEnable(GL_BLEND);
         bonusShader.use();
         glm::mat4 sferaModel = glm::mat4(1.0f);
-        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.35f));
-        sferaModel = glm::scale(sferaModel, glm::vec3(2.4, 2.4, 2.4));
-        sferaModel = glm::rotate(sferaModel, pigreco / 2, glm::vec3(0.0f, 1, 0.0f));
+        sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.32f));
+        sferaModel = glm::scale(sferaModel, glm::vec3(2.3, 2.3, 2.3));
+        sferaModel = glm::rotate(sferaModel, pigreco / 4, glm::vec3(1.0f, 0.0f, 0.0f));
         bonusShader.setMat4("model", sferaModel);
         modelSfera.Draw(bonusShader);
         glDisable(GL_BLEND);
 
     }
 
+    //non serve
     void disegnaSfera(bool moveRight, bool moveLeft) {
         glm::mat4 sferaModel = glm::mat4(1.0f);
         sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z));

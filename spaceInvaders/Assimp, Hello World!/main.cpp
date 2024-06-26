@@ -1135,11 +1135,13 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	barriera.renderBarriere(proiettileSpeciale);
 	barriera.renderBarriere(proiettileUfo);
 
-	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
-	navicella.render(moveRight, moveLeft, proiettileSpeciale);
 	proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
 	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
+	navicella.render(moveRight, moveLeft, proiettileSpeciale);
+
+	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
 	alieno.renderProiettili(navicella, barriera, esplosione);
+
 	roccia.render();
 
 	ufo.render(esplosione);
@@ -1175,7 +1177,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
 	// --------------------------------------------------------------------------------------------------------------------------
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shaderBloomFinal.use();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
