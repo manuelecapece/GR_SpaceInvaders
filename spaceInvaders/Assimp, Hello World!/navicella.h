@@ -139,7 +139,6 @@ public:
                 }
                 else {
                     
-
                     if (proiettileSpeciale.getColpiSpecialiDisponibili() > 0) {
                         disegnaNavicellaStencil(moveRight, moveLeft);
                     }
@@ -385,10 +384,8 @@ public:
     }
 
     void inizializzaProiettileSpeciale(Proiettile& proiettile, int livello) {
-        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiSparati() < proiettile.getColpiSpecialiDisponibili()) {
+        if (proiettile.getIsSpeciale() && proiettile.getColpiSpecialiDisponibili() > 0) {
 
-            //proiettile.incrementaColpi();
-            proiettile.incrementaColpiSpecialiSparati();
             proiettile.decrementaColpiSpecialiDisponibili();
             proiettile.inizializzaPos(glm::vec3(pos.x, pos.y, pos.z - 1.));
             glm::vec3 proiettileAt = glm::vec3(0.0f, 0.0f, -1.0f);

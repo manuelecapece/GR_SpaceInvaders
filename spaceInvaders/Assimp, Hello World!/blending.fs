@@ -13,7 +13,7 @@ void main()
     texColor.a = alpha; // Impostiamo l'alpha
 
     // Impostiamo BrightColor come nero (potrebbe essere diverso se vuoi effetti di luminosità)
-    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+    BrightColor = vec4(0.0, 0.0, 0.0, 0.0);
 
     // Impostiamo FragColor con il colore della texture e l'alpha modificati
     FragColor = texColor;

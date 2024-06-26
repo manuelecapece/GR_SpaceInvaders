@@ -21,7 +21,7 @@ class Barriera {
 private:
 
     glm::vec3 pos;
-    float posX;
+    float posX = 100.0f;
     float posZ = 5.0f;
     const float lunghezza = 0.3f;
     const float larghezza = 0.3f;
@@ -85,6 +85,10 @@ public:
 
     float getPosZ() {
         return posZ;
+    }
+
+    glm::vec3 getPos() const {
+        return pos;
     }
 
     float getSpazio(){

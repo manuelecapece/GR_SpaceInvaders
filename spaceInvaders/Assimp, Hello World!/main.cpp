@@ -94,7 +94,7 @@ int score = 0;
 int record = 0;
 float gameOverScale = 0.1f;
 float gameOverGrowthRate = 0.02f; // La velocità con cui la scritta aumenta di dimensione
-
+bool cambiaPos = true;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -116,6 +116,10 @@ int leggiScoreDalFile(const std::string& nomeFile);
 void aggiornaScoreSeMaggiore(const std::string& nomeFile);
 void checkNavicellaIsInvincibile();
 void renderText();
+void renderTextStartGame();
+void renderTextCentered(const std::string& text, float x, float y, float scale, glm::vec3 color);
+void selezionaVista();
+void impostaPosizioni();
 
 const float PI = 3.14159265358979323846;
 
@@ -194,10 +198,10 @@ float vertices[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
-int vista;
+int vista = -1;
 
-glm::vec3 cameraPos;  // Posizione camera
-glm::vec3 cameraAt;	// Punto in cui "guarda" la camera
+glm::vec3 cameraPos(0.0f, 5.5f, 16.5f);  // Posizione camera
+glm::vec3 cameraAt(0.0f, 0.0f, 0.0f);	// Punto in cui "guarda" la camera
 glm::vec3 cameraUp(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano
 glm::vec3 cameraDir(0.0, 0.0, -0.1); // Direzione dello sguardo
 glm::vec3 cameraSide(1.0, 0.0, 0.0); // Direzione spostamento laterale
@@ -217,6 +221,8 @@ bool moveRight = false;
 bool spara = true;
 bool exitGame = false;
 bool respawnNavicella = false;
+bool vistaTradizionale = false;
+bool vistaAction = false;
 
 unsigned int frameCount = 0;
 double previousTime = 0;
@@ -257,16 +263,20 @@ void processInput(GLFWwindow* window)
 		aggiornaScoreSeMaggiore("../src/score.txt");
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && vista != -1)
 		moveLeft = true;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && vista != -1)
 		moveRight = true;
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && vista == -1)
+		vista = 0;
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && vista == -1)
+		vista = 1;
 
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && vista != -1) {
 		if (spara && !navicella.getIsHitted() && alieno.getSpawnaAlieni()) {
 			navicella.inizializzaProiettile(proiettileNavicella, suono);
 			navicella.inizializzaProiettileSpeciale(proiettileSpeciale, alieno.getLivello());
@@ -324,12 +334,15 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 
 void idle()
 {
-	suono.soundGameStart();
+	if (cameraPos.x == 0.0f && cameraPos.y == 5.5f && cameraPos.z == 16.5f) {
+		selezionaVista();
+	}
+
+	
 	double ctSparoUfo = glfwGetTime(); 
 	double ctSparoAlieni = glfwGetTime();
 	double currentTime2s = glfwGetTime();
 	double ctSpawnUfo = glfwGetTime();
-
 	double currentTime = glfwGetTime();
 	double currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
@@ -350,8 +363,7 @@ void idle()
 	esplosione.setTranslateSpeed(esplosione.getSpeed() * deltaTime);
 
 	//Inizia il gioco dopo startTimeDelta secondi
-	if (deltaTimeExecute >= startTimeDelta) {
-
+	if (deltaTimeExecute >= startTimeDelta && vista != -1) {
 
 		if (ctSparoUfo - stSparoUfo >= 0.5) {
 			ufo.inizializzaProiettile(proiettileUfo);
@@ -402,6 +414,23 @@ void idle()
 	checkGameWin();
 	checkGameLost();
 
+}
+
+void selezionaVista() {
+
+	if (vista == 0) {
+		//Vista isometrica frontale dall'alto
+		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
+		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
+		suono.soundGameStart();
+	}
+
+	if (vista == 1) {
+		//Vista dinamica frontale 
+		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
+		cameraAt = glm::vec3(0.0, 0.0, 0.0);
+		suono.soundGameStart();
+	}
 }
 
 void checkNavicellaIsInvincibile() {
@@ -701,19 +730,8 @@ int main()
 
 	bool schermoIntero = true;
 
-	vista = 1;
-
-	if (vista == 0) {
-		//Vista isometrica frontale dall'alto
-		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
-		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
-	}
-	
-	if (vista == 1) {
-		//Vista dinamica frontale 
-		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
-		cameraAt = glm::vec3(0.0, 0.0, 0.0);
-	}
+	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
+	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
 
 	suono.inizializza();
 
@@ -1016,8 +1034,6 @@ int main()
 
 	barriera.setShader(barrieraShader);
 	barriera.setModel(modelCubo);
-	barriera.setPosX(alieno.getRaggio() * 2, alieno.getSpazio());
-	barriera.setSpazio(alieno.getRaggio() * 2, alieno.getSpazio());
 	barriera.inizializzaMaps();
 	barriera.setSuono(suono);
 
@@ -1032,6 +1048,8 @@ int main()
 		// input
 		processInput(window);
 		idle();
+
+		impostaPosizioni();
 
 		// create transformations
 		view = glm::lookAt(cameraPos, cameraAt, cameraUp);
@@ -1083,6 +1101,18 @@ int main()
 	return 0;
 }
 
+void impostaPosizioni() {
+	if (vista != -1 && cambiaPos) {
+		alieno.setPos(glm::vec3(alieno.getPos().x - 100.0f, alieno.getPos().y, alieno.getPos().z));
+
+		barriera.setPosX(alieno.getRaggio() * 2, alieno.getSpazio());
+		barriera.setSpazio(alieno.getRaggio() * 2, alieno.getSpazio());
+		navicella.setPos(glm::vec3(navicella.getPos().x - 100.0f, navicella.getPos().y, navicella.getPos().z));
+
+		cambiaPos = false;
+	}
+}
+
 void checkCollisioneAlieniBarriere() {
 	for (int i = 0; i < alieno.getRigheAlieni(); i++){
 		for (int j = 0; j < alieno.getColonneAlieni(); j++){
@@ -1116,7 +1146,7 @@ void checkCollisioneAlieniBarriere() {
 
 
 void render(Shader shaderBlur, Shader shaderBloomFinal)
-{
+{	
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // don't forget to clear the stencil buffer!
@@ -1125,11 +1155,11 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-
-	//alieno.render(proiettileNavicella, navicella, esplosione);
 	for (auto& pianeta : pianeti) {
 		pianeta.render();
 	}
+
+	roccia.render();
 
 	barriera.renderBarriere(proiettileNavicella);
 	barriera.renderBarriere(proiettileSpeciale);
@@ -1137,16 +1167,16 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	proiettileNavicella.render(glm::vec3(1.0f, 1.0f, 1.0f));
 	proiettileSpeciale.render(glm::vec3(1.0f, 0.0f, 0.0f));
+
 	navicella.render(moveRight, moveLeft, proiettileSpeciale);
 
 	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
 	alieno.renderProiettili(navicella, barriera, esplosione);
 
-	roccia.render();
-
 	ufo.render(esplosione);
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));
 	navicella.checkIsHitted(proiettileUfo,esplosione, alieno.getSpawnaAlieni());
+
 	ufo.checkIsHitted(proiettileNavicella);
 	ufo.checkIsHitted(proiettileSpeciale);
 
@@ -1189,9 +1219,45 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	glDisable(GL_DEPTH_TEST);
 	
-	renderText();
-
+	if (vista != -1) {
+		renderText();
+	}
+	else {
+		renderTextStartGame();
+	}
+	
 	glEnable(GL_DEPTH_TEST);
+}
+
+void renderTextStartGame() {
+	
+	float centroX = SCR_WIDTH / 2.0f;
+	float centroY = SCR_HEIGHT / 2.0f;
+	float deltaY = SCR_HEIGHT / 10.0f; // Spazio verticale tra le scritte
+	float dimensione = 0.5f * (SCR_HEIGHT / 1000.0f);
+
+	std::string titolo = "SPACE INVADERS";
+	renderTextCentered(titolo, centroX, centroY + 3 * deltaY, dimensione * 4, glm::vec3(1.0, 0.0f, 0.0f));
+
+	std::string vista = "Select view mode";
+	renderTextCentered(vista, centroX, centroY + deltaY, dimensione * 1.5, glm::vec3(1.0f, 1.0f, 0.26f));
+
+	std::string opzione1 = "Press key 1 for traditional 2D mode";
+	renderTextCentered(opzione1, centroX, centroY, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
+
+	std::string opzione2 = "Press key 2 for action 3D mode";
+	renderTextCentered(opzione2, centroX, centroY - deltaY, dimensione, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	std::string istruzioni = "Keys A and D to move, Space to shoot";
+	renderTextCentered(istruzioni, centroX, centroY - 4 * deltaY, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
+}
+
+// Funzione di rendering per centrare il testo
+void renderTextCentered(const std::string& text, float x, float y, float scale, glm::vec3 color) {
+	// Calcola la larghezza del testo (approssimazione)
+	// Per una stima migliore, il valore 10.0f può essere regolato in base alla larghezza media dei caratteri
+	float textWidth = text.length() * scale * 50.0f;
+	RenderText(text.c_str(), x - textWidth / 2.0f, y, scale, color);
 }
 
 void renderText() {

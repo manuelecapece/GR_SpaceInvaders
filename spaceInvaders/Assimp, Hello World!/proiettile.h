@@ -32,7 +32,7 @@ private:
     std::vector<glm::vec3> vectorDir;
 
     //int colpiSparati = -1;
-    int colpiSpecialiSparati = 0;
+    //int colpiSpecialiSparati = 0;
     int colpiSpecialiDisponibili = 0;
     bool isSpeciale = false;
 
@@ -48,9 +48,9 @@ public:
     //    return pos;
     //}
 
-    int getColpiSpecialiSparati() const {
-        return colpiSpecialiSparati;
-    }
+    //int getColpiSpecialiSparati() const {
+    //    return colpiSpecialiSparati;
+    //}
 
     float getSpread() {
         return spread;
@@ -154,9 +154,9 @@ public:
     //    colpiSparati++;
     //}
 
-    void incrementaColpiSpecialiSparati() {
-        colpiSpecialiSparati++;
-    }
+    //void incrementaColpiSpecialiSparati() {
+    //    colpiSpecialiSparati++;
+    //}
 
     void render(glm::vec3 color) {
 
@@ -235,7 +235,7 @@ public:
 
     void ripristinaColpiSpeciali() {
         isSpeciale = false;
-        colpiSpecialiSparati = 0;
+        //colpiSpecialiSparati = 0;
         colpiSpecialiDisponibili = 0;
         vectorPos.clear();
         vectorDir.clear();

@@ -142,6 +142,10 @@ public:
         return livello;
     }
 
+    void setPos(glm::vec3 newPos) {
+        pos = newPos;
+    }
+
     void setSuono(Suono newSuono) {
         suono = newSuono;
     }
@@ -593,12 +597,12 @@ public:
             mapBonus[idRiga][idColonna] = tipoBonus;
         }
 
-        //for (const auto& row : mapBonus) {
-        //    for (int value : row) {
-        //        std::cout << value << " ";
-        //    }
-        //    std::cout << std::endl;
-        //}
+        for (const auto& row : mapBonus) {
+            for (int value : row) {
+                std::cout << value << " ";
+            }
+            std::cout << std::endl;
+        }
     }
 
     void inizializzaMapHitted() {
