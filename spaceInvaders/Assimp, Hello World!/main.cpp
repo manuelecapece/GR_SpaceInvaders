@@ -1264,6 +1264,7 @@ void renderText() {
 
 	float centro = SCR_WIDTH / 2.0f;
 	float delta = SCR_WIDTH / 5.0f;
+	float deltaY = SCR_HEIGHT / 10.0f; // Spazio verticale tra le scritte
 	float puntoAltezza = SCR_HEIGHT - (SCR_HEIGHT / 10.0f);
 	float dimensione = 0.5f * (SCR_HEIGHT/1000.0f);
 
@@ -1304,6 +1305,15 @@ void renderText() {
 		if (gameOverScale > dimensione * 4) {
 			gameOverScale = dimensione * 4; // Max size
 		}
+
+		if (gameOverScale == (dimensione * 4)) {
+			std::string restart = "Press Enter to restart";
+			renderTextCentered(restart, centro - delta, centerY - 4 * deltaY, dimensione, glm::vec3(1.0f, 1.0f, 1.0f));
+
+			std::string exit = "Press Esc to exit game";
+			renderTextCentered(exit, centro + delta, centerY - 4 * deltaY, dimensione, glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+		
 	}
 }
 
