@@ -70,6 +70,10 @@ public:
         playGameStart = val;
     }
 
+    void setPlayGameOver(bool val) {
+        playGameOver = val;
+    }
+
     void setPlayMovimentoAlieni(bool val) {
         playMovimentoAlieni = val;
     }

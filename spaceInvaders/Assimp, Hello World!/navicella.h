@@ -42,7 +42,7 @@ private:
 
     bool scudo = false;
     double startTimeScudo;
-    float tempoScudo = 10.0f;
+    float tempoScudo = 5.0f;
     Suono suono;
 
 public:
@@ -79,6 +79,10 @@ public:
 
     void setPos(glm::vec3 newPos) {
         pos = newPos;
+    }
+
+    void setScudo(bool newVal) {
+        scudo = newVal;
     }
 
     void setSpeed(float newSpeed) {

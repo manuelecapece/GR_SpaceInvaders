@@ -279,7 +279,8 @@ void processInput(GLFWwindow* window)
 		alieno.caricaLivello1(navicella);
 		caricaLivello1 = false;
 		carica = true;
-		cout << "we" << endl;
+		deltaSparoAlieni = 2.0f;
+		gameOverScale = 0.1f;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && vista != -1) {
@@ -456,6 +457,7 @@ void ripristinaGioco() {
 	barriera.ripristina();
 	barriera.inizializzaMaps();
 	navicella.ripristinaPosizioneIniziale();
+	navicella.setScudo(false);
 	ripristinaCameraPos();
 	alieno.setSpawnaAlieni(true);
 	alieno.setMuoviVersoDx(true);
@@ -483,6 +485,10 @@ void ripristinaGioco() {
 	if (navicella.getVite() < 0) {
 		navicella.setVite(2);
 	}
+
+	carica = false;
+	startTimeGameOver = 0;
+	suono.setPlayGameOver(true);
 }
 
 void ripristinaCameraPos() {
@@ -1173,7 +1179,6 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		pianeta.render();
 	}
 
-	roccia.render();
 
 	barriera.renderBarriere(proiettileNavicella);
 	barriera.renderBarriere(proiettileSpeciale);
@@ -1186,6 +1191,8 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
 	alieno.renderProiettili(navicella, barriera, esplosione);
+
+	roccia.render();
 
 	ufo.render(esplosione);
 	proiettileUfo.render(glm::vec3(0.0f, 1.0f, 1.0f));

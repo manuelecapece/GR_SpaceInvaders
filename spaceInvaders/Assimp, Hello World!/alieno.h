@@ -370,8 +370,9 @@ public:
         livello = 1;
         spawnaAlieni = false;
         alieniEliminati = 0;
-        pos = glm::vec3(-(colonneAlieni / 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
+        
         colonneAlieni = 5;
+        pos = glm::vec3(-(colonneAlieni / 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
         resizeMap(righeAlieni, colonneAlieni);
         startTimeLoadNewLevel = glfwGetTime();
 
