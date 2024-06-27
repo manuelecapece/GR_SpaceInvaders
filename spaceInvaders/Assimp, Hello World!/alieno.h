@@ -365,6 +365,28 @@ public:
         ripristinaColpiSparati();
     }
 
+    void caricaLivello1(Navicella& navicella) {
+        suono.soundCaricaNuovoLivello();
+        livello = 1;
+        spawnaAlieni = false;
+        alieniEliminati = 0;
+        pos = glm::vec3(-(colonneAlieni / 2 * raggio * 2.0f * spazio), 0.0, -18.0f);
+        colonneAlieni = 5;
+        resizeMap(righeAlieni, colonneAlieni);
+        startTimeLoadNewLevel = glfwGetTime();
+
+        speedx = 0.0f;
+        speedz = 0.0f;
+        speed = 0.07;
+        nStepDown = 0;
+        muoviVersoDx = false;
+        muoviVersoSx = false;
+        muoviVersoDown = false;
+
+        ripristinaColpiSparati();
+ 
+    }
+
     void inizializzaProiettili(Shader proiettileShader, Model modelCubo, int i, int j) {
 
         int k = i * (colonneAlieni) + j;
@@ -536,9 +558,9 @@ public:
                 }
                 if (proiettile_z < -50) {
                     proiettile.eliminaInPos(i);
-                    if (proiettile.getIsSpeciale()) {
-                        proiettile.ripristinaColpiSpeciali();
-                    }
+                    //if (proiettile.getIsSpeciale()) {
+                    //    proiettile.ripristinaColpiSpeciali();
+                    //}
                 }
             }
 

@@ -95,6 +95,9 @@ int record = 0;
 float gameOverScale = 0.1f;
 float gameOverGrowthRate = 0.02f; // La velocità con cui la scritta aumenta di dimensione
 bool cambiaPos = true;
+bool caricaLivello1 = false;
+bool var = true;
+bool carica = false;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -272,8 +275,11 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && vista == -1)
 		vista = 1;
 
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-
+	if (navicella.getVite() < 0 && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && caricaLivello1) {
+		alieno.caricaLivello1(navicella);
+		caricaLivello1 = false;
+		carica = true;
+		cout << "we" << endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && vista != -1) {
@@ -289,7 +295,8 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 		moveRight = false;
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE) {
-
+		caricaLivello1 = false;
+		var = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
 		spara = true;
@@ -444,6 +451,8 @@ void checkNavicellaIsInvincibile() {
 }
 
 void ripristinaGioco() {
+
+	barriera.setRespawn(false);
 	barriera.ripristina();
 	barriera.inizializzaMaps();
 	navicella.ripristinaPosizioneIniziale();
@@ -469,6 +478,11 @@ void ripristinaGioco() {
 	alieno.inizializzaMapHitted();
 	proiettileSpeciale.ripristinaColpiSpeciali();
 	suono.ripristina();
+	suono.soundGameStart();
+
+	if (navicella.getVite() < 0) {
+		navicella.setVite(2);
+	}
 }
 
 void ripristinaCameraPos() {
@@ -728,7 +742,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
@@ -1287,7 +1301,14 @@ void renderText() {
 		RenderText(viteNavicella.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 0.0f, 0.0f));
 	}
 
-	if (navicella.getVite() < 0) {
+	if (navicella.getVite() < 0 && !carica ) {
+
+		if (var) {
+			caricaLivello1 = true;
+			var = false;
+		}
+		
+
 		viteNavicella = "LIFES:" + std::to_string(navicella.getVite() + 1);
 		RenderText(viteNavicella.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 

@@ -121,6 +121,12 @@ public:
         modelSfera = newModel;
     }
 
+    void setVite(int newVite) {
+        vite = newVite;
+        ripristinaPosizioneIniziale();
+        isInvincibile = true;
+    }
+
     void render(bool moveRight, bool moveLeft, Proiettile proiettileSpeciale) {
 
         if (!isHitted) {
@@ -256,7 +262,6 @@ public:
     }
 
     void disegnaNavicellaTrasparente(bool moveRight, bool moveLeft) {
-        //DISEGNA NAVICELLA CON TRASPARENZA
         int val = generaNumeroCasualeInt(0, 1);
         if (val == 1) {
             disegnaNavicella(moveRight, moveLeft);

@@ -30,6 +30,7 @@ private:
     int static const righeCubiBarriera = 5;
     int static const colonneCubiBarriera = 10;
     Suono suono;
+    bool respawn = false;
 
     int map1[righeCubiBarriera][colonneCubiBarriera] = {{1,1,1,1,1,1,1,1,1,1},
                                                         {1,1,1,1,1,1,1,1,1,1},
@@ -123,6 +124,10 @@ public:
         shader = newShader;
     }
 
+    void setRespawn(bool val) {
+        respawn = val;
+    }
+
     void setModel(Model newModel) {
         model = newModel;
     }
@@ -170,6 +175,7 @@ public:
                     modelCubo = glm::scale(modelCubo, glm::vec3(larghezza, altezza, lunghezza));
                     shader.setMat4("model", modelCubo);
                     shader.setVec3("color", scegliColore(map[i][j]));
+
                     model.Draw(shader);
 
                     glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
@@ -394,6 +400,7 @@ public:
         //result = pow(result, glm::vec3(1.0 / gamma));
         return result;
     }
+
 
 };
 
