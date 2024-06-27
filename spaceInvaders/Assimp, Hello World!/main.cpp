@@ -232,9 +232,16 @@ double previousTime = 0;
 double timeInterval = 0;
 unsigned int fps = 0;
 
-// Creazione di un vettore di pianeti
+// Creazione di un vettore di pianeti e di una struct per i parametri dei pianeti
 std::vector<Pianeta> pianeti(5);
 
+struct PianetaParam {
+	glm::vec3 position;
+	float scale;
+	float rotationSpeed;
+	float orbitSpeed;
+	Model model;
+};
 
 void calculateFPS() {
 	//  Incrementiamo il contatore
@@ -748,7 +755,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
@@ -1000,41 +1007,22 @@ int main()
 	roccia.setModel(modelRoccia);
 
 	// Inizializzazione dei pianeti con posizione, scala, modello, shader, velocità di rotazione e orbita
-	pianeti[0].setShader(pianetaShader);
-	pianeti[0].setModel(modelPianeta1);
-	pianeti[0].setPosition(glm::vec3(-25.0f, 2.0f, -11.0f)); // Posizione di esempio
-	pianeti[0].setScale(1.0f); // Scala di esempio
-	pianeti[0].setRotationSpeed(100.0f); // Velocità di rotazione del primo pianeta
-	pianeti[0].setOrbitSpeed(15.0f); // Velocità di orbita del primo pianeta
+	PianetaParam pianetaParams[] = {
+	{ glm::vec3(-25.0f, 2.0f, -11.0f), 1.0f, 100.0f, 15.0f, modelPianeta1 },
+	{ glm::vec3(-15.0f, 7.0f, -21.0f), 1.5f, 60.0f, 10.0f, modelPianeta2 },
+	{ glm::vec3(0.0f, -5.0f, -26.0f), 2.0f, 25.0f, 12.0f, modelPianeta3 },
+	{ glm::vec3(18.0f, -9.0f, -21.0f), 2.5f, 35.0f, 8.0f, modelPianeta4 },
+	{ glm::vec3(25.0f, 7.0f, -23.0f), 3.0f, 18.0f, 14.0f, modelPianeta5 }
+	};
 
-	pianeti[1].setShader(pianetaShader);
-	pianeti[1].setModel(modelPianeta2);
-	pianeti[1].setPosition(glm::vec3(-15.0f, 7.0f, -21.0f)); // Posizione di esempio
-	pianeti[1].setScale(1.5f); // Scala di esempio
-	pianeti[1].setRotationSpeed(60.0f); // Velocità di rotazione del secondo pianeta
-	pianeti[1].setOrbitSpeed(10.0f); // Velocità di orbita del secondo pianeta
-
-	pianeti[2].setShader(pianetaShader);
-	pianeti[2].setModel(modelPianeta3);
-	pianeti[2].setPosition(glm::vec3(0.0f, -5.0f, -26.0f)); // Posizione di esempio
-	pianeti[2].setScale(2.0f); // Scala di esempio
-	pianeti[2].setRotationSpeed(25.0f); // Velocità di rotazione del terzo pianeta
-	pianeti[2].setOrbitSpeed(12.0f); // Velocità di orbita del terzo pianeta
-
-	pianeti[3].setShader(pianetaShader);
-	pianeti[3].setModel(modelPianeta4);
-	pianeti[3].setPosition(glm::vec3(18.0f, -9.0f, -21.0f)); // Posizione di esempio
-	pianeti[3].setScale(2.5f); // Scala di esempio
-	pianeti[3].setRotationSpeed(35.0f); // Velocità di rotazione del quarto pianeta
-	pianeti[3].setOrbitSpeed(8.0f); // Velocità di orbita del quarto pianeta
-
-	pianeti[4].setShader(pianetaShader);
-	pianeti[4].setModel(modelPianeta5);
-	pianeti[4].setPosition(glm::vec3(25.0f, 7.0f, -23.0f)); // Posizione di esempio
-	pianeti[4].setScale(3.0f); // Scala di esempio
-	pianeti[4].setRotationSpeed(18.0f); // Velocità di rotazione del quinto pianeta
-	pianeti[4].setOrbitSpeed(14.0f); // Velocità di orbita del quinto pianeta
-
+	for (int i = 0; i < 5; ++i) {
+		pianeti[i].setShader(pianetaShader);
+		pianeti[i].setModel(pianetaParams[i].model);
+		pianeti[i].setPosition(pianetaParams[i].position);
+		pianeti[i].setScale(pianetaParams[i].scale);
+		pianeti[i].setRotationSpeed(pianetaParams[i].rotationSpeed);
+		pianeti[i].setOrbitSpeed(pianetaParams[i].orbitSpeed);
+	}
 
 	proiettileNavicella.setShader(proiettileShader);
 	proiettileNavicella.setModel(modelCubo);
