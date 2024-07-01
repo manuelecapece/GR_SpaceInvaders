@@ -142,6 +142,10 @@ public:
         return livello;
     }
 
+    void setScore(int newScore) {
+        score = newScore;
+    }
+
     void setPos(glm::vec3 newPos) {
         pos = newPos;
     }
@@ -620,12 +624,12 @@ public:
             mapBonus[idRiga][idColonna] = tipoBonus;
         }
 
-        for (const auto& row : mapBonus) {
-            for (int value : row) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
-        }
+        //for (const auto& row : mapBonus) {
+        //    for (int value : row) {
+        //        std::cout << value << " ";
+        //    }
+        //    std::cout << std::endl;
+        //}
     }
 
     void inizializzaMapHitted() {

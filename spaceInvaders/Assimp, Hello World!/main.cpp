@@ -288,6 +288,10 @@ void processInput(GLFWwindow* window)
 		carica = true;
 		deltaSparoAlieni = 2.0f;
 		gameOverScale = 0.1f;
+		alieno.setScore(0);
+		ufo.setScore(0);
+		aggiornaScoreSeMaggiore("../src/score.txt");
+		record = leggiScoreDalFile("../src/score.txt");
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && vista != -1) {
@@ -1281,6 +1285,10 @@ void renderText() {
 
 	if (navicella.getVite() > 0) {
 		RenderText(viteNavicella.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
+	}
+	else if (navicella.getVite() == -1) {
+		std::string vite = "LIFES:" + std::to_string(0);
+		RenderText(vite.c_str(), centro, puntoAltezza, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 	}
 
 	std::string recordScore = "RECORD:" + std::to_string(record);

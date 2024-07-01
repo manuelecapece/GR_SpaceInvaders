@@ -84,6 +84,10 @@ public:
         suono = newSuono;
     }
 
+    void setScore(int newScore) {
+        score = newScore;
+    }
+
     void render(Esplosione& esplosione) {
 
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
