@@ -385,7 +385,7 @@ void idle()
 	if (deltaTimeExecute >= startTimeDelta && vista != -1) {
 
 		if (ctSparoUfo - stSparoUfo >= 0.5) {
-			ufo.inizializzaProiettile(proiettileUfo);
+			ufo.inizializzaProiettile(proiettileUfo, alieno.getSpawnaAlieni());
 			stSparoUfo = ctSparoUfo;
 		}
 
@@ -759,7 +759,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));

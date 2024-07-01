@@ -170,8 +170,8 @@ public:
         return false;
     }
 
-    void inizializzaProiettile(Proiettile& proiettile) {
-        if (isInRangeSparo() && colpiSubiti < vite && speed != 0.0f) {
+    void inizializzaProiettile(Proiettile& proiettile, bool spawnaAlieni) {
+        if (isInRangeSparo() && colpiSubiti < vite && speed != 0.0f && spawnaAlieni) {
             proiettile.setSpeed(speedProiettili);
             proiettile.inizializzaPos(pos);
             float random = generaNumeroCasualeFloat(-0.2f, 0.2f);
