@@ -269,7 +269,6 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || exitGame == true) {
 		glfwSetWindowShouldClose(window, true);
-		//suono.dropSoundEngine();
 		aggiornaScoreSeMaggiore("../src/score.txt");
 	}
 
@@ -277,6 +276,7 @@ void processInput(GLFWwindow* window)
 		moveLeft = true;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && vista != -1)
 		moveRight = true;
+
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && vista == -1)
 		vista = 0;
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && vista == -1)
@@ -306,6 +306,7 @@ void processInput(GLFWwindow* window)
 		moveLeft = false;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 		moveRight = false;
+
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE) {
 		caricaLivello1 = false;
 		var = true;
@@ -759,7 +760,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));

@@ -563,9 +563,6 @@ public:
                 }
                 if (proiettile_z < -50) {
                     proiettile.eliminaInPos(i);
-                    //if (proiettile.getIsSpeciale()) {
-                    //    proiettile.ripristinaColpiSpeciali();
-                    //}
                 }
             }
 
