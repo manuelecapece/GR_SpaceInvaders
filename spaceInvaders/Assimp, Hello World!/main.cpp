@@ -126,13 +126,13 @@ void impostaPosizioni();
 
 const float PI = 3.14159265358979323846;
 
-// settings
-int SCR_WIDTH = 1920;
-int SCR_HEIGHT = 1080;
-
 //// settings
-//int SCR_WIDTH = 2560;
-//int SCR_HEIGHT = 1440;
+//int SCR_WIDTH = 1920;
+//int SCR_HEIGHT = 1080;
+
+// settings
+int SCR_WIDTH = 2560;
+int SCR_HEIGHT = 1440;
 
 //Bloom settings
 bool bloom = true;
@@ -376,6 +376,7 @@ void idle()
 	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedx(alieno.getSpeedx() * deltaTime);
 	alieno.setTranslateSpeedz(alieno.getSpeedz() * deltaTime);
+	alieno.setTranslateSpeedRotation(alieno.getSpeed() * deltaTime);
 	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
 	proiettileSpeciale.setTranslateSpeed(proiettileSpeciale.getSpeed() * deltaTime);
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
@@ -404,8 +405,11 @@ void idle()
 		muoviAlieni();
 
 		if (ctSpawnUfo - stSpawnUfo >= 30.0f) {
-			ufo.ripristinaPosizioneIniziale();
-			stSpawnUfo = ctSpawnUfo;
+
+			if (alieno.getPos().z < 9.0f) {
+				ufo.ripristinaPosizioneIniziale();
+				stSpawnUfo = ctSpawnUfo;
+			}
 		}
 
 	}
@@ -558,6 +562,10 @@ void muoviCamera(float deltaTime) {
 }
 
 void muoviAlieni() {
+
+	if (alieno.getPos().z > 9.0f) {
+		return;
+	}
 
 	if (alieno.getMuoviVersoDx()) {
 		
@@ -760,7 +768,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = true;
+	bool schermoIntero = false;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));

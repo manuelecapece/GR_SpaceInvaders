@@ -35,6 +35,7 @@ private:
     glm::vec3 pos = glm::vec3(-(colonneAlieni/2 * raggio * 2.0f * spazio), 0.0, -17.8f);
     float translateSpeedx;
     float translateSpeedz;
+    float translateSpeedRotation;
     float speedx = 0.0f;
     float speedz = 0.0f;
     float speed = 0.07;
@@ -50,6 +51,8 @@ private:
     bool muoviVersoDx = true;
     bool muoviVersoSx = false;
     bool muoviVersoDown = false;
+    float rotationx = 0.0f;
+    float rotationz = 0.0f;
     int nStepDown = 0;
     int score = 0;
     int livello = 1;
@@ -126,6 +129,10 @@ public:
         return speedz;
     }
 
+    float getSpeed() const {
+        return speed;
+    }
+
     double getStartTimeLoadNewLevel() const {
         return startTimeLoadNewLevel;
     }
@@ -176,6 +183,10 @@ public:
 
     void setTranslateSpeedz(float newTranslateSpeedz) {
         translateSpeedz = newTranslateSpeedz;
+    }
+
+    void setTranslateSpeedRotation(float newTranslateSpeed) {
+        translateSpeedRotation = newTranslateSpeed;
     }
 
     void setShader(Shader newShader) {
@@ -297,8 +308,9 @@ public:
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.27f, 0.27, 0.27f));
         if (mapHitted[i][j] == 1) {
-            modelAlieno = glm::rotate(modelAlieno, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+            modelAlieno = glm::rotate(modelAlieno, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
+        ruotaAlieno(modelAlieno);
         shader.setMat4("model", modelAlieno);
         models[i].Draw(shader);
 
@@ -312,8 +324,9 @@ public:
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.30f, 0.30f, 0.30f));
         if (mapHitted[i][j] == 1) {
-            modelAlieno = glm::rotate(modelAlieno, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+            modelAlieno = glm::rotate(modelAlieno, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
+        ruotaAlieno(modelAlieno);
         shader.setMat4("model", modelAlieno);
         models[i].Draw(bonusShader);
 
@@ -330,7 +343,7 @@ public:
         sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
         sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
         if (mapHitted[i][j] == 1) {
-            sferaModel = glm::rotate(sferaModel, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+            sferaModel = glm::rotate(sferaModel, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
         shader.setMat4("model", sferaModel);
         modelSfera.Draw(shader);
@@ -342,10 +355,47 @@ public:
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
         if (mapHitted[i][j] == 1) {
-            modelAlieno = glm::rotate(modelAlieno, pigreco / 10, glm::vec3(1.0f, 0.0f, 0.0f));
+            modelAlieno = glm::rotate(modelAlieno, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
+        ruotaAlieno(modelAlieno);
         shader.setMat4("model", modelAlieno);
         models[i].Draw(shader);
+    }
+
+    void ruotaAlieno(glm::mat4& modelAlieno) {
+
+        if ((speedx > 0) && rotationx > (-pigreco / 10)) {
+            rotationx = rotationx - translateSpeedRotation;
+        }
+        else if ((speedx == 0.0f) && (rotationx < -0.05f)) {
+
+            rotationx = rotationx + translateSpeedRotation;
+        }
+
+        if ((speedx < 0) && rotationx < (pigreco / 10)) {
+            rotationx = rotationx + translateSpeedRotation;
+        }
+        else if ((speedx == 0.0f) && (rotationx > 0.05f)) {
+
+            rotationx = rotationx - translateSpeedRotation;
+        }
+
+        if ((speedz > 0) && rotationz < (pigreco / 10)) {
+            rotationz = rotationz + translateSpeedRotation;
+        }
+        else if ((speedz == 0.0f) && (rotationz > 0.0f)) {
+
+            rotationz = rotationz - translateSpeedRotation;
+        }
+
+        if (speedz == 0.0f) {
+            modelAlieno = glm::rotate(modelAlieno, rotationx, glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+
+        if (speedx == 0.0f) {
+            modelAlieno = glm::rotate(modelAlieno, rotationz, glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+
     }
 
     void caricaNuovoLivello() {
