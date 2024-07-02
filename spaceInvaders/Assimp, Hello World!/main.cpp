@@ -98,6 +98,7 @@ bool cambiaPos = true;
 bool caricaLivello1 = false;
 bool var = true;
 bool carica = false;
+bool cambiaVista = true;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -122,6 +123,7 @@ void renderText();
 void renderTextStartGame();
 void renderTextCentered(const std::string& text, float x, float y, float scale, glm::vec3 color);
 void selezionaVista();
+void selezionaVista2();
 void impostaPosizioni();
 
 const float PI = 3.14159265358979323846;
@@ -201,7 +203,7 @@ float vertices[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
-int vista = -1;
+int vista = 0;
 
 glm::vec3 cameraPos(0.0f, 5.5f, 16.5f);  // Posizione camera
 glm::vec3 cameraAt(0.0f, 0.0f, 0.0f);	// Punto in cui "guarda" la camera
@@ -354,17 +356,25 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 
 void idle()
 {
-	if (cameraPos.x == 0.0f && cameraPos.y == 5.5f && cameraPos.z == 16.5f) {
-		selezionaVista();
-	}
+	//if (cameraPos.x == 0.0f && cameraPos.y == 5.5f && cameraPos.z == 16.5f) {
+	//	selezionaVista();
+	//}
 
-	if (navicella.getScudo()) {
+	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
+	if (navicella.getScudo() || proiettileSpeciale.getColpiSpecialiDisponibili() > 0 || proiettileSpeciale.getVecPos().size() != 0 || (alieno.getAlieniEliminati() > (((alieno.getColonneAlieni() * alieno.getRigheAlieni())/3)*2)) ) {
 		vista = 1;
-		selezionaVista();
+		if (cambiaVista) {
+			selezionaVista2();
+			cambiaVista = false;
+		}
 	}
 	else {
 		vista = 0;
-		selezionaVista();
+		if (!cambiaVista) {
+			selezionaVista2();
+			cameraUp = glm::vec3(0.0, 1.0, 0.0);
+			cambiaVista = true;
+		}
 	}
 
 	
@@ -462,6 +472,23 @@ void selezionaVista() {
 		//Vista dinamica frontale 
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
+		suono.soundGameStart();
+	}
+}
+
+void selezionaVista2() {
+
+	if (vista == 0) {
+		//Vista isometrica frontale dall'alto
+		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
+		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
+		suono.soundGameStart();
+	}
+
+	if (vista == 1) {
+		//Vista dinamica frontale 
+		cameraPos = glm::vec3(navicella.getPos().x, 6.5f, 17.5f);
+		cameraAt = glm::vec3(navicella.getPos().x, 0.0, 0.0);
 		suono.soundGameStart();
 	}
 }
@@ -775,6 +802,7 @@ unsigned int loadTexture3(char const* path, bool gammaCorrection)
 
 int main()
 {
+
 	record = leggiScoreDalFile("../src/score.txt");
 
 	bool schermoIntero = false;
@@ -783,6 +811,8 @@ int main()
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
 
 	suono.inizializza();
+
+	selezionaVista2();
 
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
