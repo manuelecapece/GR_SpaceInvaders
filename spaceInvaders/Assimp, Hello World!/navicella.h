@@ -73,6 +73,10 @@ public:
         return isInvincibile;
     }
 
+    bool getScudo() const {
+        return scudo;
+    }
+
     void setIsInvincibile(bool val) {
         isInvincibile = val;
     }

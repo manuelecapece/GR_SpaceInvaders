@@ -358,6 +358,15 @@ void idle()
 		selezionaVista();
 	}
 
+	if (navicella.getScudo()) {
+		vista = 1;
+		selezionaVista();
+	}
+	else {
+		vista = 0;
+		selezionaVista();
+	}
+
 	
 	double ctSparoUfo = glfwGetTime(); 
 	double ctSparoAlieni = glfwGetTime();
