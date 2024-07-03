@@ -99,7 +99,8 @@ bool caricaLivello1 = false;
 bool var = true;
 bool carica = false;
 bool cambiaVista = true;
-float durationTr = 2.0f; // Durata della transizione in secondi
+bool cambiaCamera = false;
+float durationTr = 1.0f; // Durata della transizione in secondi
 float currentTimeTr = 0.0f;
 
 //Dichiarazione matrici di trasformazione
@@ -130,6 +131,12 @@ void selezionaVista2();
 void impostaPosizioni();
 void transizioneCamera(float deltaTime);
 void cambiaCameraPos(float deltaTime);
+void transizioneCamera2(float deltaTime);
+void cambiaCameraPos2(float deltaTime);
+void cambiaVisualizzazione();
+void cambiaVisualizzazione2();
+bool isCameraChanged();
+glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t);
 
 const float PI = 3.14159265358979323846;
 
@@ -154,59 +161,59 @@ Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
 std::stack<glm::mat4> glm_ModelViewMatrix;
 
-vector<glm::vec3> windows
-{
-	glm::vec3(-1.5f, 0.0f, -0.48f),
-	glm::vec3(1.5f, 0.0f, 0.51f),
-	glm::vec3(0.0f, 0.0f, 0.7f),
-	glm::vec3(-0.3f, 0.0f, -2.3f),
-	glm::vec3(0.5f, 0.0f, -0.6f)
-};
-
-float vertices[] = {
-	// positions          // normals           // texture coords
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-};
+//vector<glm::vec3> windows
+//{
+//	glm::vec3(-1.5f, 0.0f, -0.48f),
+//	glm::vec3(1.5f, 0.0f, 0.51f),
+//	glm::vec3(0.0f, 0.0f, 0.7f),
+//	glm::vec3(-0.3f, 0.0f, -2.3f),
+//	glm::vec3(0.5f, 0.0f, -0.6f)
+//};
+//
+//float vertices[] = {
+//	// positions          // normals           // texture coords
+//	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+//	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+//	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+//	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+//	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+//	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+//
+//	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+//	0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+//	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+//	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+//	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+//	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+//
+//	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+//	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+//	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+//	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+//	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+//	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+//
+//	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+//	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+//	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+//	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+//	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+//	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+//
+//	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+//	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+//	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+//	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+//	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+//	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+//
+//	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+//	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+//	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+//	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+//	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+//	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+//};
 
 int vista = -1;
 
@@ -390,38 +397,8 @@ void idle()
 
 	double deltaTimeExecute = currentTime - startTime;
 
-	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
-	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
-	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
-	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
-	if (vista!= -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-		
-		
-		if (cambiaVista) {
-			navicella.setSpeed(0.0f);
-			speedCamera = 0.0f;
-
-			vista = 1;
-			selezionaVista2();
-			cambiaVista = false;
-
-		}
-
-		if ( alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2) ) {
-			suono.stopSoundCanzoneBase();
-			suono.setPlayCanzoneBase(true);
-			suono.soundCanzoneAction();
-		}
-	}
-	else if(vista != -1) {
-		vista = 0;
-		if (!cambiaVista) {
-			selezionaVista2();
-			cambiaVista = true;
-			navicella.setSpeed(0.0f);
-			speedCamera = 0.0f;
-		}
-	}
+	//cambiaVisualizzazione();
+	cambiaVisualizzazione2();
 
 	score = alieno.getScore() + ufo.getScore();
 
@@ -486,8 +463,142 @@ void idle()
 	checkGameWin();
 	checkGameLost();
 	muoviCamera(deltaTime);
-	transizioneCamera(deltaTime);
+	transizioneCamera2(deltaTime);
 }
+
+void cambiaVisualizzazione() {
+	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
+	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
+	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
+	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
+	if (vista != -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
+
+		if (cambiaVista) {
+			navicella.setSpeed(0.0f);
+			speedCamera = 0.0f;
+
+			vista = 1;
+			selezionaVista2();
+			cambiaVista = false;
+
+		}
+
+		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
+			suono.stopSoundCanzoneBase();
+			suono.setPlayCanzoneBase(true);
+			suono.soundCanzoneAction();
+		}
+	}
+	else if (vista != -1) {
+		vista = 0;
+		if (!cambiaVista) {
+			selezionaVista2();
+			cambiaVista = true;
+			navicella.setSpeed(0.0f);
+			speedCamera = 0.0f;
+		}
+	}
+}
+
+void cambiaVisualizzazione2() {
+	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
+	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
+	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
+	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
+
+	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
+
+		cout << "Carico vista 3D" << endl;
+
+		vista = 1;
+		selezionaVista2();
+		navicella.setSpeed(0.0f);
+		speedCamera = 0.0f;
+		proiettileNavicella.setSpeed(0.0f);
+		proiettileSpeciale.setSpeed(0.0f);
+		alieno.setSpeedProiettili(0.0f);
+
+		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
+			suono.stopSoundCanzoneBase();
+			suono.setPlayCanzoneBase(true);
+			suono.soundCanzoneAction();
+		}
+	}
+	
+	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
+		
+		cout << "Carico vista 2D" << endl;
+		
+		vista = 0;
+		selezionaVista2();
+		navicella.setSpeed(0.0f);
+		speedCamera = 0.0f;
+	}
+}
+
+void transizioneCamera2(float deltaTime) {
+
+	bool val = isCameraChanged();
+
+	if (vista == 1 && !cambiaCamera) {
+		cambiaCameraPos2(deltaTime);
+	}
+
+	if (vista == 0 && cambiaCamera) {
+
+		cambiaCameraPos2(deltaTime);
+	}
+
+}
+
+void cambiaCameraPos2(float deltaTime) {
+	glm::vec3 cameraPosStart = cameraPos;
+	glm::vec3 cameraPosEnd = cameraPosTr;
+
+	glm::vec3 cameraAtStart = cameraAt;
+	glm::vec3 cameraAtEnd = cameraAtTr;
+
+	glm::vec3 P0 = cameraPosStart;
+	glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+	glm::vec3 P3 = cameraPosEnd;
+
+	glm::vec3 P0_at = cameraAtStart;
+	glm::vec3 P1_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtStart.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
+	glm::vec3 P2_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtEnd.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
+	glm::vec3 P3_at = cameraAtEnd;
+
+	bool val = isCameraChanged();
+
+	if (!val) {
+		float t = currentTimeTr / (durationTr);
+
+		cameraPos = glm::mix(cameraPosStart, cameraPosEnd, t);
+		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
+
+		currentTimeTr += deltaTime;
+	}
+	else {
+		navicella.setSpeed(8.0f);
+		speedCamera = 8.0f;
+		proiettileNavicella.setSpeed(15.0f);
+		proiettileSpeciale.setSpeed(15.0f);
+		alieno.setSpeedProiettili(alieno.getSpeedProiettili());
+
+		cout << "Nuova vista caricata" << endl;
+		currentTimeTr = 0.0f;
+
+		cambiaCamera = !cambiaCamera;
+	}
+}
+
+bool isCameraChanged() {
+	if (cameraPos.x == cameraPosTr.x && cameraPos.y == cameraPosTr.y && cameraPos.z == cameraPosTr.z) {
+		return true;
+	}
+	return false;
+}
+
 
 void selezionaVista() {
 
@@ -1042,12 +1153,12 @@ int main()
 
 
 
-	//Binding per mattoni con texture diffuse e speculari
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	////Binding per mattoni con texture diffuse e speculari
+	//glGenVertexArrays(1, &cubeVAO);
+	//glGenBuffers(1, &cubeVBO);
+	//glBindVertexArray(cubeVAO);
+	//glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);

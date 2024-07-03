@@ -23,7 +23,7 @@ private:
     float larghezza = 0.10f;
     float altezza = 0.15f;
     float translateSpeed;
-    float speed = 15;  
+    float speed = 15.0f;  
     float limZNeg = -20;
     float limZPos = 10;
     float spread = 1.0f;

@@ -149,6 +149,10 @@ public:
         return livello;
     }
 
+    float getSpeedProiettili() {
+        return speedProiettili;
+    }
+
     void setScore(int newScore) {
         score = newScore;
     }
@@ -476,6 +480,28 @@ public:
                 {
 
                     vectorProiettili[k].setTranslateSpeed(vectorProiettili[k].getSpeed() * deltaTime);
+
+                }
+
+                k++;
+            }
+        }
+
+    }
+
+    void setSpeedProiettili(float speed) {
+
+        int k = 0;
+
+        for (int i = 0; i < righeAlieni; i++)
+        {
+            for (int j = 0; j < colonneAlieni; j++)
+            {
+
+                if (map[i][j] != 0 || !vectorProiettili[k].isAllProiettiliAlienoOut())
+                {
+
+                    vectorProiettili[k].setSpeed(speed);
 
                 }
 
