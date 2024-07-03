@@ -26,6 +26,8 @@ private:
     bool playGameOver = true;
     bool playMovimentoAlieni = true;
     bool playMovimentoUfo = true;
+    bool playCanzoneBase = true;
+    bool playCanzoneAction = true;
     ISoundEngine* soundEngine;
     ISoundSource* gameOver;
     ISoundSource* gameStart;
@@ -41,7 +43,11 @@ private:
     ISoundSource* caricaNuovoLivello;
     ISoundSource* movimentoUfo;
     ISoundSource* colpisciUfo;
+    ISoundSource* spaceInvaders1;
+    ISoundSource* finalWar;
     ISound* suonoUfo;
+    ISound* canzoneBase;
+    ISound* canzoneAction;
     double startTimeGameOver = 9999999999;
 
 public:
@@ -64,6 +70,8 @@ public:
         caricaBonus = soundEngine->addSoundSourceFromFile("../src/sounds/caricaBonus.wav");
         caricaNuovoLivello = soundEngine->addSoundSourceFromFile("../src/sounds/caricaNuovoLivello.wav");
         colpisciUfo = soundEngine->addSoundSourceFromFile("../src/sounds/colpisciUfo.wav");
+        spaceInvaders1 = soundEngine->addSoundSourceFromFile("../src/sounds/spaceInvaders1.wav");
+        finalWar = soundEngine->addSoundSourceFromFile("../src/sounds/final_war3.wav");
     }
 
     void setPlayGameStart(bool val) {
@@ -80,6 +88,14 @@ public:
 
     void setPlayMovimentoUfo(bool val) {
         playMovimentoUfo = val;
+    }
+
+    void setPlayCanzoneBase(bool val) {
+        playCanzoneBase = val;
+    }
+
+    void setPlayCanzoneAction(bool val) {
+        playCanzoneAction = val;
     }
 
     void inizializzaStartTimeGameOver() {
@@ -162,6 +178,33 @@ public:
     void stopSoundMovimentoUfo() {
         if (suonoUfo != nullptr) {
             suonoUfo->stop();
+        }
+    }
+
+
+    void soundCanzoneBase() {
+        if (playCanzoneBase) {
+            canzoneBase = soundEngine->play2D(spaceInvaders1, true, false, true);
+            playCanzoneBase = false;
+        }
+    }
+
+    void stopSoundCanzoneBase() {
+        if (canzoneBase != nullptr) {
+            canzoneBase->stop();
+        }
+    }
+
+    void soundCanzoneAction() {
+        if (playCanzoneAction) {
+            canzoneAction = soundEngine->play2D(finalWar, true, false, true);
+            playCanzoneAction = false;
+        }
+    }
+
+    void stopSoundCanzoneAction() {
+        if (canzoneAction != nullptr) {
+            canzoneAction->stop();
         }
     }
 

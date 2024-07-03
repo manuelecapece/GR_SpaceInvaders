@@ -661,7 +661,7 @@ public:
         {
             int idRiga = generaNumeroCasualeInt(0, righeAlieni - 1);
             int idColonna = generaNumeroCasualeInt(0, colonneAlieni - 1);
-            int tipoBonus = generaNumeroCasualeInt(1, 2);
+            int tipoBonus = generaNumeroCasualeInt(2, 2);
 
             while (mapBonus[idRiga][idColonna] != 0) {
                 idRiga = generaNumeroCasualeInt(0, righeAlieni - 1);

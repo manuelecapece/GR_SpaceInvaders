@@ -99,6 +99,8 @@ bool caricaLivello1 = false;
 bool var = true;
 bool carica = false;
 bool cambiaVista = true;
+float durationTr = 2.0f; // Durata della transizione in secondi
+float currentTimeTr = 0.0f;
 
 //Dichiarazione matrici di trasformazione
 //glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -125,6 +127,8 @@ void renderTextCentered(const std::string& text, float x, float y, float scale, 
 void selezionaVista();
 void selezionaVista2();
 void impostaPosizioni();
+void transizioneCamera(float deltaTime);
+void cambiaCameraPos(float deltaTime);
 
 const float PI = 3.14159265358979323846;
 
@@ -203,15 +207,23 @@ float vertices[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
-int vista = 0;
+int vista = -1;
 
 glm::vec3 cameraPos(0.0f, 5.5f, 16.5f);  // Posizione camera
 glm::vec3 cameraAt(0.0f, 0.0f, 0.0f);	// Punto in cui "guarda" la camera
-glm::vec3 cameraUp(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano
+glm::vec3 cameraUp(0.0, 1.0, 0.0);
 glm::vec3 cameraDir(0.0, 0.0, -0.1); // Direzione dello sguardo
 glm::vec3 cameraSide(1.0, 0.0, 0.0); // Direzione spostamento laterale
 
-float speed = navicella.getSpeed();
+glm::vec3 cameraUpVista0(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano nel caso della vista 2D dall'alto
+glm::vec3 cameraUpVista1(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano nel caso della vista 2D dall'alto
+
+glm::vec3 cameraPosTr(0.0f, 0.0f, 0.0f);
+glm::vec3 cameraAtTr(0.0f, 0.0f, 0.0f);
+
+
+
+float speedCamera = navicella.getSpeed();
 
 unsigned int cubeVAO;
 unsigned int cubeVBO;
@@ -279,10 +291,10 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && vista != -1)
 		moveRight = true;
 
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && vista == -1)
-		vista = 0;
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && vista == -1)
-		vista = 1;
+	//if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && vista == -1)
+	//	vista = 0;
+	//if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && vista == -1)
+	//	vista = 1;
 
 	if (navicella.getVite() < 0 && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && caricaLivello1) {
 		alieno.caricaLivello1(navicella);
@@ -294,6 +306,12 @@ void processInput(GLFWwindow* window)
 		ufo.setScore(0);
 		aggiornaScoreSeMaggiore("../src/score.txt");
 		record = leggiScoreDalFile("../src/score.txt");
+	}
+
+	if (vista == -1 && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+		vista = 0;
+		selezionaVista();
+		suono.soundGameStart();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && vista != -1) {
@@ -356,24 +374,33 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 
 void idle()
 {
-	//if (cameraPos.x == 0.0f && cameraPos.y == 5.5f && cameraPos.z == 16.5f) {
-	//	selezionaVista();
-	//}
 
 	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
-	if (navicella.getScudo() || proiettileSpeciale.getColpiSpecialiDisponibili() > 0 || proiettileSpeciale.getVecPos().size() != 0 || (alieno.getAlieniEliminati() > (((alieno.getColonneAlieni() * alieno.getRigheAlieni())/3)*2)) ) {
+	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
+	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
+	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
+	if (vista!= -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
 		vista = 1;
 		if (cambiaVista) {
 			selezionaVista2();
 			cambiaVista = false;
+			navicella.setSpeed(0.0f);
+			speedCamera = 0;
+		}
+
+		if ( alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2) ) {
+			suono.stopSoundCanzoneBase();
+			suono.setPlayCanzoneBase(true);
+			suono.soundCanzoneAction();
 		}
 	}
-	else {
+	else if(vista != -1) {
 		vista = 0;
 		if (!cambiaVista) {
 			selezionaVista2();
-			cameraUp = glm::vec3(0.0, 1.0, 0.0);
 			cambiaVista = true;
+			navicella.setSpeed(0.0f);
+			speedCamera = 0;
 		}
 	}
 
@@ -442,11 +469,6 @@ void idle()
 		ripristinaGioco();
 	}
 
-
-	if (vista == 1) {
-		muoviCamera(deltaTime);
-	}
-
 	if (respawnNavicella && (vista == 0 || vista == 1) && navicella.getVite() >= 0) {
 		navicella.setHisHitted(false);
 		respawnNavicella = false;
@@ -456,7 +478,8 @@ void idle()
 	checkNavicellaIsInvincibile();
 	checkGameWin();
 	checkGameLost();
-
+	muoviCamera(deltaTime);
+	transizioneCamera(deltaTime);
 }
 
 void selezionaVista() {
@@ -465,14 +488,12 @@ void selezionaVista() {
 		//Vista isometrica frontale dall'alto
 		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
 		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
-		suono.soundGameStart();
 	}
 
 	if (vista == 1) {
 		//Vista dinamica frontale 
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
-		suono.soundGameStart();
 	}
 }
 
@@ -480,16 +501,16 @@ void selezionaVista2() {
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
-		cameraPos = glm::vec3(0.0f, 42.0f, -7.0f);
-		cameraAt = glm::vec3(0.0f, 0.0f, -7.1f);
-		suono.soundGameStart();
+		cameraPosTr = glm::vec3(0.0f, 42.0f, -7.0f);
+		cameraAtTr = glm::vec3(0.0f, 0.0f, -7.1f);
+		cameraUp = cameraUpVista0;
 	}
 
 	if (vista == 1) {
 		//Vista dinamica frontale 
-		cameraPos = glm::vec3(navicella.getPos().x, 6.5f, 17.5f);
-		cameraAt = glm::vec3(navicella.getPos().x, 0.0, 0.0);
-		suono.soundGameStart();
+		cameraPosTr = glm::vec3(navicella.getPos().x, 6.5f, 17.5f);
+		cameraAtTr = glm::vec3(navicella.getPos().x, 0.0, 0.0);
+		cameraUp = cameraUpVista1;
 	}
 }
 
@@ -541,6 +562,9 @@ void ripristinaGioco() {
 	carica = false;
 	startTimeGameOver = 0;
 	suono.setPlayGameOver(true);
+	suono.stopSoundCanzoneAction();
+	suono.setPlayCanzoneAction(true);
+	suono.soundCanzoneBase();
 }
 
 void ripristinaCameraPos() {
@@ -548,8 +572,9 @@ void ripristinaCameraPos() {
 	if (vista == 1) {
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
-		cameraUp = glm::vec3(0.0, 1.0, 0.0);
 	}
+
+	cameraUpVista1 = glm::vec3(0.0, 1.0, 0.0);
 }
 
 void checkGameLost() {
@@ -569,32 +594,49 @@ void checkGameWin() {
 }
 
 void muoviCamera(float deltaTime) {
-	float cameraSpeed = speed * deltaTime;
+	float cameraSpeed = speedCamera * deltaTime;
 	//cameraPos.x = navicella.getPos().x;
 
 	if (respawnNavicella && vista == 1 && navicella.getVite() >= 0) {
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
 		cameraAt = glm::vec3(0.0, 0.0, 0.0);
-		cameraUp = glm::vec3(0.0, 1.0, 0.0);
+		cameraUpVista1 = glm::vec3(0.0, 1.0, 0.0);
 		navicella.setHisHitted(false);
 		respawnNavicella = false;
 	}
 
 	if (moveRight && !navicella.getIsHitted())
 	{
-		cameraPos.x = cameraPos.x + cameraSpeed;
-		cameraAt.x = cameraAt.x + cameraSpeed;
-		cameraUp.x = cameraUp.x + cameraSpeed/100;
-		cameraUp = normalize(cameraUp);
+		cameraUpVista1.x = cameraUpVista1.x + cameraSpeed/100;
+		cameraUpVista1 = normalize(cameraUpVista1);
+		if (vista == 1) {
+			cameraPos.x = cameraPos.x + cameraSpeed;
+			cameraAt.x = cameraAt.x + cameraSpeed;
+			cameraUp = cameraUpVista1;
+		}
+		else {
+			cameraUp = cameraUpVista0;
+		}
+		
 	}
 
 	if (moveLeft && !navicella.getIsHitted())
 	{
-		cameraPos.x = cameraPos.x - cameraSpeed;
-		cameraAt.x = cameraPos.x - cameraSpeed;
-		cameraUp.x = cameraUp.x - cameraSpeed / 100;
-		cameraUp = normalize(cameraUp);
+		cameraUpVista1.x = cameraUpVista1.x - cameraSpeed / 100;
+		cameraUpVista1 = normalize(cameraUpVista1);
+
+		if (vista == 1) {
+			cameraPos.x = cameraPos.x - cameraSpeed;
+			cameraAt.x = cameraPos.x - cameraSpeed;
+			cameraUp = cameraUpVista1;
+		}
+		else {
+			cameraUp = cameraUpVista0;
+		}
+		
 	}
+
+
 }
 
 void muoviAlieni() {
@@ -811,8 +853,7 @@ int main()
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
 
 	suono.inizializza();
-
-	selezionaVista2();
+	suono.soundCanzoneBase();
 
 	const GLFWvidmode* videoMode = NULL;
 	GLFWmonitor* primaryMonitor = NULL;
@@ -1205,6 +1246,118 @@ void checkCollisioneAlieniBarriere() {
 }
 
 
+// Funzione per calcolare un punto sulla curva di Bézier cubica
+glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t) {
+	float u = 1.0f - t;
+	float tt = t * t;
+	float uu = u * u;
+	float uuu = uu * u;
+	float ttt = tt * t;
+
+	glm::vec3 p = uuu * P0; // P0
+	p += 3 * uu * t * P1;   // P1
+	p += 3 * u * tt * P2;   // P2
+	p += ttt * P3;          // P3
+
+	return p;
+}
+
+
+void transizioneCamera(float deltaTime) {
+
+	if (vista == 1 && !cambiaVista) {
+
+		//glm::vec3 cameraPosStart = cameraPos;
+		//glm::vec3 cameraPosEnd = cameraPosTr;
+
+		//glm::vec3 cameraAtStart = cameraAt;
+		//glm::vec3 cameraAtEnd = cameraAtTr;
+
+		//glm::vec3 P0 = cameraPosStart;
+		//glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+		//glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+		//glm::vec3 P3 = cameraPosEnd;
+
+
+		//if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
+		//	float t = currentTimeTr / durationTr;
+
+		//	cameraPos = bezierCurve(P0, P1, P2, P3, t);
+		//	cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
+
+		//	currentTimeTr += deltaTime;
+		//}
+		//else {
+		//	currentTimeTr = 0.0f;
+		//	navicella.setSpeed(8.0f);
+		//	speedCamera = 8.0f;
+		//}
+		cambiaCameraPos(deltaTime);
+	}
+
+	if (vista == 0 && cambiaVista) {
+
+
+		//glm::vec3 cameraPosStart = cameraPos;
+		//glm::vec3 cameraPosEnd = cameraPosTr;
+
+		//glm::vec3 cameraAtStart = cameraAt;
+		//glm::vec3 cameraAtEnd = cameraAtTr;
+
+		//glm::vec3 P0 = cameraPosStart;
+		//glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+		//glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+		//glm::vec3 P3 = cameraPosEnd;
+
+
+		//if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
+		//	float t = currentTimeTr / durationTr;
+
+		//	cameraPos = bezierCurve(P0, P1, P2, P3, t);
+		//	cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
+
+		//	currentTimeTr += deltaTime;
+		//}
+		//else {
+		//	currentTimeTr = 0.0f;
+		//	navicella.setSpeed(8.0f);
+		//	speedCamera = 8.0f;
+		//}
+
+		cambiaCameraPos(deltaTime);
+	}
+
+}
+
+void cambiaCameraPos(float deltaTime) {
+	glm::vec3 cameraPosStart = cameraPos;
+	glm::vec3 cameraPosEnd = cameraPosTr;
+
+	glm::vec3 cameraAtStart = cameraAt;
+	glm::vec3 cameraAtEnd = cameraAtTr;
+
+	glm::vec3 P0 = cameraPosStart;
+	glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+	glm::vec3 P3 = cameraPosEnd;
+
+
+	if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
+		float t = currentTimeTr / durationTr;
+
+		cameraPos = bezierCurve(P0, P1, P2, P3, t);
+		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
+
+		currentTimeTr += deltaTime;
+	}
+	else {
+		currentTimeTr = 0.0f;
+		navicella.setSpeed(8.0f);
+		speedCamera = 8.0f;
+	}
+}
+
+
 void render(Shader shaderBlur, Shader shaderBloomFinal)
 {	
 
@@ -1298,19 +1451,18 @@ void renderTextStartGame() {
 	float dimensione = 0.5f * (SCR_HEIGHT / 1000.0f);
 
 	std::string titolo = "SPACE INVADERS";
-	renderTextCentered(titolo, centroX, centroY + 3 * deltaY, dimensione * 4, glm::vec3(1.0, 0.0f, 0.0f));
+	renderTextCentered(titolo, centroX, centroY + 2 * deltaY, dimensione * 4, glm::vec3(1.0, 0.0f, 0.0f));
 
-	std::string vista = "Select view mode";
-	renderTextCentered(vista, centroX, centroY + deltaY, dimensione * 1.5, glm::vec3(1.0f, 1.0f, 0.26f));
+	std::string vista = "Press Enter to start the game";
+	renderTextCentered(vista, centroX, centroY, dimensione * 1.5, glm::vec3(1.0f, 1.0f, 0.26f));
 
-	std::string opzione1 = "Press key 1 for traditional 2D mode";
-	renderTextCentered(opzione1, centroX, centroY, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
-
-	std::string opzione2 = "Press key 2 for action 3D mode";
-	renderTextCentered(opzione2, centroX, centroY - deltaY, dimensione, glm::vec3(1.0f, 1.0f, 1.0f));
+	std::string riga = "--------------------------------------";
+	renderTextCentered(riga, centroX, centroY - (2 * deltaY), dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 
 	std::string istruzioni = "Keys A and D to move, Space to shoot";
-	renderTextCentered(istruzioni, centroX, centroY - 4 * deltaY, dimensione, glm::vec3(1.0, 1.0f, 1.0f));
+	renderTextCentered(istruzioni, centroX, centroY - (3 * deltaY), dimensione, glm::vec3(1.0, 1.0f, 1.0f));
+
+	renderTextCentered(riga, centroX, centroY - (4 * deltaY), dimensione, glm::vec3(1.0, 1.0f, 1.0f));
 }
 
 // Funzione di rendering per centrare il testo
