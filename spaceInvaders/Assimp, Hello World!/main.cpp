@@ -114,6 +114,7 @@ float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 void muoviAlieni();
 void muoviCamera(float deltaTime);
+void muoviCamera2();
 void checkGameWin();
 void checkGameLost();
 void ripristinaCameraPos();
@@ -216,7 +217,10 @@ glm::vec3 cameraDir(0.0, 0.0, -0.1); // Direzione dello sguardo
 glm::vec3 cameraSide(1.0, 0.0, 0.0); // Direzione spostamento laterale
 
 glm::vec3 cameraUpVista0(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano nel caso della vista 2D dall'alto
-glm::vec3 cameraUpVista1(0.0, 1.0, 0.0); // Vettore up...la camera e sempre parallela al piano nel caso della vista 2D dall'alto
+
+glm::vec3 cameraUpVista1(0.0, 1.0, 0.0); // Vettore up vista 3D action
+glm::vec3 cameraPosVista1(0.0f, 5.5f, 16.5f);  // Posizione camera
+glm::vec3 cameraAtVista1(0.0f, 0.0f, 0.0f);	// Punto in cui "guarda" la camera
 
 glm::vec3 cameraPosTr(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraAtTr(0.0f, 0.0f, 0.0f);
@@ -375,17 +379,32 @@ void aggiornaScoreSeMaggiore(const std::string& nomeFile) {
 void idle()
 {
 
+	double ctSparoUfo = glfwGetTime();
+	double ctSparoAlieni = glfwGetTime();
+	double currentTime2s = glfwGetTime();
+	double ctSpawnUfo = glfwGetTime();
+	double currentTime = glfwGetTime();
+	double currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	double deltaTimeExecute = currentTime - startTime;
+
 	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
 	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
 	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
 	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
 	if (vista!= -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-		vista = 1;
+		
+		
 		if (cambiaVista) {
+			navicella.setSpeed(0.0f);
+			speedCamera = 0.0f;
+
+			vista = 1;
 			selezionaVista2();
 			cambiaVista = false;
-			navicella.setSpeed(0.0f);
-			speedCamera = 0;
+
 		}
 
 		if ( alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2) ) {
@@ -400,21 +419,9 @@ void idle()
 			selezionaVista2();
 			cambiaVista = true;
 			navicella.setSpeed(0.0f);
-			speedCamera = 0;
+			speedCamera = 0.0f;
 		}
 	}
-
-	
-	double ctSparoUfo = glfwGetTime(); 
-	double ctSparoAlieni = glfwGetTime();
-	double currentTime2s = glfwGetTime();
-	double ctSpawnUfo = glfwGetTime();
-	double currentTime = glfwGetTime();
-	double currentFrame = glfwGetTime();
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-
-	double deltaTimeExecute = currentTime - startTime;
 
 	score = alieno.getScore() + ufo.getScore();
 
@@ -636,6 +643,34 @@ void muoviCamera(float deltaTime) {
 		
 	}
 
+}
+
+void muoviCamera2() {
+
+	if (respawnNavicella && navicella.getVite() >= 0) {
+		cameraPosVista1 = glm::vec3(0.0f, 6.5f, 17.5f);
+		cameraAtVista1 = glm::vec3(0.0, 0.0, 0.0);
+		cameraUpVista1 = glm::vec3(0.0, 1.0, 0.0);
+		navicella.setHisHitted(false);
+		respawnNavicella = false;
+	}
+
+	if (moveRight && !navicella.getIsHitted())
+	{
+		cameraUpVista1.x = cameraUpVista1.x + navicella.getTranslateSpeed() / 100;
+		cameraUpVista1 = normalize(cameraUpVista1);
+		cameraPosVista1.x = cameraPosVista1.x + navicella.getTranslateSpeed();
+		cameraAtVista1.x = cameraAtVista1.x + navicella.getTranslateSpeed();
+
+	}
+
+	if (moveLeft && !navicella.getIsHitted())
+	{
+		cameraUpVista1.x = cameraUpVista1.x - navicella.getTranslateSpeed() / 100;
+		cameraUpVista1 = normalize(cameraUpVista1);
+		cameraPosVista1.x = cameraPosVista1.x - navicella.getTranslateSpeed();
+		cameraAtVista1.x = cameraAtVista1.x - navicella.getTranslateSpeed();
+	}
 
 }
 
@@ -1266,63 +1301,10 @@ glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3&
 void transizioneCamera(float deltaTime) {
 
 	if (vista == 1 && !cambiaVista) {
-
-		//glm::vec3 cameraPosStart = cameraPos;
-		//glm::vec3 cameraPosEnd = cameraPosTr;
-
-		//glm::vec3 cameraAtStart = cameraAt;
-		//glm::vec3 cameraAtEnd = cameraAtTr;
-
-		//glm::vec3 P0 = cameraPosStart;
-		//glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-		//glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-		//glm::vec3 P3 = cameraPosEnd;
-
-
-		//if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
-		//	float t = currentTimeTr / durationTr;
-
-		//	cameraPos = bezierCurve(P0, P1, P2, P3, t);
-		//	cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
-
-		//	currentTimeTr += deltaTime;
-		//}
-		//else {
-		//	currentTimeTr = 0.0f;
-		//	navicella.setSpeed(8.0f);
-		//	speedCamera = 8.0f;
-		//}
 		cambiaCameraPos(deltaTime);
 	}
 
 	if (vista == 0 && cambiaVista) {
-
-
-		//glm::vec3 cameraPosStart = cameraPos;
-		//glm::vec3 cameraPosEnd = cameraPosTr;
-
-		//glm::vec3 cameraAtStart = cameraAt;
-		//glm::vec3 cameraAtEnd = cameraAtTr;
-
-		//glm::vec3 P0 = cameraPosStart;
-		//glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-		//glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-		//glm::vec3 P3 = cameraPosEnd;
-
-
-		//if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
-		//	float t = currentTimeTr / durationTr;
-
-		//	cameraPos = bezierCurve(P0, P1, P2, P3, t);
-		//	cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
-
-		//	currentTimeTr += deltaTime;
-		//}
-		//else {
-		//	currentTimeTr = 0.0f;
-		//	navicella.setSpeed(8.0f);
-		//	speedCamera = 8.0f;
-		//}
 
 		cambiaCameraPos(deltaTime);
 	}
@@ -1341,11 +1323,17 @@ void cambiaCameraPos(float deltaTime) {
 	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
 	glm::vec3 P3 = cameraPosEnd;
 
+	glm::vec3 P0_at = cameraAtStart;
+	glm::vec3 P1_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtStart.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
+	glm::vec3 P2_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtEnd.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
+	glm::vec3 P3_at = cameraAtEnd;
+
 
 	if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
 		float t = currentTimeTr / durationTr;
 
 		cameraPos = bezierCurve(P0, P1, P2, P3, t);
+		//cameraAt = bezierCurve(P0_at, P1_at, P2_at, P3_at, t);
 		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
 
 		currentTimeTr += deltaTime;
@@ -1354,6 +1342,8 @@ void cambiaCameraPos(float deltaTime) {
 		currentTimeTr = 0.0f;
 		navicella.setSpeed(8.0f);
 		speedCamera = 8.0f;
+		//cameraPos.x = navicella.getPos().x;
+		//cameraAt.x = navicella.getPos().x;
 	}
 }
 

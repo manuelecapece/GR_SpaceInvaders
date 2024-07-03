@@ -24,7 +24,7 @@ const int TIPO_NAVICELLA = 7;
 class Navicella {
 private:
 
-    glm::vec3 pos = glm::vec3(0.0f, 0.0, 8.0f);
+    glm::vec3 pos = glm::vec3(0.01f, 0.0, 8.0f);
     float raggio = 1.0f;
     float rotation = 0.0f;
     float translateSpeed;
@@ -71,6 +71,10 @@ public:
 
     bool getIsInvincibile() const {
         return isInvincibile;
+    }
+
+    float getTranslateSpeed() {
+        return translateSpeed;
     }
 
     bool getScudo() const {
