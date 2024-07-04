@@ -43,7 +43,6 @@ Esplosione esplosione;
 Suono suono;
 
 //Dichiarazione shader
-Shader frecciaShader;
 Shader alienoShader;
 Shader proiettileShader;
 Shader barrieraShader;
@@ -98,7 +97,6 @@ bool cambiaPos = true;
 bool caricaLivello1 = false;
 bool var = true;
 bool carica = false;
-//bool cambiaVista = true;
 bool cambiaCamera = false;
 float durationTr = 1.0f; // Durata della transizione in secondi
 float currentTimeTr = 0.0f;
@@ -109,7 +107,6 @@ glm::mat4 projection = glm::mat4(1.0f);	//identity matrix
 
 //Dichiarazione metodi
 void renderQuad();
-void renderQuad2();
 void render(Shader shaderBlur, Shader shaderBloomFinal);
 float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
@@ -127,17 +124,13 @@ void renderText();
 void renderTextStartGame();
 void renderTextCentered(const std::string& text, float x, float y, float scale, glm::vec3 color);
 void selezionaVista();
-void selezionaVista2();
+void setPosTrCamera();
 void impostaPosizioni();
-//void transizioneCamera(float deltaTime);
-//void cambiaCameraPos(float deltaTime);
-void transizioneCamera2(float deltaTime);
-void cambiaCameraPos2(float deltaTime);
-//void cambiaVisualizzazione();
+void transizioneCamera(float deltaTime);
+void cambiaCameraPos(float deltaTime);
 void cambiaVisualizzazione2();
 bool isCameraChanged();
 void fermaColpi();
-//glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t);
 
 const float PI = 3.14159265358979323846;
 
@@ -249,11 +242,6 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && vista != -1)
 		moveRight = true;
 
-	//if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && vista == -1)
-	//	vista = 0;
-	//if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && vista == -1)
-	//	vista = 1;
-
 	if (navicella.getVite() < 0 && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && caricaLivello1) {
 		alieno.caricaLivello1(navicella);
 		caricaLivello1 = false;
@@ -344,7 +332,6 @@ void idle()
 
 	double deltaTimeExecute = currentTime - startTime;
 
-	//cambiaVisualizzazione();
 	cambiaVisualizzazione2();
 
 	if (alieno.getAlieniEliminati() > ((alieno.getColonneAlieni() * alieno.getRigheAlieni() / 3) * 2)) {
@@ -416,36 +403,9 @@ void idle()
 	checkGameWin();
 	checkGameLost();
 	muoviCamera(deltaTime);
-	transizioneCamera2(deltaTime);
+	transizioneCamera(deltaTime);
 }
 
-//void cambiaVisualizzazione() {
-//	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
-//	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
-//	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
-//	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
-//	if (vista != -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-//
-//		if (cambiaVista) {
-//			navicella.setSpeed(0.0f);
-//			speedCamera = 0.0f;
-//
-//			vista = 1;
-//			selezionaVista2();
-//			cambiaVista = false;
-//
-//		}
-//	}
-//	else if (vista != -1) {
-//		vista = 0;
-//		if (!cambiaVista) {
-//			selezionaVista2();
-//			cambiaVista = true;
-//			navicella.setSpeed(0.0f);
-//			speedCamera = 0.0f;
-//		}
-//	}
-//}
 
 void cambiaVisualizzazione2() {
 	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
@@ -456,9 +416,8 @@ void cambiaVisualizzazione2() {
 	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
 	//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
-		cout << "Carico vista 3D" << endl;
 		vista = 1;
-		selezionaVista2();
+		setPosTrCamera();
 		fermaColpi();
 
 		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
@@ -470,53 +429,40 @@ void cambiaVisualizzazione2() {
 	
 	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
 	//if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
-		
-		cout << "Carico vista 2D" << endl;
+
 		vista = 0;
-		selezionaVista2();
+		setPosTrCamera();
 	}
 }
 
-void transizioneCamera2(float deltaTime) {
+void transizioneCamera(float deltaTime) {
 
 	bool val = isCameraChanged();
 
 	if (vista == 1 && !cambiaCamera) {
-		cambiaCameraPos2(deltaTime);
+		cambiaCameraPos(deltaTime);
 	}
 
 	if (vista == 0 && cambiaCamera) {
 
-		cambiaCameraPos2(deltaTime);
+		cambiaCameraPos(deltaTime);
 	}
 
 }
 
-void cambiaCameraPos2(float deltaTime) {
+void cambiaCameraPos(float deltaTime) {
 	glm::vec3 cameraPosStart = cameraPos;
 	glm::vec3 cameraPosEnd = cameraPosTr;
 
 	glm::vec3 cameraAtStart = cameraAt;
 	glm::vec3 cameraAtEnd = cameraAtTr;
 
-	glm::vec3 P0 = cameraPosStart;
-	glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-	glm::vec3 P3 = cameraPosEnd;
-
-	glm::vec3 P0_at = cameraAtStart;
-	glm::vec3 P1_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtStart.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
-	glm::vec3 P2_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtEnd.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
-	glm::vec3 P3_at = cameraAtEnd;
-
 	bool val = isCameraChanged();
 
 	if (!val) {
 		float t = currentTimeTr / (durationTr);
-
 		cameraPos = glm::mix(cameraPosStart, cameraPosEnd, t);
 		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
-
 		currentTimeTr += deltaTime;
 	}
 	else {
@@ -525,10 +471,7 @@ void cambiaCameraPos2(float deltaTime) {
 		proiettileNavicella.setSpeed(15.0f);
 		proiettileSpeciale.setSpeed(15.0f);
 		alieno.setSpeedProiettili(alieno.getSpeedProiettili());
-
-		cout << "Nuova vista caricata" << endl;
 		currentTimeTr = 0.0f;
-
 		cambiaCamera = !cambiaCamera;
 	}
 }
@@ -564,7 +507,7 @@ void selezionaVista() {
 	}
 }
 
-void selezionaVista2() {
+void setPosTrCamera() {
 
 	if (vista == 0) {
 		//Vista isometrica frontale dall'alto
@@ -1026,7 +969,6 @@ int main()
 
 
 	//Shader
-	frecciaShader = Shader("freccia.vs", "freccia.fs");
 	alienoShader = Shader("alieno.vs", "alieno.fs");
 	proiettileShader = Shader("proiettile.vs", "proiettile.fs");
 	barrieraShader = Shader("barriera.vs", "barriera.fs");
@@ -1129,9 +1071,6 @@ int main()
 
 	//draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	frecciaShader.use();
-	frecciaShader.setMat4("projection", projection);
 
 	alienoShader.use();
 	alienoShader.setMat4("projection", projection);
@@ -1248,8 +1187,6 @@ int main()
 		// create transformations
 		view = glm::lookAt(cameraPos, cameraAt, cameraUp);
 
-		frecciaShader.use();
-		frecciaShader.setMat4("view", view);
 		alienoShader.use();
 		alienoShader.setMat4("view", view);
 		proiettileShader.use();
@@ -1337,74 +1274,6 @@ void checkCollisioneAlieniBarriere() {
 	}
 }
 
-
-//// Funzione per calcolare un punto sulla curva di Bézier cubica
-//glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t) {
-//	float u = 1.0f - t;
-//	float tt = t * t;
-//	float uu = u * u;
-//	float uuu = uu * u;
-//	float ttt = tt * t;
-//
-//	glm::vec3 p = uuu * P0; // P0
-//	p += 3 * uu * t * P1;   // P1
-//	p += 3 * u * tt * P2;   // P2
-//	p += ttt * P3;          // P3
-//
-//	return p;
-//}
-
-
-//void transizioneCamera(float deltaTime) {
-//
-//	if (vista == 1 && !cambiaVista) {
-//		cambiaCameraPos(deltaTime);
-//	}
-//
-//	if (vista == 0 && cambiaVista) {
-//
-//		cambiaCameraPos(deltaTime);
-//	}
-//
-//}
-
-//void cambiaCameraPos(float deltaTime) {
-//	glm::vec3 cameraPosStart = cameraPos;
-//	glm::vec3 cameraPosEnd = cameraPosTr;
-//
-//	glm::vec3 cameraAtStart = cameraAt;
-//	glm::vec3 cameraAtEnd = cameraAtTr;
-//
-//	glm::vec3 P0 = cameraPosStart;
-//	glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-//	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-//	glm::vec3 P3 = cameraPosEnd;
-//
-//	glm::vec3 P0_at = cameraAtStart;
-//	glm::vec3 P1_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtStart.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
-//	glm::vec3 P2_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtEnd.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
-//	glm::vec3 P3_at = cameraAtEnd;
-//
-//
-//	if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
-//		float t = currentTimeTr / durationTr;
-//
-//		cameraPos = bezierCurve(P0, P1, P2, P3, t);
-//		//cameraAt = bezierCurve(P0_at, P1_at, P2_at, P3_at, t);
-//		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
-//
-//		currentTimeTr += deltaTime;
-//	}
-//	else {
-//		currentTimeTr = 0.0f;
-//		navicella.setSpeed(8.0f);
-//		speedCamera = 8.0f;
-//		//cameraPos.x = navicella.getPos().x;
-//		//cameraAt.x = navicella.getPos().x;
-//	}
-//}
-
-
 void render(Shader shaderBlur, Shader shaderBloomFinal)
 {	
 
@@ -1459,7 +1328,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 		shaderBlur.setInt("horizontal", horizontal);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
-		renderQuad2();
+		renderQuad();
 		horizontal = !horizontal;
 		if (first_iteration)
 			first_iteration = false;
@@ -1476,7 +1345,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
 	shaderBloomFinal.setInt("bloom", bloom);
 	shaderBloomFinal.setFloat("exposure", exposure);
-	renderQuad2();
+	renderQuad();
 
 	glDisable(GL_DEPTH_TEST);
 	
@@ -1588,92 +1457,13 @@ void renderText() {
 	}
 }
 
-// renders a 1x1 quad in NDC with manually calculated tangent vectors
-// ------------------------------------------------------------------
+// renderQuad() renders a 1x1 XY quad in NDC
+// -----------------------------------------
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad()
 {
 	if (quadVAO == 0)
-	{
-		// positions
-		glm::vec3 pos1(-1.0f, 1.0f, 0.0f);
-		glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
-		glm::vec3 pos3(1.0f, -1.0f, 0.0f);
-		glm::vec3 pos4(1.0f, 1.0f, 0.0f);
-		// texture coordinates
-		glm::vec2 uv1(0.0f, 1.0f);
-		glm::vec2 uv2(0.0f, 0.0f);
-		glm::vec2 uv3(1.0f, 0.0f);
-		glm::vec2 uv4(1.0f, 1.0f);
-		// normal vector
-		glm::vec3 nm(0.0f, 0.0f, 1.0f);
-
-		// calculate tangent/bitangent vectors of both triangles
-		glm::vec3 tangent1, bitangent1;
-		glm::vec3 tangent2, bitangent2;
-		// triangle 1
-		// ----------
-		glm::vec3 edge1 = pos2 - pos1;
-		glm::vec3 edge2 = pos3 - pos1;
-		glm::vec2 deltaUV1 = uv2 - uv1;
-		glm::vec2 deltaUV2 = uv3 - uv1;
-
-		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-		tangent1 = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
-		bitangent1 = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
-
-		// triangle 2
-		// ----------
-		edge1 = pos3 - pos1;
-		edge2 = pos4 - pos1;
-		deltaUV1 = uv3 - uv1;
-		deltaUV2 = uv4 - uv1;
-
-		f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-		tangent2 = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
-		bitangent2 = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
-
-
-		float quadVertices[] = {
-			// positions            // normal         // texcoords  // tangent                          // bitangent
-			pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-			pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-			pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-
-			pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-			pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-			pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
-		};
-		// configure plane VAO
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
-	}
-	glBindVertexArray(quadVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-}
-
-// renderQuad2() renders a 1x1 XY quad in NDC
-// -----------------------------------------
-unsigned int quadVAO2 = 0;
-unsigned int quadVBO2;
-void renderQuad2()
-{
-	if (quadVAO2 == 0)
 	{
 		float quadVertices[] = {
 			// positions        // texture Coords
@@ -1683,17 +1473,17 @@ void renderQuad2()
 			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 		};
 		// setup plane VAO
-		glGenVertexArrays(1, &quadVAO2);
-		glGenBuffers(1, &quadVBO2);
-		glBindVertexArray(quadVAO2);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO2);
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	}
-	glBindVertexArray(quadVAO2);
+	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }

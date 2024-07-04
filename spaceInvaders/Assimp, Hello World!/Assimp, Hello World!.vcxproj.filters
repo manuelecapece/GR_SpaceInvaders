@@ -46,12 +46,6 @@
     <None Include="bordo.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="freccia.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="freccia.fs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="alieno.vs">
       <Filter>Resource Files</Filter>
     </None>
