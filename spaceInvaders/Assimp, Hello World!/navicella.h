@@ -207,7 +207,7 @@ public:
         bonusShader.use();
         glm::mat4 sferaModel = glm::mat4(1.0f);
         sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.32f));
-        sferaModel = glm::scale(sferaModel, glm::vec3(2.15, 2.15, 2.15));
+        sferaModel = glm::scale(sferaModel, glm::vec3(2.3, 2.3, 2.3));
         sferaModel = glm::rotate(sferaModel, pigreco / 4, glm::vec3(1.0f, 0.0f, 0.0f));
         bonusShader.setMat4("model", sferaModel);
         modelSfera.Draw(bonusShader);
