@@ -180,11 +180,9 @@
     <None Include="blur.vs" />
     <None Include="bordo.fs" />
     <None Include="bordo.vs" />
-    <None Include="freccia.fs" />
     <None Include="navicella.fs" />
     <None Include="navicella.vs" />
     <None Include="packages.config" />
-    <None Include="freccia.vs" />
     <None Include="pianeta.fs" />
     <None Include="pianeta.vs" />
     <None Include="proiettile.fs" />
