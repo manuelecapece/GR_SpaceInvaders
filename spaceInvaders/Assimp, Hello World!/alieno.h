@@ -369,6 +369,11 @@ public:
 
     void ruotaAlieno(glm::mat4& modelAlieno) {
 
+        int remainingAliens = righeAlieni * colonneAlieni - alieniEliminati;
+
+        translateSpeedRotation = speed * (1.0f + ((righeAlieni * colonneAlieni) - remainingAliens) / (float)(righeAlieni * colonneAlieni));
+
+
         if ((speedx > 0) && rotationx > (-pigreco / 10)) {
             rotationx = rotationx - translateSpeedRotation;
         }
@@ -388,7 +393,7 @@ public:
         if ((speedz > 0) && rotationz < (pigreco / 10)) {
             rotationz = rotationz + translateSpeedRotation;
         }
-        else if ((speedz == 0.0f) && (rotationz > 0.0f)) {
+        else if ((speedz == 0.0f) && (rotationz > 0.05f)) {
 
             rotationz = rotationz - translateSpeedRotation;
         }

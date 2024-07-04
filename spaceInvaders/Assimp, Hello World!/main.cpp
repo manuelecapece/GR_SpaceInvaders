@@ -453,8 +453,8 @@ void cambiaVisualizzazione2() {
 	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
 	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
 
-	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
-	//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
+	//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
+	if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
 		cout << "Carico vista 3D" << endl;
 		vista = 1;
@@ -468,8 +468,8 @@ void cambiaVisualizzazione2() {
 		}
 	}
 	
-	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
-	//if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
+	//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
+	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
 		
 		cout << "Carico vista 2D" << endl;
 		vista = 0;

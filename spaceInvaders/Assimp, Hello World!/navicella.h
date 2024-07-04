@@ -208,7 +208,7 @@ public:
         glm::mat4 sferaModel = glm::mat4(1.0f);
         sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.32f));
         sferaModel = glm::scale(sferaModel, glm::vec3(2.1, 2.1, 2.1));
-        sferaModel = glm::rotate(sferaModel, pigreco / 4, glm::vec3(1.0f, 0.0f, 0.0f));
+        sferaModel = glm::rotate(sferaModel, pigreco / 3, glm::vec3(1.0f, 0.0f, 0.0f));
         bonusShader.setMat4("model", sferaModel);
         modelSfera.Draw(bonusShader);
         glDisable(GL_BLEND);
