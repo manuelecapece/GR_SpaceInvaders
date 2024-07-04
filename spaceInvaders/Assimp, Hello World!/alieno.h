@@ -259,6 +259,7 @@ public:
                     if (mapBonus[i][j] == 0) {
 
                         disegnaAlieno(x, z, i, j);
+                        //disegnaSfera(x, z, i, j);
 
                     }
                     else {
@@ -294,7 +295,7 @@ public:
                         }
                     }
 
-                    navicella.checkCollisionAlien(posAlieno, raggio);
+                    navicella.checkCollisionAlien(posAlieno, raggio, esplosione);
 
                 }
             }

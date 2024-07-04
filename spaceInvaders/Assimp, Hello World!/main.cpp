@@ -98,7 +98,7 @@ bool cambiaPos = true;
 bool caricaLivello1 = false;
 bool var = true;
 bool carica = false;
-bool cambiaVista = true;
+//bool cambiaVista = true;
 bool cambiaCamera = false;
 float durationTr = 1.0f; // Durata della transizione in secondi
 float currentTimeTr = 0.0f;
@@ -129,24 +129,25 @@ void renderTextCentered(const std::string& text, float x, float y, float scale, 
 void selezionaVista();
 void selezionaVista2();
 void impostaPosizioni();
-void transizioneCamera(float deltaTime);
-void cambiaCameraPos(float deltaTime);
+//void transizioneCamera(float deltaTime);
+//void cambiaCameraPos(float deltaTime);
 void transizioneCamera2(float deltaTime);
 void cambiaCameraPos2(float deltaTime);
-void cambiaVisualizzazione();
+//void cambiaVisualizzazione();
 void cambiaVisualizzazione2();
 bool isCameraChanged();
-glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t);
+void fermaColpi();
+//glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t);
 
 const float PI = 3.14159265358979323846;
 
-//// settings
-//int SCR_WIDTH = 1920;
-//int SCR_HEIGHT = 1080;
-
 // settings
-int SCR_WIDTH = 2560;
-int SCR_HEIGHT = 1440;
+int SCR_WIDTH = 1920;
+int SCR_HEIGHT = 1080;
+
+//// settings
+//int SCR_WIDTH = 2560;
+//int SCR_HEIGHT = 1440;
 
 //Bloom settings
 bool bloom = true;
@@ -160,60 +161,6 @@ unsigned int colorBuffers[2];
 Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
 std::stack<glm::mat4> glm_ModelViewMatrix;
-
-//vector<glm::vec3> windows
-//{
-//	glm::vec3(-1.5f, 0.0f, -0.48f),
-//	glm::vec3(1.5f, 0.0f, 0.51f),
-//	glm::vec3(0.0f, 0.0f, 0.7f),
-//	glm::vec3(-0.3f, 0.0f, -2.3f),
-//	glm::vec3(0.5f, 0.0f, -0.6f)
-//};
-//
-//float vertices[] = {
-//	// positions          // normals           // texture coords
-//	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-//	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-//	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-//	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-//	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-//	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-//
-//	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-//	0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-//	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-//	0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-//	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-//	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-//
-//	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-//	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-//	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-//	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-//	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-//	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-//
-//	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-//	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-//	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-//	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-//	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-//	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-//
-//	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-//	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-//	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-//	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-//	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-//	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-//
-//	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-//	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-//	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-//	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-//	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-//	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-//};
 
 int vista = -1;
 
@@ -400,6 +347,12 @@ void idle()
 	//cambiaVisualizzazione();
 	cambiaVisualizzazione2();
 
+	if (alieno.getAlieniEliminati() > ((alieno.getColonneAlieni() * alieno.getRigheAlieni() / 3) * 2)) {
+		suono.stopSoundCanzoneBase();
+		suono.setPlayCanzoneBase(true);
+		suono.soundCanzoneAction();
+	}
+
 	score = alieno.getScore() + ufo.getScore();
 
 	navicella.setTranslateSpeed(navicella.getSpeed() * deltaTime);
@@ -466,39 +419,33 @@ void idle()
 	transizioneCamera2(deltaTime);
 }
 
-void cambiaVisualizzazione() {
-	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
-	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
-	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
-	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
-	if (vista != -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-
-		if (cambiaVista) {
-			navicella.setSpeed(0.0f);
-			speedCamera = 0.0f;
-
-			vista = 1;
-			selezionaVista2();
-			cambiaVista = false;
-
-		}
-
-		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
-			suono.stopSoundCanzoneBase();
-			suono.setPlayCanzoneBase(true);
-			suono.soundCanzoneAction();
-		}
-	}
-	else if (vista != -1) {
-		vista = 0;
-		if (!cambiaVista) {
-			selezionaVista2();
-			cambiaVista = true;
-			navicella.setSpeed(0.0f);
-			speedCamera = 0.0f;
-		}
-	}
-}
+//void cambiaVisualizzazione() {
+//	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
+//	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
+//	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
+//	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
+//	if (vista != -1 && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
+//
+//		if (cambiaVista) {
+//			navicella.setSpeed(0.0f);
+//			speedCamera = 0.0f;
+//
+//			vista = 1;
+//			selezionaVista2();
+//			cambiaVista = false;
+//
+//		}
+//	}
+//	else if (vista != -1) {
+//		vista = 0;
+//		if (!cambiaVista) {
+//			selezionaVista2();
+//			cambiaVista = true;
+//			navicella.setSpeed(0.0f);
+//			speedCamera = 0.0f;
+//		}
+//	}
+//}
 
 void cambiaVisualizzazione2() {
 	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
@@ -509,14 +456,9 @@ void cambiaVisualizzazione2() {
 	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
 
 		cout << "Carico vista 3D" << endl;
-
 		vista = 1;
 		selezionaVista2();
-		navicella.setSpeed(0.0f);
-		speedCamera = 0.0f;
-		proiettileNavicella.setSpeed(0.0f);
-		proiettileSpeciale.setSpeed(0.0f);
-		alieno.setSpeedProiettili(0.0f);
+		fermaColpi();
 
 		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
 			suono.stopSoundCanzoneBase();
@@ -528,11 +470,8 @@ void cambiaVisualizzazione2() {
 	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
 		
 		cout << "Carico vista 2D" << endl;
-		
 		vista = 0;
 		selezionaVista2();
-		navicella.setSpeed(0.0f);
-		speedCamera = 0.0f;
 	}
 }
 
@@ -597,6 +536,14 @@ bool isCameraChanged() {
 		return true;
 	}
 	return false;
+}
+
+void fermaColpi() {
+	navicella.setSpeed(0.0f);
+	speedCamera = 0.0f;
+	proiettileNavicella.setSpeed(0.0f);
+	proiettileSpeciale.setSpeed(0.0f);
+	alieno.setSpeedProiettili(0.0f);
 }
 
 
@@ -993,7 +940,7 @@ int main()
 
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
@@ -1392,71 +1339,71 @@ void checkCollisioneAlieniBarriere() {
 }
 
 
-// Funzione per calcolare un punto sulla curva di Bézier cubica
-glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t) {
-	float u = 1.0f - t;
-	float tt = t * t;
-	float uu = u * u;
-	float uuu = uu * u;
-	float ttt = tt * t;
-
-	glm::vec3 p = uuu * P0; // P0
-	p += 3 * uu * t * P1;   // P1
-	p += 3 * u * tt * P2;   // P2
-	p += ttt * P3;          // P3
-
-	return p;
-}
-
-
-void transizioneCamera(float deltaTime) {
-
-	if (vista == 1 && !cambiaVista) {
-		cambiaCameraPos(deltaTime);
-	}
-
-	if (vista == 0 && cambiaVista) {
-
-		cambiaCameraPos(deltaTime);
-	}
-
-}
-
-void cambiaCameraPos(float deltaTime) {
-	glm::vec3 cameraPosStart = cameraPos;
-	glm::vec3 cameraPosEnd = cameraPosTr;
-
-	glm::vec3 cameraAtStart = cameraAt;
-	glm::vec3 cameraAtEnd = cameraAtTr;
-
-	glm::vec3 P0 = cameraPosStart;
-	glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
-	glm::vec3 P3 = cameraPosEnd;
-
-	glm::vec3 P0_at = cameraAtStart;
-	glm::vec3 P1_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtStart.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
-	glm::vec3 P2_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtEnd.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
-	glm::vec3 P3_at = cameraAtEnd;
+//// Funzione per calcolare un punto sulla curva di Bézier cubica
+//glm::vec3 bezierCurve(const glm::vec3& P0, const glm::vec3& P1, const glm::vec3& P2, const glm::vec3& P3, float t) {
+//	float u = 1.0f - t;
+//	float tt = t * t;
+//	float uu = u * u;
+//	float uuu = uu * u;
+//	float ttt = tt * t;
+//
+//	glm::vec3 p = uuu * P0; // P0
+//	p += 3 * uu * t * P1;   // P1
+//	p += 3 * u * tt * P2;   // P2
+//	p += ttt * P3;          // P3
+//
+//	return p;
+//}
 
 
-	if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
-		float t = currentTimeTr / durationTr;
+//void transizioneCamera(float deltaTime) {
+//
+//	if (vista == 1 && !cambiaVista) {
+//		cambiaCameraPos(deltaTime);
+//	}
+//
+//	if (vista == 0 && cambiaVista) {
+//
+//		cambiaCameraPos(deltaTime);
+//	}
+//
+//}
 
-		cameraPos = bezierCurve(P0, P1, P2, P3, t);
-		//cameraAt = bezierCurve(P0_at, P1_at, P2_at, P3_at, t);
-		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
-
-		currentTimeTr += deltaTime;
-	}
-	else {
-		currentTimeTr = 0.0f;
-		navicella.setSpeed(8.0f);
-		speedCamera = 8.0f;
-		//cameraPos.x = navicella.getPos().x;
-		//cameraAt.x = navicella.getPos().x;
-	}
-}
+//void cambiaCameraPos(float deltaTime) {
+//	glm::vec3 cameraPosStart = cameraPos;
+//	glm::vec3 cameraPosEnd = cameraPosTr;
+//
+//	glm::vec3 cameraAtStart = cameraAt;
+//	glm::vec3 cameraAtEnd = cameraAtTr;
+//
+//	glm::vec3 P0 = cameraPosStart;
+//	glm::vec3 P1 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosStart.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+//	glm::vec3 P2 = glm::vec3((cameraPosStart.x + cameraPosEnd.x) / 2, cameraPosEnd.y, (cameraPosStart.z + cameraPosEnd.z) / 2);
+//	glm::vec3 P3 = cameraPosEnd;
+//
+//	glm::vec3 P0_at = cameraAtStart;
+//	glm::vec3 P1_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtStart.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
+//	glm::vec3 P2_at = glm::vec3((cameraAtStart.x + cameraAtEnd.x) / 2, cameraAtEnd.y, (cameraAtStart.z + cameraAtEnd.z) / 2);
+//	glm::vec3 P3_at = cameraAtEnd;
+//
+//
+//	if (cameraPos.x != cameraPosTr.x && cameraPos.y != cameraPosTr.y && cameraPos.z != cameraPosTr.z) {
+//		float t = currentTimeTr / durationTr;
+//
+//		cameraPos = bezierCurve(P0, P1, P2, P3, t);
+//		//cameraAt = bezierCurve(P0_at, P1_at, P2_at, P3_at, t);
+//		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
+//
+//		currentTimeTr += deltaTime;
+//	}
+//	else {
+//		currentTimeTr = 0.0f;
+//		navicella.setSpeed(8.0f);
+//		speedCamera = 8.0f;
+//		//cameraPos.x = navicella.getPos().x;
+//		//cameraAt.x = navicella.getPos().x;
+//	}
+//}
 
 
 void render(Shader shaderBlur, Shader shaderBloomFinal)

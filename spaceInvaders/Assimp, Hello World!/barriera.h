@@ -311,12 +311,13 @@ public:
                 float z = posBarriera.z + 2 * lunghezza;
                 glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
 
-                if (isCollided(posAlieno, raggioAlieno, posCubo)) {
+                if (isCollided(posAlieno, raggioAlieno, posCubo) && (map1[0][j] != 0 || map1[1][j] != 0 || map1[2][j] != 0 || map1[3][j] != 0 || map1[4][j] != 0)) {
                     map1[0][j] = 0;
                     map1[1][j] = 0;
                     map1[2][j] = 0;
                     map1[3][j] = 0;
                     map1[4][j] = 0;
+                    suono.soundDistruggiBarriera();
                 }
             }
         }
@@ -328,12 +329,13 @@ public:
                 float z = posBarriera.z + 2 * lunghezza;
                 glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
 
-                if (isCollided(posAlieno, raggioAlieno, posCubo)) {
+                if (isCollided(posAlieno, raggioAlieno, posCubo) && (map2[0][j] != 0 || map2[1][j] != 0 || map2[2][j] != 0 || map2[3][j] != 0 || map2[4][j] != 0)) {
                     map2[0][j] = 0;
                     map2[1][j] = 0;
                     map2[2][j] = 0;
                     map2[3][j] = 0;
                     map2[4][j] = 0;
+                    suono.soundDistruggiBarriera();
                 }
             }
         }
@@ -345,12 +347,13 @@ public:
                 float z = posBarriera.z + 2 * lunghezza;
                 glm::vec3 posCubo = glm::vec3(x, 0.0f, z);
 
-                if (isCollided(posAlieno, raggioAlieno, posCubo)) {
+                if (isCollided(posAlieno, raggioAlieno, posCubo) && (map3[0][j] != 0 || map3[1][j] != 0 || map3[2][j] != 0 || map3[3][j] != 0 || map3[4][j] != 0)) {
                     map3[0][j] = 0;
                     map3[1][j] = 0;
                     map3[2][j] = 0;
                     map3[3][j] = 0;
                     map3[4][j] = 0;
+                    suono.soundDistruggiBarriera();
                 }
             }
         }

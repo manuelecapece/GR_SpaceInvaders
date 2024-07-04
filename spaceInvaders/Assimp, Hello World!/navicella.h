@@ -162,6 +162,7 @@ public:
                     }
                     else {
                         disegnaNavicella(moveRight, moveLeft);
+                        //disegnaSfera(moveRight, moveLeft);
                     }
                 }
 
@@ -311,7 +312,7 @@ public:
 
     void checkIsHitted(Proiettile& proiettile, Esplosione& esplosione, bool spawnaAlieni) {
 
-        if (isInvincibile) {
+        if (isInvincibile || isHitted) {
             return;
         }
 
@@ -355,21 +356,7 @@ public:
             if (isPointInsideCircle(punto, centroCirconf)) {
                 proiettile.eliminaInPos(i);
                 if (!scudo && !isInvincibile) {
-                    startTimeHitted = glfwGetTime();
-                    isHitted = true;
-                    esplosione.inizializza(pos, TIPO_NAVICELLA);
-
-                    if (vite >= 0 ) {
-                        vite = vite - 1;
-                    }
-                    
-                    if (vite >= 0) {
-                        ripristinaPosizioneIniziale();
-                    }
-                    else {
-                        pos = glm::vec3(0.0f, 0.0f, -30.0f);
-                    }
-                    return;
+                    distruggiNavicella(esplosione);
                 }
             }
 
@@ -380,14 +367,34 @@ public:
 
     }
 
+    void distruggiNavicella(Esplosione& esplosione) {
+        startTimeHitted = glfwGetTime();
+        isHitted = true;
+        esplosione.inizializza(pos, TIPO_NAVICELLA);
+
+        if (vite >= 0) {
+            vite = vite - 1;
+        }
+
+        if (vite >= 0) {
+            ripristinaPosizioneIniziale();
+        }
+        else {
+            pos = glm::vec3(0.0f, 0.0f, -30.0f);
+        }
+        return;
+    }
+
     void ripristinaPosizioneIniziale() {
         pos = glm::vec3(0.0f, 0.0, 8.0f);
     }
 
-    void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno) {
+    void checkCollisionAlien(glm::vec3 alienPos, float raggioAlieno, Esplosione& esplosione) {
         float distSq = (alienPos.x - pos.x) * (alienPos.x - pos.x) + (alienPos.z - pos.z) * (alienPos.z - pos.z);
         if (distSq <= (raggio + raggioAlieno)) {
-            isHitted = true;
+            if (!isInvincibile) {
+                distruggiNavicella(esplosione);
+            }
         }
     }
 

@@ -184,6 +184,7 @@ public:
 
     void soundCanzoneBase() {
         if (playCanzoneBase) {
+            spaceInvaders1->setDefaultVolume(0.8f);
             canzoneBase = soundEngine->play2D(spaceInvaders1, true, false, true);
             playCanzoneBase = false;
         }
@@ -197,6 +198,7 @@ public:
 
     void soundCanzoneAction() {
         if (playCanzoneAction) {
+            finalWar->setDefaultVolume(0.8f);
             canzoneAction = soundEngine->play2D(finalWar, true, false, true);
             playCanzoneAction = false;
         }
