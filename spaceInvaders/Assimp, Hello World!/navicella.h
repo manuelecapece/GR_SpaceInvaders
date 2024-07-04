@@ -207,7 +207,7 @@ public:
         bonusShader.use();
         glm::mat4 sferaModel = glm::mat4(1.0f);
         sferaModel = glm::translate(sferaModel, glm::vec3(pos.x, 0.0f, pos.z + 0.32f));
-        sferaModel = glm::scale(sferaModel, glm::vec3(2.3, 2.3, 2.3));
+        sferaModel = glm::scale(sferaModel, glm::vec3(2.1, 2.1, 2.1));
         sferaModel = glm::rotate(sferaModel, pigreco / 4, glm::vec3(1.0f, 0.0f, 0.0f));
         bonusShader.setMat4("model", sferaModel);
         modelSfera.Draw(bonusShader);
@@ -228,7 +228,7 @@ public:
         //Per il modello navicella
         glm::mat4 modelNavicella = glm::mat4(1.0f);
         modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.23f, 0.23f, 0.23f));
         modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
         ruotaNavicella(moveRight, moveLeft, modelNavicella);
         shader.setMat4("model", modelNavicella);
@@ -245,7 +245,7 @@ public:
         shader.use();
         glm::mat4 modelNavicella = glm::mat4(1.0f);
         modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.23f, 0.23f, 0.23f));
         modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
         ruotaNavicella(moveRight, moveLeft, modelNavicella);
         shader.setMat4("model", modelNavicella);
@@ -260,7 +260,7 @@ public:
 
         modelNavicella = glm::mat4(1.0f);
         modelNavicella = glm::translate(modelNavicella, glm::vec3(pos.x, 0.0f, pos.z + 0.5f));
-        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.27f, 0.27f, 0.27f));
+        modelNavicella = glm::scale(modelNavicella, glm::vec3(0.25f, 0.25f, 0.25f));
         modelNavicella = glm::rotate(modelNavicella, pigreco, glm::vec3(0.0f, 1, 0.0f));
         ruotaNavicella(moveRight, moveLeft, modelNavicella);
         shader.setMat4("model", modelNavicella);

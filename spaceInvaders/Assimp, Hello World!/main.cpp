@@ -453,7 +453,8 @@ void cambiaVisualizzazione2() {
 	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
 	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
 
-	if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
+	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
+	//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
 		cout << "Carico vista 3D" << endl;
 		vista = 1;
@@ -467,7 +468,8 @@ void cambiaVisualizzazione2() {
 		}
 	}
 	
-	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
+	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
+	//if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
 		
 		cout << "Carico vista 2D" << endl;
 		vista = 0;
@@ -640,6 +642,7 @@ void ripristinaCameraPos() {
 	}
 
 	cameraUpVista1 = glm::vec3(0.0, 1.0, 0.0);
+	cameraUp = glm::vec3(0.0, 1.0, 0.0);
 }
 
 void checkGameLost() {
@@ -1231,9 +1234,6 @@ int main()
 	barriera.inizializzaMaps();
 	barriera.setSuono(suono);
 
-	//float limX_pos = alieno.getPos().x + 5 * alieno.getRaggio() * 2.0f * alieno.getSpazio();
-	//navicella.setLimXpos(limX_pos);
-
 
 	// render loop
 	while (!glfwWindowShouldClose(window))
@@ -1270,7 +1270,6 @@ int main()
 		blendingShader.setFloat("alpha", 0.2);
 		stencilShader.use();
 		stencilShader.setMat4("view", view);
-		//stencilShader.setVec3("color", glm::vec3(1.0f, 1.0f, 0.26f));
 		
 		for (auto& pianeta : pianeti) {
 			pianeta.update(deltaTime);
