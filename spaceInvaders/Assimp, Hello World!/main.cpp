@@ -408,14 +408,17 @@ void idle()
 
 
 void cambiaVisualizzazione2() {
-	//La camera action si abilita quando è attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
+	//La camera action si abilita quando ? attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
 	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
 	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
 	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
 
-	//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
+	//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
+		//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
+		//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
 	if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
+		cout << "Carico vista 3D" << endl;
 		vista = 1;
 		setPosTrCamera();
 		fermaColpi();
@@ -426,21 +429,19 @@ void cambiaVisualizzazione2() {
 			suono.soundCanzoneAction();
 		}
 	}
-	
-<<<<<<< HEAD
+
 	//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
 	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
-		
-		cout << "Carico vista 2D" << endl;
-=======
-	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
-	//if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
+		//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
 
->>>>>>> 5fb99956bd10afe63640863420b38239ac8f2aa9
+		cout << "Carico vista 2D" << endl;
 		vista = 0;
 		setPosTrCamera();
+
 	}
+
 }
+	
 
 void transizioneCamera(float deltaTime) {
 
