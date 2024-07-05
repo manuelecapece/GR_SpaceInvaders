@@ -41,6 +41,7 @@ private:
     float speed = 0.07;
     float speedProiettili = 6;
     int alieniEliminati = 0;
+    int remainingAliens = righeAlieni * colonneAlieni - alieniEliminati;
     float alpha = 0.3;
     Shader shader;
     Shader bonusShader;
@@ -369,7 +370,7 @@ public:
 
     void ruotaAlieno(glm::mat4& modelAlieno) {
 
-        int remainingAliens = righeAlieni * colonneAlieni - alieniEliminati;
+        remainingAliens = righeAlieni * colonneAlieni - alieniEliminati;
 
         translateSpeedRotation = speed * (1.0f + ((righeAlieni * colonneAlieni) - remainingAliens) / (float)(righeAlieni * colonneAlieni));
 

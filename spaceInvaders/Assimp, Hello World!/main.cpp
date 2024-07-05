@@ -429,7 +429,7 @@ void cambiaVisualizzazione2() {
 	}
 
 	//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
-	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() <= ((numeroAlieni / 3) * 2))) {
+	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
 
 		cout << "Carico vista 2D" << endl;
 		vista = 0;
