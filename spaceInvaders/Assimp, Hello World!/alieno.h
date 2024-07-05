@@ -134,6 +134,10 @@ public:
         return speed;
     }
 
+    int getNumeroAlieni() const {
+        return righeAlieni * colonneAlieni;
+    }
+
     double getStartTimeLoadNewLevel() const {
         return startTimeLoadNewLevel;
     }
@@ -370,11 +374,6 @@ public:
 
     void ruotaAlieno(glm::mat4& modelAlieno) {
 
-        remainingAliens = righeAlieni * colonneAlieni - alieniEliminati;
-
-        translateSpeedRotation = speed * (1.0f + ((righeAlieni * colonneAlieni) - remainingAliens) / (float)(righeAlieni * colonneAlieni));
-
-
         if ((speedx > 0) && rotationx > (-pigreco / 10)) {
             rotationx = rotationx - translateSpeedRotation;
         }
@@ -394,7 +393,7 @@ public:
         if ((speedz > 0) && rotationz < (pigreco / 10)) {
             rotationz = rotationz + translateSpeedRotation;
         }
-        else if ((speedz == 0.0f) && (rotationz > 0.05f)) {
+        else if ((speedz == 0.0f) && (rotationz > 0.0f)) {
 
             rotationz = rotationz - translateSpeedRotation;
         }
@@ -407,6 +406,14 @@ public:
             modelAlieno = glm::rotate(modelAlieno, rotationz, glm::vec3(1.0f, 0.0f, 0.0f));
         }
 
+    }
+
+    float getSpeedRotation() const {
+        int numeroAlieni = righeAlieni * colonneAlieni;
+        int numeroAlieniRimasti = numeroAlieni - alieniEliminati;
+        float coeff = static_cast<float>(numeroAlieni) / numeroAlieniRimasti;
+        float speedRotation = speed * coeff;
+        return speedRotation;
     }
 
     void caricaNuovoLivello() {

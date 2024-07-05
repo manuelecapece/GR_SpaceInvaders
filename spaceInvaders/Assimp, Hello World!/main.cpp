@@ -54,7 +54,6 @@ Shader blendingShader;
 Shader stencilShader;
 
 //Dichiarazione modelli
-Model modelFreccia;
 Model modelSfera;
 Model modelCubo;
 Model modelNavicella;
@@ -70,9 +69,6 @@ Model modelPianeta2;
 Model modelPianeta3;
 Model modelPianeta4;
 Model modelPianeta5;
-
-
-float random_x;
 
 float startTimeDelta = 5.0f;
 double stSparoUfo = glfwGetTime();
@@ -102,7 +98,6 @@ float durationTr = 1.0f; // Durata della transizione in secondi
 float currentTimeTr = 0.0f;
 
 //Dichiarazione matrici di trasformazione
-//glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
 glm::mat4 projection = glm::mat4(1.0f);	//identity matrix
 
 //Dichiarazione metodi
@@ -112,7 +107,6 @@ float generaNumeroCasualeFloat(float estremoInferiore, float estremoSuperiore);
 float generaNumeroCasualeInt(int estremoInferiore, int estremoSuperiore);
 void muoviAlieni();
 void muoviCamera(float deltaTime);
-void muoviCamera2();
 void checkGameWin();
 void checkGameLost();
 void ripristinaCameraPos();
@@ -128,7 +122,7 @@ void setPosTrCamera();
 void impostaPosizioni();
 void transizioneCamera(float deltaTime);
 void cambiaCameraPos(float deltaTime);
-void cambiaVisualizzazione2();
+void cambiaVisualizzazione();
 bool isCameraChanged();
 void fermaColpi();
 
@@ -172,8 +166,6 @@ glm::vec3 cameraAtVista1(0.0f, 0.0f, 0.0f);	// Punto in cui "guarda" la camera
 glm::vec3 cameraPosTr(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraAtTr(0.0f, 0.0f, 0.0f);
 
-
-
 float speedCamera = navicella.getSpeed();
 
 unsigned int cubeVAO;
@@ -189,8 +181,6 @@ bool moveRight = false;
 bool spara = true;
 bool exitGame = false;
 bool respawnNavicella = false;
-bool vistaTradizionale = false;
-bool vistaAction = false;
 
 unsigned int frameCount = 0;
 double previousTime = 0;
@@ -332,9 +322,9 @@ void idle()
 
 	double deltaTimeExecute = currentTime - startTime;
 
-	cambiaVisualizzazione2();
+	cambiaVisualizzazione();
 
-	if (alieno.getAlieniEliminati() > ((alieno.getColonneAlieni() * alieno.getRigheAlieni() / 3) * 2)) {
+	if (alieno.getAlieniEliminati() > ((alieno.getNumeroAlieni() / 3) * 2)) {
 		suono.stopSoundCanzoneBase();
 		suono.setPlayCanzoneBase(true);
 		suono.soundCanzoneAction();
@@ -346,7 +336,7 @@ void idle()
 	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedx(alieno.getSpeedx() * deltaTime);
 	alieno.setTranslateSpeedz(alieno.getSpeedz() * deltaTime);
-	//alieno.setTranslateSpeedRotation(alieno.getSpeed() * deltaTime);
+	alieno.setTranslateSpeedRotation(alieno.getSpeedRotation() * deltaTime);
 	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
 	proiettileSpeciale.setTranslateSpeed(proiettileSpeciale.getSpeed() * deltaTime);
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
@@ -407,16 +397,15 @@ void idle()
 }
 
 
-void cambiaVisualizzazione2() {
+void cambiaVisualizzazione() {
 	//La camera action si abilita quando ? attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
 	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
 	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
-	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
+	int numeroAlieni = alieno.getNumeroAlieni();
 
-	//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-	if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
+	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
+	//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
-		cout << "Carico vista 3D" << endl;
 		vista = 1;
 		setPosTrCamera();
 		fermaColpi();
@@ -428,10 +417,9 @@ void cambiaVisualizzazione2() {
 		}
 	}
 
-	//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
-	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
+	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
+	//if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
 
-		cout << "Carico vista 2D" << endl;
 		vista = 0;
 		setPosTrCamera();
 
@@ -602,8 +590,7 @@ void checkGameLost() {
 }
 
 void checkGameWin() {
-	if (alieno.getAlieniEliminati() == (alieno.getColonneAlieni() * alieno.getRigheAlieni())) {
- 		//cout << "Hai vinto!" << endl;
+	if (alieno.getAlieniEliminati() == alieno.getNumeroAlieni()) {
 		ufo.setSpeed(0.0f);
 		navicella.setSpeed(0.0f);
 	}
@@ -611,7 +598,6 @@ void checkGameWin() {
 
 void muoviCamera(float deltaTime) {
 	float cameraSpeed = speedCamera * deltaTime;
-	//cameraPos.x = navicella.getPos().x;
 
 	if (respawnNavicella && vista == 1 && navicella.getVite() >= 0) {
 		cameraPos = glm::vec3(0.0f, 6.5f, 17.5f);
@@ -654,34 +640,34 @@ void muoviCamera(float deltaTime) {
 
 }
 
-void muoviCamera2() {
-
-	if (respawnNavicella && navicella.getVite() >= 0) {
-		cameraPosVista1 = glm::vec3(0.0f, 6.5f, 17.5f);
-		cameraAtVista1 = glm::vec3(0.0, 0.0, 0.0);
-		cameraUpVista1 = glm::vec3(0.0, 1.0, 0.0);
-		navicella.setHisHitted(false);
-		respawnNavicella = false;
-	}
-
-	if (moveRight && !navicella.getIsHitted())
-	{
-		cameraUpVista1.x = cameraUpVista1.x + navicella.getTranslateSpeed() / 100;
-		cameraUpVista1 = normalize(cameraUpVista1);
-		cameraPosVista1.x = cameraPosVista1.x + navicella.getTranslateSpeed();
-		cameraAtVista1.x = cameraAtVista1.x + navicella.getTranslateSpeed();
-
-	}
-
-	if (moveLeft && !navicella.getIsHitted())
-	{
-		cameraUpVista1.x = cameraUpVista1.x - navicella.getTranslateSpeed() / 100;
-		cameraUpVista1 = normalize(cameraUpVista1);
-		cameraPosVista1.x = cameraPosVista1.x - navicella.getTranslateSpeed();
-		cameraAtVista1.x = cameraAtVista1.x - navicella.getTranslateSpeed();
-	}
-
-}
+//void muoviCamera2() {
+//
+//	if (respawnNavicella && navicella.getVite() >= 0) {
+//		cameraPosVista1 = glm::vec3(0.0f, 6.5f, 17.5f);
+//		cameraAtVista1 = glm::vec3(0.0, 0.0, 0.0);
+//		cameraUpVista1 = glm::vec3(0.0, 1.0, 0.0);
+//		navicella.setHisHitted(false);
+//		respawnNavicella = false;
+//	}
+//
+//	if (moveRight && !navicella.getIsHitted())
+//	{
+//		cameraUpVista1.x = cameraUpVista1.x + navicella.getTranslateSpeed() / 100;
+//		cameraUpVista1 = normalize(cameraUpVista1);
+//		cameraPosVista1.x = cameraPosVista1.x + navicella.getTranslateSpeed();
+//		cameraAtVista1.x = cameraAtVista1.x + navicella.getTranslateSpeed();
+//
+//	}
+//
+//	if (moveLeft && !navicella.getIsHitted())
+//	{
+//		cameraUpVista1.x = cameraUpVista1.x - navicella.getTranslateSpeed() / 100;
+//		cameraUpVista1 = normalize(cameraUpVista1);
+//		cameraPosVista1.x = cameraPosVista1.x - navicella.getTranslateSpeed();
+//		cameraAtVista1.x = cameraAtVista1.x - navicella.getTranslateSpeed();
+//	}
+//
+//}
 
 void muoviAlieni() {
 
@@ -758,132 +744,12 @@ void muoviAlieni() {
 
 }
 
-
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
-}
-
-
-// load and create a texture standard per jpg
-unsigned int loadTexture1(std::string filename)
-{
-	unsigned int texture;
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
-	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-	// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-		return -1;
-	}
-	stbi_image_free(data);
-
-	return texture;
-}
-
-// load and create a texture per le trasparenti, le carica storte
-unsigned int loadTexture2(char const* path)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-	if (data)
-	{
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
-}
-
-// utility function for loading a 2D texture from file con gammaCorrection
-unsigned int loadTexture3(char const* path, bool gammaCorrection)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-	if (data)
-	{
-		GLenum internalFormat;
-		GLenum dataFormat;
-		if (nrComponents == 1)
-		{
-			internalFormat = dataFormat = GL_RED;
-		}
-		else if (nrComponents == 3)
-		{
-			internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
-			dataFormat = GL_RGB;
-		}
-		else if (nrComponents == 4)
-		{
-			internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
-			dataFormat = GL_RGBA;
-		}
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
 }
 
 int main()
@@ -955,7 +821,6 @@ int main()
 	initRenderText(SCR_WIDTH, SCR_HEIGHT);
 
 	// load models
-	modelFreccia = Model("../src/models/freccia/freccia.obj");
 	modelSfera = Model("../src/models/sfera/sphere.obj");
 	modelCubo = Model("../src/models/cubo.obj");
 	modelNavicella = Model("../src/models/navicella/navicella.obj");
@@ -995,8 +860,6 @@ int main()
 	// ---------------------------------------
 	glGenFramebuffers(1, &hdrFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-
-
 
 	// create 2 floating point color buffers (1 for normal rendering, other for brightness threshold values)
 
@@ -1047,15 +910,6 @@ int main()
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete!" << std::endl;
 	}
-
-
-
-	////Binding per mattoni con texture diffuse e speculari
-	//glGenVertexArrays(1, &cubeVAO);
-	//glGenBuffers(1, &cubeVBO);
-	//glBindVertexArray(cubeVAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
