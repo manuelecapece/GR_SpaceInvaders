@@ -346,7 +346,7 @@ void idle()
 	ufo.setTranslateSpeed(ufo.getSpeed() * deltaTime);
 	alieno.setTranslateSpeedx(alieno.getSpeedx() * deltaTime);
 	alieno.setTranslateSpeedz(alieno.getSpeedz() * deltaTime);
-	alieno.setTranslateSpeedRotation(alieno.getSpeed() * deltaTime);
+	//alieno.setTranslateSpeedRotation(alieno.getSpeed() * deltaTime);
 	proiettileNavicella.setTranslateSpeed(proiettileNavicella.getSpeed() * deltaTime);
 	proiettileSpeciale.setTranslateSpeed(proiettileSpeciale.getSpeed() * deltaTime);
 	proiettileUfo.setTranslateSpeed(proiettileUfo.getSpeed() * deltaTime);
@@ -414,8 +414,6 @@ void cambiaVisualizzazione2() {
 	int numeroAlieni = alieno.getColonneAlieni() * alieno.getRigheAlieni();
 
 	//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-		//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
-		//if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))){
 	if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
 		cout << "Carico vista 3D" << endl;
@@ -431,8 +429,7 @@ void cambiaVisualizzazione2() {
 	}
 
 	//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
-	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
-		//if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
+	if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() <= ((numeroAlieni / 3) * 2))) {
 
 		cout << "Carico vista 2D" << endl;
 		vista = 0;
