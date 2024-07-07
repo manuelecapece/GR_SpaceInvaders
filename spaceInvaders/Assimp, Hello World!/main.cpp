@@ -81,7 +81,7 @@ double startTimeGameOver = 0;
 double currentxs;
 double deltaxs = 0;
 float deltaSparoAlieni = 2.0f;
-float intervallo = 1.5f;
+float intervallo = 1.0f;
 int stepDx = 1;
 int stepSx = 1;
 bool restart = false;
@@ -233,6 +233,10 @@ void processInput(GLFWwindow* window)
 		moveRight = true;
 
 	if (navicella.getVite() < 0 && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && caricaLivello1) {
+		navicella.setVite(2);
+		alieno.setSpeedProiettili(6);
+		ufo.setSpeedProiettili(6);
+		alieno.setViteAlieni(1);
 		alieno.caricaLivello1(navicella);
 		caricaLivello1 = false;
 		carica = true;
@@ -547,7 +551,7 @@ void ripristinaGioco() {
 	}
 	stepDx = 1;
 	stepSx = 1;
-	intervallo = 1.5f;
+	intervallo = 1.0f;
 
 	proiettileNavicella.ripristinaColpiSparati();
 	proiettileUfo.ripristinaColpiSparati();
@@ -558,16 +562,13 @@ void ripristinaGioco() {
 	suono.ripristina();
 	suono.soundGameStart();
 
-	if (navicella.getVite() < 0) {
-		navicella.setVite(2);
-	}
-
 	carica = false;
 	startTimeGameOver = 0;
 	suono.setPlayGameOver(true);
 	suono.stopSoundCanzoneAction();
 	suono.setPlayCanzoneAction(true);
 	suono.soundCanzoneBase();
+	
 }
 
 void ripristinaCameraPos() {
@@ -1157,7 +1158,7 @@ void render(Shader shaderBlur, Shader shaderBloomFinal)
 
 	navicella.render(moveRight, moveLeft, proiettileSpeciale);
 
-	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione);
+	alieno.render(proiettileNavicella, proiettileSpeciale, navicella, esplosione, ufo);
 	alieno.renderProiettili(navicella, barriera, esplosione);
 
 	roccia.render();

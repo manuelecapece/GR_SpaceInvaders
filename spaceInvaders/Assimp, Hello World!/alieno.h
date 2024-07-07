@@ -18,6 +18,7 @@
 #include "barriera.h"
 #include "esplosione.h"
 #include "suono.h"
+#include "ufo.h"
 
 class Alieno {
 private:
@@ -38,7 +39,7 @@ private:
     float translateSpeedRotation;
     float speedx = 0.0f;
     float speedz = 0.0f;
-    float speed = 0.07;
+    float speed = 0.1;
     float speedProiettili = 6;
     int alieniEliminati = 0;
     int remainingAliens = righeAlieni * colonneAlieni - alieniEliminati;
@@ -61,6 +62,7 @@ private:
     std::vector<std::vector<int>> mapBonus;
     std::vector<std::vector<int>> mapHitted;
     Suono suono;
+    int viteAlieni = 1;
 
 public:
     // Costruttore
@@ -166,6 +168,10 @@ public:
         pos = newPos;
     }
 
+    void setViteAlieni(int val) {
+        viteAlieni = val;
+    }
+
     void setSuono(Suono newSuono) {
         suono = newSuono;
     }
@@ -244,7 +250,7 @@ public:
 
     }
 
-    void render(Proiettile& proiettile, Proiettile& proiettileSpeciale, Navicella& navicella, Esplosione& esplosione) {
+    void render(Proiettile& proiettile, Proiettile& proiettileSpeciale, Navicella& navicella, Esplosione& esplosione, Ufo& ufo) {
 
         shader.use();
 
@@ -280,7 +286,7 @@ public:
                     if (isHitted(proiettile, posAlieno) || isHitted(proiettileSpeciale, posAlieno)) {
                         mapHitted[i][j]++;
 
-                        if (livello > 3 && mapHitted[i][j] < 2) {
+                        if (mapHitted[i][j] < viteAlieni) {
                             suono.soundDistruggiBarriera();
                         }
                         else {
@@ -289,8 +295,8 @@ public:
 
                             score = score + 50;
                             alieniEliminati++;
-                            if (alieniEliminati == righeAlieni * colonneAlieni) {
-                                caricaNuovoLivello();
+                            if (alieniEliminati == righeAlieni * colonneAlieni && navicella.getVite() >= 0) {
+                                caricaNuovoLivello(ufo);
                             }
 
                             if (mapBonus[i][j] != 0) {
@@ -317,8 +323,8 @@ public:
         glm::mat4 modelAlieno = glm::mat4(1.0f);
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.27f, 0.27, 0.27f));
-        if (mapHitted[i][j] == 1) {
-            modelAlieno = glm::rotate(modelAlieno, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
+        if (mapHitted[i][j] > 0) {
+            modelAlieno = glm::rotate(modelAlieno, -(mapHitted[i][j]) * (pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
         ruotaAlieno(modelAlieno);
         shader.setMat4("model", modelAlieno);
@@ -333,8 +339,8 @@ public:
         modelAlieno = glm::mat4(1.0f);
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.30f, 0.30f, 0.30f));
-        if (mapHitted[i][j] == 1) {
-            modelAlieno = glm::rotate(modelAlieno, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
+        if (mapHitted[i][j] > 0) {
+            modelAlieno = glm::rotate(modelAlieno, -(mapHitted[i][j]) * (pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
         ruotaAlieno(modelAlieno);
         shader.setMat4("model", modelAlieno);
@@ -352,8 +358,8 @@ public:
         glm::mat4 sferaModel = glm::mat4(1.0f);
         sferaModel = glm::translate(sferaModel, glm::vec3(x, 0.0f, z));
         sferaModel = glm::scale(sferaModel, glm::vec3(raggio, raggio, raggio));
-        if (mapHitted[i][j] == 1) {
-            sferaModel = glm::rotate(sferaModel, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
+        if (mapHitted[i][j] > 0) {
+            sferaModel = glm::rotate(sferaModel, -(mapHitted[i][j]) * (pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
         shader.setMat4("model", sferaModel);
         modelSfera.Draw(shader);
@@ -364,8 +370,8 @@ public:
         glm::mat4 modelAlieno = glm::mat4(1.0f);
         modelAlieno = glm::translate(modelAlieno, glm::vec3(x, 0.0f, z));
         modelAlieno = glm::scale(modelAlieno, glm::vec3(0.3f, 0.3, 0.3f));
-        if (mapHitted[i][j] == 1) {
-            modelAlieno = glm::rotate(modelAlieno, -(pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
+        if (mapHitted[i][j] > 0) {
+            modelAlieno = glm::rotate(modelAlieno, -(mapHitted[i][j]) * (pigreco / 10), glm::vec3(1.0f, 0.0f, 0.0f));
         }
         ruotaAlieno(modelAlieno);
         shader.setMat4("model", modelAlieno);
@@ -416,7 +422,7 @@ public:
         return speedRotation;
     }
 
-    void caricaNuovoLivello() {
+    void caricaNuovoLivello(Ufo& ufo) {
         suono.soundCaricaNuovoLivello();
         livello++;
         spawnaAlieni = false;
@@ -428,13 +434,19 @@ public:
 
         speedx = 0.0f;
         speedz = 0.0f;
-        speed = 0.07;
+        speed = 0.1;
         nStepDown = 0;
         muoviVersoDx = false;
         muoviVersoSx = false;
         muoviVersoDown = false;
 
         ripristinaColpiSparati();
+
+        if (isDivisibleBy3(livello)) {
+            viteAlieni++;
+            speedProiettili++;
+            ufo.incrementaSpeedProiettili();
+        }
     }
 
     void caricaLivello1(Navicella& navicella) {
@@ -450,7 +462,7 @@ public:
 
         speedx = 0.0f;
         speedz = 0.0f;
-        speed = 0.07;
+        speed = 0.1;
         nStepDown = 0;
         muoviVersoDx = false;
         muoviVersoSx = false;
@@ -697,7 +709,7 @@ public:
             }
         }
 
-        for (int i = 0; i < livello; i++)
+        for (int i = 0; i < viteAlieni; i++)
         {
             int idRiga = generaNumeroCasualeInt(0, righeAlieni - 1);
             int idColonna = generaNumeroCasualeInt(0, colonneAlieni - 1);
@@ -754,6 +766,20 @@ public:
             }
         }
         return true;
+    }
+
+    bool isDivisibleBy3(int number) {
+        int sum = 0;
+        int temp = number;
+
+        // Calcola la somma delle cifre
+        while (temp > 0) {
+            sum += temp % 10;
+            temp /= 10;
+        }
+
+        // Controlla se la somma delle cifre è divisibile per 3
+        return (sum % 3 == 0);
     }
 
 };

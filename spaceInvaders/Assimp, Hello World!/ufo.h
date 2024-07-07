@@ -88,6 +88,14 @@ public:
         score = newScore;
     }
 
+    void setSpeedProiettili(float newSpeed) {
+        speedProiettili = newSpeed;
+    }
+
+    void incrementaSpeedProiettili() {
+        speedProiettili++;
+    }
+
     void render(Esplosione& esplosione) {
 
         pos = glm::vec3(pos.x + translateSpeed, pos.y, pos.z);
