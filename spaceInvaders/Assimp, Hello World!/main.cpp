@@ -411,8 +411,8 @@ void cambiaVisualizzazione() {
 	//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
 
 		vista = 1;
-		setPosTrCamera();
 		fermaColpi();
+		setPosTrCamera();
 
 		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
 			suono.stopSoundCanzoneBase();
@@ -467,7 +467,8 @@ void cambiaCameraPos(float deltaTime) {
 		speedCamera = 8.0f;
 		proiettileNavicella.setSpeed(15.0f);
 		proiettileSpeciale.setSpeed(15.0f);
-		alieno.setSpeedProiettili(alieno.getSpeedProiettili());
+		alieno.setSpeedProiettili(6 + alieno.getViteAlieni() - 1);
+		ufo.setSpeedProiettili(6 + alieno.getViteAlieni() - 1);
 		currentTimeTr = 0.0f;
 		cambiaCamera = !cambiaCamera;
 	}
@@ -486,6 +487,7 @@ void fermaColpi() {
 	proiettileNavicella.setSpeed(0.0f);
 	proiettileSpeciale.setSpeed(0.0f);
 	alieno.setSpeedProiettili(0.0f);
+	ufo.setSpeedProiettili(0.0f);
 }
 
 

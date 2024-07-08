@@ -65,7 +65,7 @@ private:
     int viteAlieni = 1;
 
 public:
-    // Costruttore
+    // CostruttoreviteAlieni
     Alieno() {}
 
     bool getMuoviVersoDx() const {
@@ -158,6 +158,10 @@ public:
 
     float getSpeedProiettili() {
         return speedProiettili;
+    }
+
+    int getViteAlieni() const {
+        return viteAlieni;
     }
 
     void setScore(int newScore) {
@@ -444,7 +448,7 @@ public:
 
         if (isDivisibleBy3(livello)) {
             viteAlieni++;
-            speedProiettili++;
+            speedProiettili = speedProiettili + (viteAlieni-1);
             ufo.incrementaSpeedProiettili();
         }
     }
