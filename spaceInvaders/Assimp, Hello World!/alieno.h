@@ -176,6 +176,10 @@ public:
         viteAlieni = val;
     }
 
+    void setSpeed(float newSpeed) {
+        speed = newSpeed;
+    }
+
     void setSuono(Suono newSuono) {
         suono = newSuono;
     }

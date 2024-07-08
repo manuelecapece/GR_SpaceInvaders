@@ -94,7 +94,8 @@ bool caricaLivello1 = false;
 bool var = true;
 bool carica = false;
 bool cambiaCamera = false;
-float durationTr = 1.0f; // Durata della transizione in secondi
+bool sparaAlieno = true;
+float durationTr = 5.0f; // Durata della transizione in secondi
 float currentTimeTr = 0.0f;
 
 //Dichiarazione matrici di trasformazione
@@ -355,7 +356,7 @@ void idle()
 			stSparoUfo = ctSparoUfo;
 		}
 
-		if (ctSparoAlieni - stSparoAlieni >= deltaSparoAlieni && alieno.getSpawnaAlieni()) {
+		if (ctSparoAlieni - stSparoAlieni >= deltaSparoAlieni && alieno.getSpawnaAlieni() && sparaAlieno) {
 			for (int id_colonna = 0; id_colonna < alieno.getColonneAlieni(); id_colonna++) {
 				int id_riga = generaNumeroCasualeInt(0, alieno.getRigheAlieni()-1);
 				//if (alieno.getMap()[id_riga][id_colonna] != 0) {
@@ -413,6 +414,7 @@ void cambiaVisualizzazione() {
 		vista = 1;
 		fermaColpi();
 		setPosTrCamera();
+		sparaAlieno = false;
 
 		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
 			suono.stopSoundCanzoneBase();
@@ -448,6 +450,9 @@ void transizioneCamera(float deltaTime) {
 }
 
 void cambiaCameraPos(float deltaTime) {
+
+	//float t = 0.0f;
+
 	glm::vec3 cameraPosStart = cameraPos;
 	glm::vec3 cameraPosEnd = cameraPosTr;
 
@@ -458,9 +463,16 @@ void cambiaCameraPos(float deltaTime) {
 
 	if (!val) {
 		float t = currentTimeTr / (durationTr);
+
 		cameraPos = glm::mix(cameraPosStart, cameraPosEnd, t);
 		cameraAt = glm::mix(cameraAtStart, cameraAtEnd, t);
-		currentTimeTr += deltaTime;
+
+		if (t > 0.15f && currentTimeTr != durationTr) {
+			currentTimeTr = durationTr;
+		}
+		else {
+			currentTimeTr += deltaTime;
+		}
 	}
 	else {
 		navicella.setSpeed(8.0f);
@@ -471,6 +483,7 @@ void cambiaCameraPos(float deltaTime) {
 		ufo.setSpeedProiettili(6 + alieno.getViteAlieni() - 1);
 		currentTimeTr = 0.0f;
 		cambiaCamera = !cambiaCamera;
+		sparaAlieno = true;
 	}
 }
 
