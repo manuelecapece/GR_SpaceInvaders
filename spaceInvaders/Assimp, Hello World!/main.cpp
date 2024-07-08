@@ -403,27 +403,29 @@ void idle()
 
 
 void cambiaVisualizzazione() {
-	//La camera action si abilita quando ? attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
+	//La camera action si abilita quando e' attivo un bonus oppure sono stati eliminati i 2/3 degli alieni
 	int proiettiliSpecialiDisponibili = proiettileSpeciale.getColpiSpecialiDisponibili();
 	int dimVecPosProiettiliSpeciali = proiettileSpeciale.getVecPos().size();
 	int numeroAlieni = alieno.getNumeroAlieni();
+	bool proiettiliSpecialiOut = proiettileSpeciale.isAllProiettiliSpecialiOut();
+	bool isEliminati = alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2); // true se vengono eliminati i 2/3 degli alieni
 
-	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || dimVecPosProiettiliSpeciali != 0 || (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)))) {
-	//if (vista == 0 && !cambiaCamera && (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2))) {
+	if (vista == 0 && !cambiaCamera && (navicella.getScudo() || proiettiliSpecialiDisponibili > 0 || !proiettiliSpecialiOut || isEliminati)) {
+	//if (vista == 0 && !cambiaCamera && isEliminati) {
 
 		vista = 1;
 		fermaColpi();
 		setPosTrCamera();
 		sparaAlieno = false;
 
-		if (alieno.getAlieniEliminati() > ((numeroAlieni / 3) * 2)) {
+		if (isEliminati) {
 			suono.stopSoundCanzoneBase();
 			suono.setPlayCanzoneBase(true);
 			suono.soundCanzoneAction();
 		}
 	}
 
-	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && dimVecPosProiettiliSpeciali == 0 && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2)))) {
+	if (vista == 1 && cambiaCamera && (!navicella.getScudo() && proiettiliSpecialiDisponibili == 0 && proiettiliSpecialiOut && !isEliminati)) {
 	//if (vista == 1 && cambiaCamera && (alieno.getAlieniEliminati() < ((numeroAlieni / 3) * 2))) {
 
 		vista = 0;
@@ -502,7 +504,6 @@ void fermaColpi() {
 	alieno.setSpeedProiettili(0.0f);
 	ufo.setSpeedProiettili(0.0f);
 }
-
 
 void selezionaVista() {
 
@@ -583,7 +584,6 @@ void ripristinaGioco() {
 	suono.stopSoundCanzoneAction();
 	suono.setPlayCanzoneAction(true);
 	suono.soundCanzoneBase();
-	
 }
 
 void ripristinaCameraPos() {

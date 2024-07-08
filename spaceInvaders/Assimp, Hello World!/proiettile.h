@@ -231,6 +231,18 @@ public:
         }
     }
 
+    bool isAllProiettiliSpecialiOut() {
+        for (int i = 0; i < vectorPos.size(); i++)
+        {
+            if (vectorPos[i].z > -18.0f)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 };
 
 #endif 
