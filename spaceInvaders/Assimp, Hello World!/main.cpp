@@ -768,7 +768,7 @@ int main()
 {
 	record = leggiScoreDalFile("../src/score.txt");
 
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 
 	alieno.setPos(glm::vec3(alieno.getPos().x + 100.0f, alieno.getPos().y, alieno.getPos().z));
 	navicella.setPos(glm::vec3(navicella.getPos().x + 100.0f, navicella.getPos().y, navicella.getPos().z));
