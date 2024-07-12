@@ -34,12 +34,11 @@ Il gioco offre la possibilita di giocare con la tradizionale vista 2D dall'alto 
     2) Bonus proiettile speciale: la navicella, evidenziata in stencil testing, potrà sparare un colpo indistruttibile che eliminerà tutto quello che incontrerà sul suo cammino, ufo compreso.
 ### Altri screen
 ![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.26.16.77.png)
-![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.26.16.77.png)
 ![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.26.31.39.png)
 ![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.27.21.69.png)
 ![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.27.44.80.png)
 ![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.29.26.53.png)
-![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.29.28.42.png)
+![](https://github.com/manuelecapece/GR_SpaceInvaders/blob/actionCamera/screen/Release%20Screenshot%202024.07.12%20-%2009.29.40.34.png)
 
 # ENG
 ## Advanced Three-Dimensional Graphics Exam Project 2023/24 - University of Basilicata
