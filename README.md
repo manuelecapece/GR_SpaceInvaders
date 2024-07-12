@@ -12,7 +12,7 @@ Il progetto prevede di effettuare una remaster in 3D del famoso gioco Space Inva
 
 ## Istruzioni esecuzione codice - metodo 2
 1) Scaricare il repository contenente il progetto
-2) Posizionarsi nella cartella spaceInvaders/Eseguibile/Release
+2) Posizionarsi nella cartella spaceInvaders/Eseguibile/game
 3) Eseguire SpaceInvaders.exe
 
 ## Space invaders
@@ -54,7 +54,7 @@ This repository contains the project carried out for the Advanced Three-Dimensio
 
 ## Code Execution Instructions - Method 2
 1) Download the repository containing the project
-2) Navigate to the folder spaceInvaders/Executable/Release
+2) Navigate to the folder spaceInvaders/Executable/game
 3) Run SpaceInvaders.exe
 
 ## Space Invaders
